@@ -1,26 +1,35 @@
 @import "tailwindcss";
 
+/* Theme variables */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #2c2b2b;           /* Page background (white) */
+  --foreground: #171717;           /* Default text color */
+
+  /* Header colors */
+  --header-bg: #111827;            /* Dark Charcoal */
+  --header-text: #ffffff;          /* White */
+
+  /* Buttons */
+  --login-outline: #ffffff;        /* Login button outline */
+  --login-hover-bg: #ffffff;       /* Login hover background */
+  --login-hover-text: #111827;     /* Login hover text */
+  --signup-bg: #14B8A6;            /* Teal signup button */
+  --signup-text: #ffffff;           /* Signup button text */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
+/* Dark mode overrides */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0a0a0a;        /* Dark background in dark mode */
+    --foreground: #ededed;        /* Light text in dark mode */
   }
 }
 
+/* Body base styles */
 body {
-  background: var(--background);
+  background-color: #ffffff;        /* Force background white */
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
 }
