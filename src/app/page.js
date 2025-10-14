@@ -1,23 +1,26 @@
-// src/app/page.js
+"use client";
+
 export default function HomePage() {
   return (
-    <div className="container mx-auto px-4">
-      <section className="my-8">
-        <h1 className="text-3xl font-bold mb-4 text-[#1E3A8A]">
-          Welcome to BattleZone!
-        </h1>
-        <h2 className="text-xl font-semibold mb-2 text-[#047857]">
-          Upcoming Tournaments
-        </h2>
-        <p className="text-[#111827]">
-          Join upcoming tournaments and challenge the best players.
-        </p>
-        <p className="text-[#6B7280] text-sm">
-          Sign up now and get early access to tournaments.
-        </p>
-      </section>
+    <div className="flex flex-col items-center justify-center min-h-[70vh] text-center">
+      {/* Hero Section */}
+      <h1 className="text-4xl md:text-6xl font-extrabold mb-4 text-[var(--text-primary)]">
+        Welcome to <span className="text-[var(--accent-primary)]">BattleZone</span>
+      </h1>
 
-      {/* Add tournament cards, quick links, etc. */}
+      <p className="text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mb-8">
+        Compete with players worldwide. Organize tournaments. Track your stats. All in one platform.
+      </p>
+
+      {/* CTA Buttons */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <button className="btn-green px-6 py-3 rounded-full font-semibold">
+          Join the Battle
+        </button>
+        <button className="btn-indigo px-6 py-3 rounded-full font-semibold">
+          Learn More
+        </button>
+      </div>
     </div>
   );
 }

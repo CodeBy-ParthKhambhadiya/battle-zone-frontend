@@ -1,35 +1,85 @@
 @import "tailwindcss";
 
-/* Theme variables */
-:root {
-  --background: #2c2b2b;           /* Page background (white) */
-  --foreground: #171717;           /* Default text color */
-
-  /* Header colors */
-  --header-bg: #111827;            /* Dark Charcoal */
-  --header-text: #ffffff;          /* White */
-
-  /* Buttons */
-  --login-outline: #ffffff;        /* Login button outline */
-  --login-hover-bg: #ffffff;       /* Login hover background */
-  --login-hover-text: #111827;     /* Login hover text */
-  --signup-bg: #14B8A6;            /* Teal signup button */
-  --signup-text: #ffffff;           /* Signup button text */
+/* ✅ Global body styles */
+body {
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  line-height: 1.6;
 }
 
-/* Dark mode overrides */
+/* ✅ Theme variables */
+:root {
+  /* 🎨 Base Colors */
+  --primary: #252525;             /* Charcoal gray base */
+  --background: #2E2E2E;          /* Slightly lighter background */
+  --surface: #3A3A3A;             /* Mid gray for cards/surfaces */
+  --border: #4B4B4B;              /* Divider / border tone */
+
+  /* 🖋️ Text */
+  --text-primary: #E5E5E5;        /* Light text */
+  --text-secondary: #B3B3B3;      /* Muted text */
+  --text-inverse: #FFFFFF;        /* White text for dark backgrounds */
+
+  /* 💚 Accent Colors */
+  --accent-success: #10B981;      /* Emerald green */
+  --accent-primary: #1E3A8A;      /* Indigo */
+  --accent-secondary: #14B8A6;    /* Teal */
+  --accent-warning: #F59E0B;      /* Amber */
+  --accent-error: #EF4444;        /* Red */
+
+  /* 🧭 Header */
+  --header-bg: #111827;           /* Dark charcoal header */
+  --header-text: #FFFFFF;         /* Header text */
+
+  /* 🔘 Buttons */
+  --login-outline: #FFFFFF;
+  --login-hover-bg: #FFFFFF;
+  --login-hover-text: #111827;
+  --signup-bg: #14B8A6;
+  --signup-text: #FFFFFF;
+}
+
+/* ✅ Dark mode overrides */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;        /* Dark background in dark mode */
-    --foreground: #ededed;        /* Light text in dark mode */
+    --primary: #1C1C1C;
+    --background: #0A0A0A;
+    --surface: #1F1F1F;
+    --border: #2A2A2A;
+    --text-primary: #EDEDED;
+    --text-secondary: #A1A1A1;
   }
 }
 
-/* Body base styles */
-body {
-  background-color: #ffffff;        /* Force background white */
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-  margin: 0;
-  padding: 0;
+/* ✅ Optional utility examples */
+.bg-primary { background-color: var(--primary); }
+.bg-surface { background-color: var(--surface); }
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.border-custom { border-color: var(--border); }
+
+.btn-green {
+  background-color: var(--accent-success);
+  color: white;
+  transition: background-color 0.2s ease-in-out;
+}
+.btn-green:hover {
+  background-color: #059669; /* Slightly darker green on hover */
+}
+
+.btn-indigo {
+  background-color: var(--accent-primary);
+  color: white;
+}
+.btn-indigo:hover {
+  background-color: #1E40AF;
+}
+
+.btn-teal {
+  background-color: var(--accent-secondary);
+  color: white;
+}
+.btn-teal:hover {
+  background-color: #0D9488;
 }

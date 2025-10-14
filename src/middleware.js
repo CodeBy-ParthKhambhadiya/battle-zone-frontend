@@ -4,27 +4,27 @@ import { NextResponse } from "next/server";
 export function middleware(req) {
   const url = req.nextUrl.clone();
 
-  // Example: get the user token from cookies
-  const token = req.cookies.get("token"); // store JWT on login
-  const role = req.cookies.get("role"); // store role on login
+  // Get token and role from cookies
+  const token = req.cookies.get("token"); // JWT or session token
+  const role = req.cookies.get("role");   // "PLAYER" or "ORGANIZER"
 
-  // If user is logged in, redirect from login/signup pages
-  if ((url.pathname === "/login" || url.pathname === "/signup") && token) {
+  // Redirect logged-in users away from auth pages
+  if ((url.pathname === "/auth/login" || url.pathname === "/auth/signup") && token) {
     if (role === "ORGANIZER") {
       return NextResponse.redirect(new URL("/organizer/dashboard", req.url));
-    } else {
+    } else if (role === "PLAYER") {
       return NextResponse.redirect(new URL("/player/home", req.url));
     }
   }
 
-  // Protect organizer pages
+  // Protect organizer routes
   if (url.pathname.startsWith("/organizer") && role !== "ORGANIZER") {
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 
-  // Protect player pages
+  // Protect player routes
   if (url.pathname.startsWith("/player") && role !== "PLAYER") {
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(new URL("/auth/login", req.url));
   }
 
   // Allow all other requests
@@ -34,8 +34,8 @@ export function middleware(req) {
 // Apply middleware to these paths
 export const config = {
   matcher: [
-    "/login",
-    "/signup",
+    "/auth/login",
+    "/auth/signup",
     "/organizer/:path*",
     "/player/:path*"
   ],
