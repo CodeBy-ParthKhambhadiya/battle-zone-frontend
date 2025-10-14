@@ -69,14 +69,16 @@ export default function VerifyPage() {
             className="w-full p-3 rounded-md border border-[var(--border)] bg-[var(--background)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)]"
           />
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 rounded-full text-[var(--signup-text)] font-medium transition-all duration-200"
-            style={{ backgroundColor: "var(--signup-bg)" }}
-          >
-          {loading ? <LoaderIcon />  : "Verify"}
-          </button>
+         <button
+  type="submit"
+  disabled={loading}
+  className={`w-full py-3 rounded-full text-[var(--signup-text)] font-medium transition-all duration-200 flex justify-center items-center
+              ${loading ? "cursor-not-allowed opacity-70" : "hover:brightness-90"}`}
+  style={{ backgroundColor: "var(--signup-bg)" }}
+>
+  {loading ? <LoaderIcon className="w-5 h-5 animate-spin" /> : "Verify"}
+</button>
+
         </form>
 
         <div className="mt-4 text-center">

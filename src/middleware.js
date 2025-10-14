@@ -3,31 +3,22 @@ import { NextResponse } from "next/server";
 
 export function middleware(req) {
   const url = req.nextUrl.clone();
+  const token = req.cookies.get("token")?.value; // JWT or session token
+  const role = req.cookies.get("role")?.value;   // "PLAYER" or "ORGANIZER"
 
-  // Get token and role from cookies
-  const token = req.cookies.get("token"); // JWT or session token
-  const role = req.cookies.get("role");   // "PLAYER" or "ORGANIZER"
+  console.log("🚀 ~ middleware ~ token:", token, "role:", role);
 
-  // Redirect logged-in users away from auth pages
-  if ((url.pathname === "/auth/login" || url.pathname === "/auth/signup") && token) {
-    if (role === "ORGANIZER") {
-      return NextResponse.redirect(new URL("/organizer/dashboard", req.url));
-    } else if (role === "PLAYER") {
-      return NextResponse.redirect(new URL("/player/home", req.url));
+  // If token exists, redirect based on role
+  if (token && role) {
+    if (role === "PLAYER") {
+      url.pathname = "/player/home"; // redirect players to their dashboard
+    } else if (role === "ORGANIZER") {
+      url.pathname = "/organizer/dashboard"; // redirect organizers to their dashboard
     }
+    return NextResponse.redirect(url);
   }
 
-  // Protect organizer routes
-  if (url.pathname.startsWith("/organizer") && role !== "ORGANIZER") {
-    return NextResponse.redirect(new URL("/auth/login", req.url));
-  }
-
-  // Protect player routes
-  if (url.pathname.startsWith("/player") && role !== "PLAYER") {
-    return NextResponse.redirect(new URL("/auth/login", req.url));
-  }
-
-  // Allow all other requests
+  // If no token, allow the request to proceed
   return NextResponse.next();
 }
 

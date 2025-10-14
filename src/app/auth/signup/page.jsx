@@ -23,7 +23,7 @@ export default function SignupPage() {
     const dropdownRef = useRef();
     const roles = ["PLAYER", "ORGANIZER"];
 
-    const { createUser, loading,user } = useAuth();
+    const { createUser, loading, user } = useAuth();
     console.log("🚀 ~ SignupPage ~ user:", user)
 
     useEffect(() => {
@@ -62,7 +62,7 @@ export default function SignupPage() {
             if (result.meta?.requestStatus === "fulfilled") {
                 Toast.success("Account created! Check email for verification.");
                 router.push("/auth/verify");
-            } 
+            }
         } catch (err) {
             console.error(err);
             Toast.error("Something went wrong during registration");
@@ -70,7 +70,7 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 bg-[var(--background)]">
+        <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 py-10 bg-[var(--background)]">
             <div className="w-full max-w-md p-8 rounded-lg shadow-lg" style={{ backgroundColor: "var(--surface)" }}>
                 <h1 className="text-2xl font-bold mb-6 text-[var(--text-primary)] text-center">Sign Up</h1>
 
@@ -122,15 +122,15 @@ export default function SignupPage() {
                     />
 
                     {/* Gender Buttons */}
-                    <div className="flex justify-between mt-4 gap-4">
+                    <div className="flex justify-between mt-4 gap-4 ">
                         {["MALE", "FEMALE"].map((g) => (
                             <button
                                 key={g}
                                 type="button"
                                 onClick={() => handleGender(g)}
                                 className={`flex-1 py-3 rounded-lg text-[var(--text-primary)] font-semibold transition-all duration-300 relative overflow-hidden border border-[var(--border)] ${form.gender === g
-                                    ? "bg-[var(--accent-primary)] text-[var(--signup-text)] shadow-lg"
-                                    : "bg-[var(--background)] hover:bg-[var(--accent-primary)/10]"
+                                    ? "bg-[var(--accent-primary)] text-[var(--signup-text)] shadow-lg cursor-pointer"
+                                    : "bg-[var(--background)] hover:bg-[var(--accent-primary)/10] cursor-pointer"
                                     }`}
                             >
                                 {g}
@@ -146,7 +146,7 @@ export default function SignupPage() {
                     <div className="relative w-full" ref={dropdownRef}>
                         <button
                             type="button"
-                            className="w-full p-3 rounded-md border border-[var(--border)] bg-[var(--background)] text-[var(--text-primary)] text-left focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] transition-all duration-200 flex justify-between items-center"
+                            className="w-full p-3 cursor-pointer rounded-md border border-[var(--border)] bg-[var(--background)] text-[var(--text-primary)] text-left focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)] transition-all duration-200 flex justify-between items-center"
                             onClick={() => setDropdownOpen(!dropdownOpen)}
                         >
                             {form.role}
@@ -173,11 +173,15 @@ export default function SignupPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3 rounded-full text-[var(--signup-text)] font-medium transition-all duration-200 flex justify-center items-center"
+                        className={`w-full py-3 rounded-full font-medium text-[var(--signup-text)] 
+              transition-all duration-200 flex justify-center items-center 
+              cursor-pointer ${loading ? "cursor-not-allowed opacity-70" : "hover:opacity-90"
+                            }`}
                         style={{ backgroundColor: "var(--signup-bg)" }}
                     >
-                        {loading ? <LoaderIcon /> : "Sign Up"}
+                        {loading ? <LoaderIcon className="animate-spin" /> : "Sign Up"}
                     </button>
+
                 </form>
 
                 <div className="mt-4 text-center">

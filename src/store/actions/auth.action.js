@@ -17,7 +17,7 @@ export const signUpAction = createAsyncThunk(
       Toast.success(response.message);
       return response; // just the user data
     } catch (error) {
-      Toast.error(message);
+      Toast.error(error.message);
 
       return thunkAPI.rejectWithValue(error.message || "Something went wrong");
     }
@@ -76,6 +76,56 @@ export const resendOtpAction = createAsyncThunk(
       Toast.error(errorMessage);
 
       return thunkAPI.rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const forgotPasswordAction = createAsyncThunk(
+  "auth/forgotPassword",
+  async ({ email, role }, thunkAPI) => {
+    try {
+      const response = await apiRequest({
+        method: "POST",
+        url: "/auth/forgot-password",
+        data: { email, role },
+      });
+
+      if (!response || !response.success) {
+        return thunkAPI.rejectWithValue(response?.message);
+      }
+
+      Toast.success(response.message || "Reset link sent to your email");
+      return response;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || error.message || "Something went wrong";
+      if (errorMessage) Toast.error(errorMessage);
+      return thunkAPI.rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const loginAction = createAsyncThunk(
+  "auth/login",
+  async (loginData, thunkAPI) => {
+    try {
+      const response = await apiRequest({
+        method: "POST",
+        url: "/auth/login",
+        data: loginData,
+      });
+      Toast.success(response.message );
+
+      // Save token to cookie or localStorage
+      if (response.data?.token) {
+        Cookie.set("token", response.data.token);
+      }
+
+      return response.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message || "Something went wrong";
+      Toast.error(message);
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );

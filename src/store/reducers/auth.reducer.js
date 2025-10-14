@@ -1,6 +1,6 @@
 // reducers/auth.reducer.js
 import { createSlice } from "@reduxjs/toolkit";
-import { resendOtpAction, signUpAction, verifyOtpAction } from "@/store/actions/auth.action";
+import { forgotPasswordAction, loginAction, resendOtpAction, signUpAction, verifyOtpAction } from "@/store/actions/auth.action";
 
 const initialState = {
   user: null,
@@ -79,8 +79,39 @@ const authReducer = createSlice({
       .addCase(resendOtpAction.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to resend OTP";
-      });
+      })
 
+      .addCase(forgotPasswordAction.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.success = false;
+      })
+      .addCase(forgotPasswordAction.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+      })
+      .addCase(forgotPasswordAction.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message;
+      })
+
+      .addCase(loginAction.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.success = false;
+      })
+      .addCase(loginAction.fulfilled, (state, action) => {
+        console.log("🚀 ~ action:", action)
+        state.loading = false;
+        state.success = true;
+        state.user = action.payload;
+        state.token = action.payload.token;
+      })
+      .addCase(loginAction.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message;
+        state.success = false;
+      });
   },
 });
 

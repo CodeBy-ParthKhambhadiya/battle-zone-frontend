@@ -1,18 +1,19 @@
-"use client";
-
+// src/app/layout.js
 import "./globals.css";
-import Header from "@/components/Header";
 import { Nunito } from "next/font/google";
-import { Provider } from "react-redux";
-import store from "@/store";
-import { Toaster } from "react-hot-toast"; // ✅ import Toaster
+import ClientLayout from "./ClientLayout";
 
-// Load the Nunito font
+// Load the Nunito font (server-safe)
 const nunito = Nunito({
   subsets: ["latin"],
   weight: ["400", "600", "700"],
   variable: "--font-nunito",
 });
+
+export const metadata = {
+  title: "BattleZone",
+  description: "Your game platform",
+};
 
 export default function RootLayout({ children }) {
   return (
@@ -20,17 +21,11 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${nunito.className} bg-[var(--background)] text-[var(--text-primary)]`}
     >
-      <body className="min-h-screen flex flex-col">
-        <Provider store={store}>
-          {/* Header */}
-          <Header />
-
-          {/* Main content */}
-          <main className="flex-grow w-full px-6 py-10">{children}</main>
-
-          {/* Toast notifications */}
-          <Toaster position="top-right" reverseOrder={false} />
-        </Provider>
+      <body>
+        {/* ClientLayout should NOT have html/body tags */}
+        <ClientLayout>
+          {children}
+        </ClientLayout>
       </body>
     </html>
   );

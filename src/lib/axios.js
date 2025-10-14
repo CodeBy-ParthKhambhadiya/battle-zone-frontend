@@ -35,14 +35,7 @@ api.interceptors.response.use(
       error.message ||
       "Something went wrong with the request";
 
-    // 🧠 Log detailed info for debugging
-    console.error("🚨 API Error:", {
-      url: error.config?.url,
-      status,
-      message,
-      backend: errorData,
-    });
-
+    
 
     // Always reject with a consistent error object
     return Promise.reject({
