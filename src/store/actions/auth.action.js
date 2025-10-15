@@ -24,7 +24,7 @@ export const signUpAction = createAsyncThunk(
   }
 );
 
-// Verify OTP action
+
 export const verifyOtpAction = createAsyncThunk(
   "auth/verifyOtp",
   async (otpData, thunkAPI) => {
@@ -34,34 +34,34 @@ export const verifyOtpAction = createAsyncThunk(
         url: "/auth/verify-otp",
         data: otpData,
       });
-
-      if (!response || response.error) {
-        return thunkAPI.rejectWithValue(response?.message || "OTP verification failed");
-      }
-
+      // Success
       Toast.success(response.message);
 
-      if (response.data) {
-        Cookie.set("user", JSON.stringify(response.data));
-      }
-
-      return response.data; // user data
+      return response.data; // return user data
     } catch (error) {
+      const message = error?.response?.data?.message || error.message || "Something went wrong during OTP verification";
       Toast.error(message);
-      return thunkAPI.rejectWithValue(error.message || "Something went wrong during OTP verification");
+
+      return thunkAPI.rejectWithValue({
+        message,
+        code: error?.response?.data?.code || "OTP_ERROR",
+        otpExpiresAt: error?.response?.data?.otpExpiresAt || null,
+      });
     }
   }
 );
 
+
 export const resendOtpAction = createAsyncThunk(
   "auth/resendOtp",
-  async (email, thunkAPI) => {
+  async ({ email, role }, thunkAPI) => {
     try {
       const response = await apiRequest({
         method: "POST",
         url: "/auth/resend-otp",
-        data: { email },
+        data: { email, role }, // send role along with email
       });
+
       Toast.success(response.message);
 
       return response;
@@ -114,11 +114,15 @@ export const loginAction = createAsyncThunk(
         url: "/auth/login",
         data: loginData,
       });
-      Toast.success(response.message );
+      Toast.success(response.message);
 
       // Save token to cookie or localStorage
-      if (response.data?.token) {
-        Cookie.set("token", response.data.token);
+      if (response) {
+        localStorage.setItem("token", response.data.token); // token
+      }
+      if (response) {
+        localStorage.setItem("user", JSON.stringify(response.data));
+        console.log("🚀 ~ response.data:", response.data)
       }
 
       return response.data;

@@ -21,33 +21,46 @@ export default function VerifyPage() {
     );
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    setLoading(true);
-    try {
-      const result = await verifyOtp({ email: user.email, otp: code });
-      if (result.meta?.requestStatus === "fulfilled") {
-        router.push("/auth/login");
-      } 
-    } catch (err) {
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    const result = await verifyOtp({
+      email: user.email,
+      otp: code,
+      role: user.role || "PLAYER", // include role, default to PLAYER if not set
+    });
+    console.log("🚀 ~ handleSubmit ~ result:", result)
 
-  const handleResend = async () => {
-    setResendLoading(true);
-    try {
-        const email = user.email;
-      const result = await reSendOtp(email);
-      if (result.meta?.requestStatus === "fulfilled") {
-      } 
-    } catch (err) {
-    } finally {
-      setResendLoading(false);
+    if (result.meta?.requestStatus === "fulfilled") {
+      router.push("/auth/login");
     }
-  };
+  } catch (err) {
+    console.error("OTP verification failed:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
+const handleResend = async () => {
+  setResendLoading(true);
+  try {
+    const email = user.email;
+    const role = user.role // include role, default to PLAYER
+
+    const result = await reSendOtp({ email, role });
+
+    if (result.meta?.requestStatus === "fulfilled") {
+      console.log("OTP resent successfully");
+    }
+  } catch (err) {
+    console.error("Failed to resend OTP:", err);
+  } finally {
+    setResendLoading(false);
+  }
+};
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] px-4 bg-[var(--background)]">
@@ -69,15 +82,15 @@ export default function VerifyPage() {
             className="w-full p-3 rounded-md border border-[var(--border)] bg-[var(--background)] text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-primary)]"
           />
 
-         <button
-  type="submit"
-  disabled={loading}
-  className={`w-full py-3 rounded-full text-[var(--signup-text)] font-medium transition-all duration-200 flex justify-center items-center
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-3 rounded-full text-[var(--signup-text)] font-medium transition-all duration-200 flex justify-center items-center
               ${loading ? "cursor-not-allowed opacity-70" : "hover:brightness-90"}`}
-  style={{ backgroundColor: "var(--signup-bg)" }}
->
-  {loading ? <LoaderIcon className="w-5 h-5 animate-spin" /> : "Verify"}
-</button>
+            style={{ backgroundColor: "var(--signup-bg)" }}
+          >
+            {loading ? <LoaderIcon className="w-5 h-5 animate-spin" /> : "Verify"}
+          </button>
 
         </form>
 
@@ -90,7 +103,7 @@ export default function VerifyPage() {
               className="text-[var(--accent-primary)] hover:underline font-bold"
               onClick={handleResend}
             >
-             {loading ? <LoaderIcon />  : "Resend Code"}
+              {loading ? <LoaderIcon /> : "Resend Code"}
             </button>
           </p>
         </div>

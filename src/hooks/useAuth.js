@@ -17,14 +17,14 @@ const useAuth = () => {
   };
 
   // Verify OTP
-  const verifyOtp = async ({ email, otp }) => {
-    return await dispatch(verifyOtpAction({ email, otp }));
+  const verifyOtp = async ({ email, otp, role }) => {
+    return await dispatch(verifyOtpAction({ email, otp, role }));
   };
 
   // Resend OTP
-  const reSendOtp = async (email) => {
-    return await dispatch(resendOtpAction(email));
-  };
+const reSendOtp = async ({ email, role }) => {
+  return await dispatch(resendOtpAction({ email, role }));
+};
 
   // Forgot password
   const forgotPassword = async ({ email, role }) => {
