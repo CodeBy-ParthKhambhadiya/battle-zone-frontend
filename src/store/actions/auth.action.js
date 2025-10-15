@@ -133,3 +133,61 @@ export const loginAction = createAsyncThunk(
     }
   }
 );
+
+export const fetchUserAction = createAsyncThunk(
+  "user/fetchUser",
+  async (_, thunkAPI) => {
+    try {
+      const response = await apiRequest({
+        method: "GET",
+        url: "/user/me",
+      });
+
+      if (!response || response.error) {
+        return thunkAPI.rejectWithValue(response?.message || "Failed to fetch user");
+      }
+
+      return response.data; // return user object
+    } catch (error) {
+      Toast.error(error.message || "Something went wrong while fetching user");
+      return thunkAPI.rejectWithValue(error.message || "Fetch user failed");
+    }
+  }
+);
+export const updateUserAction = createAsyncThunk(
+  "user/updateUser",
+  async ({ userId, data, avatarFile }, thunkAPI) => {
+    try {
+      const formData = new FormData();
+      for (const key in data) {
+        formData.append(key, data[key]);
+      }
+
+      if (avatarFile) {
+        formData.append("avatar", avatarFile);
+      }
+
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/user/me/${userId}`, {
+        method: "PUT",
+        body: formData,
+        headers: {
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      });
+
+      const responseData = await response.json();
+
+      if (!response.ok || responseData.error) {
+        throw new Error(responseData.message || "Failed to update user");
+      }
+
+      localStorage.setItem("user", JSON.stringify(responseData.data));
+      Toast.success("Profile updated successfully!");
+      return responseData.data;
+    } catch (error) {
+      Toast.error(error.message || "Failed to update user");
+      return thunkAPI.rejectWithValue(error.message || "Failed to update user");
+    }
+  }
+);

@@ -13,7 +13,7 @@ export default function PlayerLayout({ children }) {
                 {children}
             </div>
             <PlayerIcons />
-            <PlayerFooter />
+            {/* <PlayerFooter /> */}
         </div>
     );
 }

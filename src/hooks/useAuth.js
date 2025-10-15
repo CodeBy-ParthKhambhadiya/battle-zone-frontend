@@ -4,7 +4,9 @@ import {
   verifyOtpAction,
   resendOtpAction,
   forgotPasswordAction,
-  loginAction, // add login action
+  loginAction,
+  fetchUserAction,
+  updateUserAction, // add login action
 } from "@/store/actions/auth.action";
 
 const useAuth = () => {
@@ -22,9 +24,9 @@ const useAuth = () => {
   };
 
   // Resend OTP
-const reSendOtp = async ({ email, role }) => {
-  return await dispatch(resendOtpAction({ email, role }));
-};
+  const reSendOtp = async ({ email, role }) => {
+    return await dispatch(resendOtpAction({ email, role }));
+  };
 
   // Forgot password
   const forgotPassword = async ({ email, role }) => {
@@ -36,6 +38,15 @@ const reSendOtp = async ({ email, role }) => {
     return await dispatch(loginAction({ email, password, role }));
   };
 
+  const fetchUser = async () => {
+    return await dispatch((fetchUserAction()));
+  };
+
+  const updateUser = async (userId, data) => {
+    return await dispatch(updateUserAction({ userId, data }));
+  };
+
+
   return {
     user,
     loading,
@@ -44,6 +55,8 @@ const reSendOtp = async ({ email, role }) => {
     reSendOtp,
     forgotPassword,
     login, // export login
+    fetchUser,
+    updateUser,
   };
 };
 

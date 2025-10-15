@@ -1,6 +1,6 @@
 // reducers/auth.reducer.js
 import { createSlice } from "@reduxjs/toolkit";
-import { forgotPasswordAction, loginAction, resendOtpAction, signUpAction, verifyOtpAction } from "@/store/actions/auth.action";
+import { fetchUserAction, forgotPasswordAction, loginAction, resendOtpAction, signUpAction, updateUserAction, verifyOtpAction } from "@/store/actions/auth.action";
 
 const initialState = {
   user: null,
@@ -110,6 +110,36 @@ const authReducer = createSlice({
       .addCase(loginAction.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || action.error.message;
+        state.success = false;
+      })
+
+      .addCase(fetchUserAction.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserAction.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(fetchUserAction.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      builder
+      .addCase(updateUserAction.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.success = false;
+      })
+      .addCase(updateUserAction.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        state.success = true;
+      })
+      .addCase(updateUserAction.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
         state.success = false;
       });
   },
