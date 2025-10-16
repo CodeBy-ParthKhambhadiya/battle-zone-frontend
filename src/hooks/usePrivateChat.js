@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllUsersAction, createPrivateChatAction } from "@/store/actions/privateChat.action";
+import { fetchAllUsersAction, createPrivateChatAction, sendMessageAction, fetchMessagesAction, fetchUserPrivateChatsAction } from "@/store/actions/privateChat.action";
 
 export default function usePrivateChat() {
   const dispatch = useDispatch();
-  const { allUsers, loading, error, chat } = useSelector((state) => state.privateChat);
+  const { allUsers, loading, error, chat, chatUserList, messages } = useSelector((state) => state.privateChat);
 
   const fetchAllUsers = async () => {
     await dispatch(fetchAllUsersAction()).unwrap();
@@ -15,16 +15,37 @@ export default function usePrivateChat() {
     return result;
   };
 
-//   useEffect(() => {
-//     fetchAllUsers();
-//   }, []);
+  const sendMessage = async ({ chatId, message }) => {
+    const result = await dispatch(sendMessageAction({ chatId, message })).unwrap();
+    return result;
+  };
+
+  const fetchMessages = async (chatId) => {
+    const result = await dispatch(fetchMessagesAction(chatId)).unwrap();
+    return result;
+  };
+
+
+  const fetchUserPrivateChats = async (chatId) => {
+    const result = await dispatch(fetchUserPrivateChatsAction()).unwrap();
+    return result;
+  };
+
+  //   useEffect(() => {
+  //     fetchAllUsers();
+  //   }, []);
 
   return {
     allUsers,
     loading,
     error,
     chat,
+    messages,
+    chatUserList,
     fetchAllUsers,
     createPrivateChat,
+    sendMessage,
+    fetchMessages,
+    fetchUserPrivateChats
   };
 }

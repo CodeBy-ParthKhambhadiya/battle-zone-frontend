@@ -1,19 +1,17 @@
 /**
- * Generate a random pastel background color and a matching dark text color.
- * @returns {string} - string of classes: "bg-[color] text-[color]"
+ * Generate a very light pastel background and matching dark text.
+ * @returns {Object} - { bgColor, textColor } for inline styles
  */
 export function getRandomColor() {
-  // Generate random H, S, L values for pastel background
-  const hue = Math.floor(Math.random() * 360); // 0 - 359
-  const saturation = Math.floor(Math.random() * 40) + 60; // 60 - 100%
-  const lightness = Math.floor(Math.random() * 20) + 75; // 75 - 95% (light pastel)
+  const hue = Math.floor(Math.random() * 360); // 0-359
+  const saturation = Math.floor(Math.random() * 40) + 50; // 50-90%
+  
+  // Background: very light pastel
+  const bgLightness = Math.floor(Math.random() * 15) + 85; // 85-99% light
+  const bgColor = `hsl(${hue}, ${saturation}%, ${bgLightness}%)`;
 
-  // Background color in HSL
-  const bgColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  // Text: same hue, high saturation, dark enough for contrast
+  const textColor = `hsl(${hue}, ${saturation}%, 20%)`;
 
-  // Text color: make it darker for readability
-  const textColor = `hsl(${hue}, ${saturation}%, 25%)`;
-
-  // Return inline style string
   return { bgColor, textColor };
 }

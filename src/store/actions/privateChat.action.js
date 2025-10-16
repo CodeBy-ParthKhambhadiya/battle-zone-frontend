@@ -8,7 +8,6 @@ export const fetchAllUsersAction = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const response = await apiRequest.get("/private-chat/all-users");
-      console.log("🚀 ~ response:", response);
       return response.data; // array of user objects
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -33,6 +32,56 @@ export const createPrivateChatAction = createAsyncThunk(
     } catch (error) {
       const message =
         error.response?.data?.message || "Something went wrong!";
+      Toast.error(message);
+      return thunkAPI.rejectWithValue(error.response?.data || { message });
+    }
+  }
+);
+
+export const sendMessageAction = createAsyncThunk(
+  "privateChat/sendMessage",
+  async ({ chatId, message }, thunkAPI) => {
+    try {
+      const response = await apiRequest.post("/private-chat/message", {
+        chatId,
+        message,
+      });
+
+      Toast.success("Message sent!");
+      return response.data; // assuming API returns the created message object
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "Failed to send message!";
+      Toast.error(message);
+      return thunkAPI.rejectWithValue(error.response?.data || { message });
+    }
+  }
+);
+
+export const fetchMessagesAction = createAsyncThunk(
+  "privateChat/fetchMessages",
+  async (chatId, thunkAPI) => {
+    try {
+      const response = await apiRequest.get(`/private-chat/${chatId}`);
+      return response.data; // assuming API returns an array of messages
+    } catch (error) {
+      const message = error.response?.data?.message || "Failed to fetch messages!";
+      Toast.error(message);
+      return thunkAPI.rejectWithValue(error.response?.data || { message });
+    }
+  }
+);
+
+
+export const fetchUserPrivateChatsAction = createAsyncThunk(
+  "privateChat/fetchUserChats",
+  async (_, thunkAPI) => {
+    try {
+      const response = await apiRequest.get("/private-chat/user");
+      return response.data; // array of chat objects for the current user
+    } catch (error) {
+      const message =
+        error.response?.data?.message || "Failed to fetch user chats!";
       Toast.error(message);
       return thunkAPI.rejectWithValue(error.response?.data || { message });
     }

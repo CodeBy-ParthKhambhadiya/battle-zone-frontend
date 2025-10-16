@@ -2,10 +2,11 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+
 import {
   Swords,
   Home,
-  Medal,
+  Trophy,
   MessageSquareText,
   User
 } from "lucide-react"
@@ -14,7 +15,7 @@ export default function PlayerIcons() {
   const pathname = usePathname();
   const tabs = [
     { name: "Home", icon: Home, path: "/player/home" },
-    { name: "Tournaments", icon: Medal, path: "/player/tournaments" },
+    { name: "Tournaments", icon: Trophy, path: "/player/tournaments" },
     { name: "Joined", icon: Swords, path: "/player/joined" },
     { name: "Chat", icon: MessageSquareText, path: "/player/chat" },
     { name: "Profile", icon: User, path: "/player/profile" },

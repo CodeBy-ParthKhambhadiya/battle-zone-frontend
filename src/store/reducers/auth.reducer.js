@@ -20,7 +20,6 @@ const authReducer = createSlice({
       state.loading = false;
       state.success = false;
       state.requestStatus = null;
-      Cookie.remove("user");
     },
     resetError: (state) => {
       state.error = null;
@@ -122,6 +121,7 @@ const authReducer = createSlice({
         state.user = action.payload;
       })
       .addCase(fetchUserAction.rejected, (state, action) => {
+        console.log("🚀 ~ action:", action)
         state.loading = false;
         state.error = action.payload;
       })

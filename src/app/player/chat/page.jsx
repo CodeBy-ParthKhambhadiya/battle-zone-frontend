@@ -9,11 +9,21 @@ import { getRandomColor } from "@/components/getColor";
 
 export default function ChatIndexPage() {
   const router = useRouter();
-  const { allUsers, fetchAllUsers, createPrivateChat, loading, error } = usePrivateChat();
+  const {
+    allUsers,
+    fetchAllUsers,
+    createPrivateChat,
+    chatUserList,
+    fetchUserPrivateChats,
+    loading,
+    error,
+  } = usePrivateChat();
+
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchAllUsers();
+    fetchUserPrivateChats();
   }, []);
 
   const handleUserClick = async (userId) => {
@@ -31,33 +41,51 @@ export default function ChatIndexPage() {
     return fullName.includes(searchQuery.toLowerCase());
   });
 
+  const newChatUserList = chatUserList
+    .map((chat) => chat.otherUser)
+    .filter((user) => user) // remove undefined/null
+    .filter((user) => {
+      const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+      return fullName.includes(searchQuery.toLowerCase());
+    });
+  console.log("🚀 ~ ChatIndexPage ~ newChatUserList:", newChatUserList)
+
+  const displayedUsers = searchQuery ? filteredUsers : newChatUserList;
+
   return (
     <div className="flex flex-col items-center justify-start p-6 text-gray-200 w-full max-w-md mx-auto">
       <h2 className="text-2xl font-semibold mb-6">Start a Chat</h2>
 
-      {/* Search bar */}
-      <div className="mb-6 flex items-center gap-2 w-full">
-        <Search className="w-5 h-5 text-gray-400" />
-        <input
-          type="text"
-          placeholder="Search users..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="flex-1 p-2 rounded-md bg-gray-800 text-gray-200 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-accent-primary"
-        />
+      <div className="mb-6 w-full">
+        <div className="flex items-center bg-gray-800 rounded-full shadow-md overflow-hidden border border-gray-700 focus-within:ring-2 focus-within:ring-accent-primary transition-shadow hover:shadow-lg">
+          {/* Search icon inside a circle */}
+
+
+          {/* Input field */}
+          <input
+            type="text"
+            placeholder="Search users..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 bg-gray-800 text-gray-200 p-3 rounded-r-full focus:outline-none placeholder-gray-500"
+          />
+          <div className="flex items-center justify-center w-12 h-12 text-gray-400 bg-gray-900">
+            <Search className="w-5 h-5" />
+          </div>
+        </div>
       </div>
 
-      {/* Users list */}
+
       {loading ? (
         <div className="flex items-center justify-center w-full mt-4">
           <LoaderIcon className="animate-spin w-8 h-8 text-accent-primary" />
         </div>
       ) : error ? (
         <p className="text-red-500">{error}</p>
-      ) : filteredUsers.length > 0 ? (
+      ) : displayedUsers.length > 0 ? (
         <div className="flex flex-col w-full gap-2">
-          {filteredUsers.map((user) => {
-            const { bgColor, textColor } = getRandomColor(); // generate color for each row
+          {displayedUsers.map((user) => {
+            const { bgColor, textColor } = getRandomColor();
             return (
               <div
                 key={user._id}
@@ -65,7 +93,6 @@ export default function ChatIndexPage() {
                 style={{ backgroundColor: bgColor, color: textColor }}
                 className="p-4 rounded-md shadow hover:shadow-md cursor-pointer flex items-center gap-4 transition-shadow"
               >
-                {/* Optional avatar */}
                 {user.avatar ? (
                   <img
                     src={user.avatar}
@@ -83,7 +110,7 @@ export default function ChatIndexPage() {
                   <p className="font-semibold">
                     {user.firstName} {user.lastName}
                   </p>
-                  <p className="text-sm">{user.email}</p>
+                  <p className="text-sm">{user.username}</p>
                 </div>
               </div>
             );
