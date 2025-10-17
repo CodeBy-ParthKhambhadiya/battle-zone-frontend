@@ -6,11 +6,16 @@ import {
     joinTournamentAction,
     fetchTournamentJoinDetails,
     cancelJoinTournamentAction,
+    fetchAllTournamentChatsAction,
+    fetchTournamentChatsByIdAction,
+    sendTournamentMessageAction,
 } from "@/store/actions/tournament.action";
 
 const initialState = {
     tournaments: [],
     selectedTournament: null,
+    tournamentChats: null,
+    tournamentChatById: null,
     loading: false,
     error: null,
     success: false,
@@ -144,6 +149,75 @@ const tournamentReducer = createSlice({
                 state.success = false;
                 state.error = action.payload?.message || "Failed to cancel join";
             });
+
+        builder
+            .addCase(fetchAllTournamentChatsAction.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.requestStatus = "pending";
+            })
+            .addCase(fetchAllTournamentChatsAction.fulfilled, (state, action) => {
+                state.loading = false;
+                state.tournamentChats = action.payload; // store all chats
+                state.success = true;
+                state.requestStatus = "fulfilled";
+            })
+            .addCase(fetchAllTournamentChatsAction.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.message || action.error.message;
+                state.success = false;
+                state.requestStatus = "rejected";
+            });
+        builder
+            // Pending
+            .addCase(fetchTournamentChatsByIdAction.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.tournamentChatById = null; // reset previous chat
+            })
+
+            // Fulfilled
+            .addCase(fetchTournamentChatsByIdAction.fulfilled, (state, action) => {
+                state.loading = false;
+                state.tournamentChatById = action.payload; // store fetched chat
+            })
+
+            // Rejected
+            .addCase(fetchTournamentChatsByIdAction.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.message || "Failed to fetch tournament chat!";
+                state.tournamentChatById = null; // clear chat on error
+            });
+
+        builder
+            .addCase(sendTournamentMessageAction.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(sendTournamentMessageAction.fulfilled, (state, action) => {
+    state.loading = false;
+
+    // If chat object is null, initialize it with the full chat
+    if (!state.tournamentChatById) {
+        state.tournamentChatById = action.payload.chat;
+    } else {
+        // Merge the new message into the messages array
+        if (action.payload?.newMessage) {
+            state.tournamentChatById.messages.push(action.payload.newMessage);
+        }
+
+        // Optionally update timestamps or other chat info
+        if (action.payload.chat?.updatedAt) {
+            state.tournamentChatById.updatedAt = action.payload.chat.updatedAt;
+        }
+    }
+})
+
+            .addCase(sendTournamentMessageAction.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.message || "Failed to send message";
+            });
+
     },
 });
 

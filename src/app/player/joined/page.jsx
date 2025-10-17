@@ -7,10 +7,10 @@ import { getRandomColor } from "@/components/getColor";
 import LoaderIcon from "@/components/LoadingButton";
 import useAuth from "@/hooks/useAuth";
 import ConfirmModal from "@/components/player/ConfirmModal";
-
+import Link from "next/link";
 export default function JoinedPage() {
-    const { tournaments, joinDetails, fetchJoinDetails, fetchTournaments, loading } = useTournament();
-    console.log("🚀 ~ TournamentsPage ~ joinDetails:", joinDetails)
+    const { tournaments, joinDetails, fetchJoinDetails, fetchTournaments, fetchAllTournamentChats, tournamentChats, loading } = useTournament();
+    // console.log("🚀 ~ TournamentsPage ~ joinDetails:", joinDetails)
     const { user } = useAuth();
     const [expanded, setExpanded] = useState(null);
     const [tournamentColors, setTournamentColors] = useState({});
@@ -63,7 +63,7 @@ export default function JoinedPage() {
             );
         })
     );
-    console.log("🚀 ~ TournamentsPage ~ confirmedTournaments:", confirmedTournaments)
+    // console.log("🚀 ~ TournamentsPage ~ confirmedTournaments:", confirmedTournaments)
 
 
     return (
@@ -136,6 +136,11 @@ export default function JoinedPage() {
 
                                         {/* Joined button & Expand toggle */}
                                         <div className="flex gap-2">
+                                            <Link href={`/player/joined/${t._id}`}>
+                                                <button className="bg-green-600 text-white px-3 py-1 cursor-pointer rounded text-xs sm:text-sm">
+                                                    Messages
+                                                </button>
+                                            </Link>
                                             <button
                                                 disabled
                                                 className="bg-blue-600 text-white px-3 py-1 cursor-not-allowed rounded text-xs sm:text-sm"
@@ -145,7 +150,7 @@ export default function JoinedPage() {
 
                                             <button
                                                 onClick={() => toggleExpand(t._id)}
-                                                className="p-1 rounded hover:bg-gray-100 transition"
+                                                className="p-1 rounded hover:bg-gray-100 transition cursor-pointer"
                                             >
                                                 {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                             </button>
@@ -155,18 +160,68 @@ export default function JoinedPage() {
 
                                 {/* Expanded details */}
                                 {isExpanded && (
-                                    <div className="mt-2 sm:mt-3 text-xs sm:text-sm space-y-2">
+                                    <div className="mt-2 sm:mt-3 text-xs sm:text-sm space-y-4 w-full">
                                         <p>{t.description}</p>
+                                        {/* Leaderboard */}
+                                        <div
+                                            className="mt-4 w-full p-4 rounded-lg"
+                                            style={{
+                                                backgroundColor: bgColor,
+                                                color: textColor,
+                                                boxShadow: "0 10px 25px rgba(0,0,0,0.5)", // dark shadow
+                                                border: `2px solid ${textColor}`, // border matching text color
+                                            }}
+                                        >
+                                            <h3 className="font-semibold text-sm mb-2">Leaderboard / Prize Distribution</h3>
+                                            <div className="overflow-x-auto w-full">
+                                                <table className="min-w-full border rounded-lg overflow-hidden w-full">
+                                                    <thead>
+                                                        <tr>
+                                                            <th className="px-4 py-2 text-left">Position</th>
+                                                            <th className="px-4 py-2 text-left">Prize</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td className="px-4 py-2">1st Place</td>
+                                                            <td className="px-4 py-2">₹{firstPrize}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className="px-4 py-2">2nd Place</td>
+                                                            <td className="px-4 py-2">₹{secondPrize}</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className="px-4 py-2">3rd Place</td>
+                                                            <td className="px-4 py-2">₹{thirdPrize}</td>
+                                                        </tr>
 
-                                        <div>
-                                            <p><span className="font-semibold">Game Type:</span> {t.game_type}</p>
-                                            <p><span className="font-semibold">Max Players:</span> {t.max_players}</p>
-                                            <p><span className="font-semibold">Prize Pool (Entry × Joined × 0.9):</span> ₹{prizePoolMoney}</p>
+                                                        {winnerBottomPlayers > 0 && (
+                                                            <tr>
+                                                                <td className="px-4 py-2">
+                                                                    4th – {winnerPlayers}th Place
+                                                                </td>
+                                                                <td className="px-4 py-2">₹{returnedPerPlayer}</td>
+                                                            </tr>
+                                                        )}
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
 
-                                        <div>
-                                            <p><span className="font-semibold">Start:</span> {new Date(t.start_datetime).toLocaleString()}</p>
-                                            <p><span className="font-semibold">End:</span> {new Date(t.end_datetime).toLocaleString()}</p>
+
+
+
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                                            <div>
+                                                <p><span className="font-semibold">Game Type:</span> {t.game_type}</p>
+                                                <p><span className="font-semibold">Max Players:</span> {t.max_players}</p>
+                                                <p><span className="font-semibold">Prize Pool (Entry × Joined × 0.9):</span> ₹{prizePoolMoney}</p>
+                                            </div>
+
+                                            <div>
+                                                <p><span className="font-semibold">Start:</span> {new Date(t.start_datetime).toLocaleString()}</p>
+                                                <p><span className="font-semibold">End:</span> {new Date(t.end_datetime).toLocaleString()}</p>
+                                            </div>
                                         </div>
 
                                         {t.rules?.length > 0 && (
@@ -180,20 +235,10 @@ export default function JoinedPage() {
                                             </div>
                                         )}
 
-                                        {/* Leaderboard */}
-                                        <div className="mt-2">
-                                            <h3 className="font-semibold text-sm mb-1">Leaderboard / Prize Distribution</h3>
-                                            <ul className="list-disc list-inside text-gray-800">
-                                                <li>1st Place: ₹{firstPrize}</li>
-                                                <li>2nd Place: ₹{secondPrize}</li>
-                                                <li>3rd Place: ₹{thirdPrize}</li>
-                                                {winnerBottomPlayers > 0 && (
-                                                    <li>Returned to each of the remaining {winnerBottomPlayers} player(s): ₹{returnedPerPlayer}</li>
-                                                )}
-                                            </ul>
-                                        </div>
+
                                     </div>
                                 )}
+
                             </div>
                         );
                     })}

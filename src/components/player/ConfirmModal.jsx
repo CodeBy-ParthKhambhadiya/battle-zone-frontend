@@ -18,11 +18,18 @@ export default function ConfirmModal({
     return (
         <div
             className="fixed inset-0 flex justify-center items-center z-50 p-4"
-            style={style} // allows custom positioning
+            style={{
+                // backgroundColor: "rgba(0, 0, 0, 0.4)", // optional: darken backdrop
+                ...style,
+            }}
         >
             <div
-                className="rounded-lg w-full max-w-xs sm:max-w-md shadow-xl overflow-hidden flex flex-col"
-                style={{ backgroundColor: bgColor, color: textColor }}
+                className="rounded-lg w-full max-w-xs sm:max-w-md overflow-hidden flex flex-col"
+                style={{
+                    backgroundColor: bgColor,
+                    color: textColor,
+                    boxShadow: "0 0 40px 15px rgba(0, 0, 0, 0.8)", // strong dark shadow on all sides
+                }}
             >
                 {/* Header */}
                 <div
@@ -33,7 +40,9 @@ export default function ConfirmModal({
                 </div>
 
                 {/* Body */}
-                <div className="p-4 text-gray-700 text-sm sm:text-base" style={{ backgroundColor: bgColor, color: textColor }}
+                <div
+                    className="p-4 text-sm sm:text-base"
+                    style={{ backgroundColor: bgColor, color: textColor }}
                 >
                     <p>{message}</p>
                 </div>

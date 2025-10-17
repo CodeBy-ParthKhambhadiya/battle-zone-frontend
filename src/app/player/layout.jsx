@@ -9,7 +9,7 @@ export default function PlayerLayout({ children }) {
         <div className="flex flex-col min-h-screen bg-black">
             <PlayerHeader />
 
-            <div className="flex-grow p-4 overflow-y-auto max-h-[calc(100vh-150px)] scrollbar-custom">
+            <div className="flex-grow overflow-y-auto max-h-[calc(100vh-150px)] scrollbar-custom">
                 {children}
             </div>
             <PlayerIcons />
