@@ -84,16 +84,19 @@ export const fetchTournamentJoinDetails = createAsyncThunk(
 export const cancelJoinTournamentAction = createAsyncThunk(
   "tournament/cancelJoin",
   async ({ joinId }, thunkAPI) => {
+    console.log("🚀 ~ joinId:", joinId);
     try {
-      const response = await apiRequest.post("/tournament-join/cancel", {
-        joinId,
+      const response = await apiRequest.delete("/tournament-join/cancel", {
+        data: { joinId }, // ✅ Axios requires "data" key for DELETE body
       });
       Toast.success("Successfully cancelled the tournament join!");
       return { joinId, data: response.data };
     } catch (error) {
-      const message = error.response?.data?.message || "Failed to cancel tournament join!";
+      const message =
+        error.response?.data?.message || "Failed to cancel tournament join!";
       Toast.error(message);
       return thunkAPI.rejectWithValue(error.response?.data || { message });
     }
   }
 );
+

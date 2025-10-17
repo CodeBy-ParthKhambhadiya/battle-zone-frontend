@@ -10,8 +10,6 @@ import ConfirmModal from "@/components/player/ConfirmModal";
 
 export default function TournamentsPage() {
     const { tournaments, joinDetails, fetchJoinDetails, fetchTournaments, joinTournament, cancelJoinTournament, loading } = useTournament();
-    console.log("🚀 ~ TournamentsPage ~ joinDetails:", joinDetails)
-    // console.log("🚀 ~ TournamentsPage ~ tournaments:", tournaments)
     const { user } = useAuth();
     const [expanded, setExpanded] = useState(null);
     const [tournamentColors, setTournamentColors] = useState({});
@@ -19,7 +17,8 @@ export default function TournamentsPage() {
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [selectedTournamentToJoin, setSelectedTournamentToJoin] = useState(null);
     const [cancellingJoinId, setCancellingJoinId] = useState(null);
-
+    const [selectedJoinToCancel, setSelectedJoinToCancel] = useState(null);
+    const [showCancelModal, setShowCancelModal] = useState(false);
     useEffect(() => {
         fetchTournaments();
         fetchJoinDetails();
@@ -58,16 +57,17 @@ export default function TournamentsPage() {
         }
     };
     const handleCancel = async (joinId) => {
-        setCancellingJoinId(joinId); // ✅ mark this join as cancelling
+        setCancellingJoinId(joinId);
+        console.log("🚀 ~ handleCancel ~ joinId:", joinId)
         try {
             await cancelJoinTournament(joinId);
-            await fetchJoinDetails(); // refresh join details after cancellation
         } catch (err) {
             console.error("Failed to cancel join:", err);
         } finally {
-            setCancellingJoinId(null); // ✅ reset after cancel completes
+            setCancellingJoinId(null); // reset
         }
     };
+
     return (
         <div className="p-4 sm:p-6 min-h-screen">
             {/* Header */}
@@ -91,6 +91,7 @@ export default function TournamentsPage() {
                         );
 
                         const isJoining = joiningTournamentId === t._id;
+                        const isCancelling = joinedRecord && cancellingJoinId === joinedRecord._id;
 
                         let buttonText = "Pre-Join";
                         let buttonDisabled = false;
@@ -152,16 +153,21 @@ export default function TournamentsPage() {
                                             {/* Extra Button when pending */}
                                             {showExtraButton && (
                                                 <button
-                                                    onClick={() => handleCancelPending(t._id)}
-                                                    disabled={loading} // ✅ disable only while this join is being cancelled
-                                                    className={`px-3 py-1 rounded text-xs sm:text-sm transition 
-                                                            ${loading
-                                                            ? "bg-gray-400 cursor-not-allowed"
-                                                            : "bg-red-500 hover:bg-red-600 text-white"}`}
+                                                    onClick={() => {
+                                                        setSelectedTournamentToJoin(t);
+                                                        setSelectedJoinToCancel(joinedRecord); // store the join record
+                                                        setShowCancelModal(true); // show confirm modal
+                                                    }}
+                                                    disabled={isCancelling}
+                                                    className={`px-3 py-1 rounded text-xs sm:text-sm transition ${isCancelling
+                                                        ? "bg-gray-400 cursor-not-allowed"
+                                                        : "bg-red-500 hover:bg-red-600 text-white"
+                                                        }`}
                                                 >
-                                                    {true ? "Cancelling..." : "Cancel"} {/* ✅ dynamic text */}
+                                                    {isCancelling ? "Cancelling..." : "Cancel"}
                                                 </button>
                                             )}
+
 
                                             <button
                                                 onClick={() => toggleExpand(t._id)}
@@ -216,6 +222,20 @@ export default function TournamentsPage() {
                             colorKey={selectedTournamentToJoin?._id} // optional: color per tournament
                         />
 
+                    )}
+                    {showCancelModal && selectedJoinToCancel && (
+                        <ConfirmModal
+                            title="Cancel Join Request"
+                            message={`Are you sure you want to cancel your join request for "${selectedTournamentToJoin.name}"?`}
+                            confirmText="Yes, Cancel"
+                            cancelText="No"
+                            colorKey="red"
+                            onConfirm={() => {
+                                handleCancel(selectedJoinToCancel._id);
+                                setShowCancelModal(false);
+                            }}
+                            onCancel={() => setShowCancelModal(false)}
+                        />
                     )}
                 </div>
             )}

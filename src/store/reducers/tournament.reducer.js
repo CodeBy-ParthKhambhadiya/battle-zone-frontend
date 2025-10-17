@@ -41,7 +41,6 @@ const tournamentReducer = createSlice({
                 state.requestStatus = "pending";
             })
             .addCase(fetchTournamentsAction.fulfilled, (state, action) => {
-                console.log("🚀 ~ action:", action)
                 state.loading = false;
                 state.tournaments = action.payload.data;
                 state.requestStatus = "fulfilled";
@@ -118,7 +117,7 @@ const tournamentReducer = createSlice({
                 state.success = false;
                 state.error = action.payload?.message || action.error.message;
             });
-            
+
         builder
             .addCase(cancelJoinTournamentAction.pending, (state, action) => {
                 const joinId = action.meta.arg.joinId;
@@ -132,10 +131,12 @@ const tournamentReducer = createSlice({
                 state.success = true;
                 state.error = null;
 
-                // Optional: remove the cancelled join from joinedTournaments
-                state.joinedTournaments = state.joinedTournaments.filter(
-                    (t) => t._id !== joinId
-                );
+                // ✅ Remove the cancelled join from joinDetails
+                if (state.joinDetails && Array.isArray(state.joinDetails)) {
+                    state.joinDetails = state.joinDetails.filter(
+                        (join) => join._id !== joinId
+                    );
+                }
             })
             .addCase(cancelJoinTournamentAction.rejected, (state, action) => {
                 const joinId = action.meta.arg.joinId;
