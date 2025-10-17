@@ -144,7 +144,7 @@ export default function TournamentsPage() {
                                                     setShowConfirmModal(true);
                                                 }}
                                                 disabled={buttonDisabled}
-                                                className={`bg-blue-600 text-white px-3 py-1 rounded text-xs sm:text-sm hover:bg-blue-700 transition ${buttonDisabled ? "opacity-50 cursor-not-allowed" : ""
+                                                className={`bg-blue-600 text-white px-3 py-1 cursor-pointer rounded text-xs sm:text-sm hover:bg-blue-700 transition ${buttonDisabled ? "opacity-50 cursor-not-allowed" : ""
                                                     }`}
                                             >
                                                 {isJoining ? <LoaderIcon className="w-4 h-4 inline-block animate-spin" /> : buttonText}
@@ -159,7 +159,7 @@ export default function TournamentsPage() {
                                                         setShowCancelModal(true); // show confirm modal
                                                     }}
                                                     disabled={isCancelling}
-                                                    className={`px-3 py-1 rounded text-xs sm:text-sm transition ${isCancelling
+                                                    className={`px-3 py-1 rounded cursor-pointer text-xs sm:text-sm transition ${isCancelling
                                                         ? "bg-gray-400 cursor-not-allowed"
                                                         : "bg-red-500 hover:bg-red-600 text-white"
                                                         }`}

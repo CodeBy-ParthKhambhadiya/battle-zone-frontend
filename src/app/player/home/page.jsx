@@ -1,44 +1,94 @@
-// /src/app/player/home/page.jsx
-"use client";
+import React from "react";
+import Link from "next/link";
+import { getRandomColor } from "@/components/getColor";
 
-export default function PlayerHomePage() {
-  const cards = [
-    { title: "Manage Games", description: "Add, edit, or remove your games.", color: "bg-blue-100 text-blue-800" },
-    { title: "View Stats", description: "Check your performance stats and rankings.", color: "bg-green-100 text-green-800" },
-    { title: "Achievements", description: "Track your achievements and badges.", color: "bg-yellow-100 text-yellow-800" },
-    { title: "Profile Settings", description: "Update your profile and preferences.", color: "bg-purple-100 text-purple-800" },
-    { title: "Messages", description: "Check messages and notifications.", color: "bg-pink-100 text-pink-800" },
-    { title: "Leaderboard", description: "See how you rank against other players.", color: "bg-indigo-100 text-indigo-800" }, { title: "Manage Games", description: "Add, edit, or remove your games.", color: "bg-blue-100 text-blue-800" },
-    { title: "View Stats", description: "Check your performance stats and rankings.", color: "bg-green-100 text-green-800" },
-    { title: "Achievements", description: "Track your achievements and badges.", color: "bg-yellow-100 text-yellow-800" },
-    { title: "Profile Settings", description: "Update your profile and preferences.", color: "bg-purple-100 text-purple-800" },
-    { title: "Messages", description: "Check messages and notifications.", color: "bg-pink-100 text-pink-800" },
-    // { title: "Leaderboard", description: "See how you rank against other players.", color: "bg-indigo-100 text-indigo-800" }, { title: "Manage Games", description: "Add, edit, or remove your games.", color: "bg-blue-100 text-blue-800" },
-    // { title: "View Stats", description: "Check your performance stats and rankings.", color: "bg-green-100 text-green-800" },
-    // { title: "Achievements", description: "Track your achievements and badges.", color: "bg-yellow-100 text-yellow-800" },
-    // { title: "Profile Settings", description: "Update your profile and preferences.", color: "bg-purple-100 text-purple-800" },
-    // { title: "Messages", description: "Check messages and notifications.", color: "bg-pink-100 text-pink-800" },
-    // { title: "Leaderboard", description: "See how you rank against other players.", color: "bg-indigo-100 text-indigo-800" }, { title: "Manage Games", description: "Add, edit, or remove your games.", color: "bg-blue-100 text-blue-800" },
-    // { title: "View Stats", description: "Check your performance stats and rankings.", color: "bg-green-100 text-green-800" },
-    // { title: "Achievements", description: "Track your achievements and badges.", color: "bg-yellow-100 text-yellow-800" },
-    // { title: "Profile Settings", description: "Update your profile and preferences.", color: "bg-purple-100 text-purple-800" },
-    // { title: "Messages", description: "Check messages and notifications.", color: "bg-pink-100 text-pink-800" },
-    // { title: "Leaderboard", description: "See how you rank against other players.", color: "bg-indigo-100 text-indigo-800" },
-  ];
+export default function HomePage() {
+  const tournamentsColor = getRandomColor();
+  const joinedColor = getRandomColor();
+  const chatColor = getRandomColor();
+  const profileColor = getRandomColor(); // New color for Profile card
+  const headerColor = getRandomColor();
 
   return (
-    <div className="p-6">
-      <h2 className="text-3xl font-bold mb-6">Welcome to Player Home!</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {cards.map((card, index) => (
+    <div className="min-h-screen p-4 md:p-8">
+      {/* Page Header */}
+      <h2
+        style={{
+          backgroundColor: headerColor.bgColor,
+          color: headerColor.textColor,
+          padding: "1rem",
+          borderRadius: "1rem",
+        }}
+        className="text-3xl md:text-4xl font-bold mb-6 text-center"
+      >
+        Welcome to BattleZone!
+      </h2>
+
+      {/* Dashboard Cards */}
+      <div className="flex flex-col md:flex-row md:flex-wrap justify-center gap-6">
+        {/* Tournaments Section */}
+        <Link href="/player/tournaments">
           <div
-            key={index}
-            className={`shadow-md rounded-2xl p-6 hover:shadow-xl transition-shadow duration-300 ${card.color}`}
+            style={{
+              backgroundColor: tournamentsColor.bgColor,
+              color: tournamentsColor.textColor,
+            }}
+            className="rounded-2xl shadow-lg p-6 flex-1 min-w-[250px] max-w-sm h-auto flex flex-col justify-center items-center hover:brightness-95 cursor-pointer transition"
           >
-            <h3 className="text-xl font-semibold mb-2">{card.title}</h3>
-            <p>{card.description}</p>
+            <h3 className="text-2xl font-semibold mb-2">Tournaments</h3>
+            <p className="text-center">
+              View all available tournaments and join the battle!
+            </p>
           </div>
-        ))}
+        </Link>
+
+        {/* Joined Tournaments Section */}
+        <Link href="/player/joined">
+          <div
+            style={{
+              backgroundColor: joinedColor.bgColor,
+              color: joinedColor.textColor,
+            }}
+            className="rounded-2xl shadow-lg p-6 flex-1 min-w-[250px] max-w-sm h-auto flex flex-col justify-center items-center hover:brightness-95 cursor-pointer transition"
+          >
+            <h3 className="text-2xl font-semibold mb-2">Joined Tournaments</h3>
+            <p className="text-center">
+              Check the tournaments you have joined.
+            </p>
+          </div>
+        </Link>
+
+        {/* Chat Section */}
+        <Link href="/player/chat">
+          <div
+            style={{
+              backgroundColor: chatColor.bgColor,
+              color: chatColor.textColor,
+            }}
+            className="rounded-2xl shadow-lg p-6 flex-1 min-w-[250px] max-w-sm h-auto flex flex-col justify-center items-center hover:brightness-95 cursor-pointer transition"
+          >
+            <h3 className="text-2xl font-semibold mb-2">Chat</h3>
+            <p className="text-center">
+              Join the chat and connect with other players.
+            </p>
+          </div>
+        </Link>
+
+        {/* Profile Section */}
+        <Link href="/player/profile">
+          <div
+            style={{
+              backgroundColor: profileColor.bgColor,
+              color: profileColor.textColor,
+            }}
+            className="rounded-2xl shadow-lg p-6 flex-1 min-w-[250px] max-w-sm h-auto flex flex-col justify-center items-center hover:brightness-95 cursor-pointer transition"
+          >
+            <h3 className="text-2xl font-semibold mb-2">Profile</h3>
+            <p className="text-center">
+              View and edit your player profile.
+            </p>
+          </div>
+        </Link>
       </div>
     </div>
   );
