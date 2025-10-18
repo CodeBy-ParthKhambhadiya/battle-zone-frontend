@@ -8,7 +8,6 @@ import LoaderIcon from "@/components/LoadingButton";
 export default function VerifyPage() {
   const router = useRouter();
   const { user, verifyOtp, reSendOtp } = useAuth(); // include resendOtp from your hook
-  console.log("🚀 ~ VerifyPage ~ user:", user)
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
@@ -31,7 +30,6 @@ const handleSubmit = async (e) => {
       otp: code,
       role: user.role || "PLAYER", // include role, default to PLAYER if not set
     });
-    console.log("🚀 ~ handleSubmit ~ result:", result)
 
     if (result.meta?.requestStatus === "fulfilled") {
       router.push("/auth/login");

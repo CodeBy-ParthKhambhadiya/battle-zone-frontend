@@ -48,7 +48,6 @@ export default function ChatIndexPage() {
       const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
       return fullName.includes(searchQuery.toLowerCase());
     });
-  console.log("🚀 ~ ChatIndexPage ~ newChatUserList:", newChatUserList)
 
   const displayedUsers = searchQuery ? filteredUsers : newChatUserList;
 

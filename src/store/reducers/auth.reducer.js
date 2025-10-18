@@ -38,7 +38,6 @@ const authReducer = createSlice({
         state.requestStatus = "pending";
       })
       .addCase(signUpAction.fulfilled, (state, action) => {
-        console.log("🚀 ~ action:", action)
         state.loading = false;
         state.user = action.payload?.data; // already the user data
         state.success = true;
@@ -100,7 +99,6 @@ const authReducer = createSlice({
         state.success = false;
       })
       .addCase(loginAction.fulfilled, (state, action) => {
-        console.log("🚀 ~ action:", action)
         state.loading = false;
         state.success = true;
         state.user = action.payload;
@@ -121,7 +119,6 @@ const authReducer = createSlice({
         state.user = action.payload;
       })
       .addCase(fetchUserAction.rejected, (state, action) => {
-        console.log("🚀 ~ action:", action)
         state.loading = false;
         state.error = action.payload;
       })

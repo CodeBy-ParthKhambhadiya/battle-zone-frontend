@@ -57,7 +57,6 @@ export default function SignupPage() {
 
         try {
             const result = await createUser(form);
-            console.log("🚀 ~ handleSubmit ~ esult.meta:", result.meta)
             if (result.meta?.requestStatus === "fulfilled") {
                 Toast.success("Account created! Check email for verification.");
                 router.push("/auth/verify");

@@ -58,7 +58,6 @@ export default function TournamentsPage() {
     };
     const handleCancel = async (joinId) => {
         setCancellingJoinId(joinId);
-        console.log("🚀 ~ handleCancel ~ joinId:", joinId)
         try {
             await cancelJoinTournament(joinId);
         } catch (err) {

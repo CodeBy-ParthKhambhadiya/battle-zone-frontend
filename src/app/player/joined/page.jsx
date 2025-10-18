@@ -10,7 +10,6 @@ import ConfirmModal from "@/components/player/ConfirmModal";
 import Link from "next/link";
 export default function JoinedPage() {
     const { tournaments, joinDetails, fetchJoinDetails, fetchTournaments, fetchAllTournamentChats, tournamentChats, loading } = useTournament();
-    // console.log("🚀 ~ TournamentsPage ~ joinDetails:", joinDetails)
     const { user } = useAuth();
     const [expanded, setExpanded] = useState(null);
     const [tournamentColors, setTournamentColors] = useState({});

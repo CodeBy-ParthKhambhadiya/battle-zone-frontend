@@ -21,7 +21,6 @@ export const fetchAllUsersAction = createAsyncThunk(
 export const createPrivateChatAction = createAsyncThunk(
   "privateChat/create",
   async (receiverId, thunkAPI) => {
-    console.log("🚀 ~ receiverId:", receiverId);
 
     try {
       // Wrap receiverId in an object so it becomes valid JSON

@@ -26,7 +26,6 @@ export default function ChatArea({ roomId }) {
   }
 
   const messageList = Array.isArray(chat?.messages) ? chat?.messages : [];
-  console.log("🚀 ~ ChatArea ~ messageList:", messageList)
 
   // Focus input on mount
   useEffect(() => {

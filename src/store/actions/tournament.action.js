@@ -84,7 +84,6 @@ export const fetchTournamentJoinDetails = createAsyncThunk(
 export const cancelJoinTournamentAction = createAsyncThunk(
     "tournament/cancelJoin",
     async ({ joinId }, thunkAPI) => {
-        console.log("🚀 ~ joinId:", joinId);
         try {
             const response = await apiRequest.delete("/tournament-join/cancel", {
                 data: { joinId }, // ✅ Axios requires "data" key for DELETE body
@@ -136,8 +135,6 @@ export const fetchTournamentChatsByIdAction = createAsyncThunk(
 export const sendTournamentMessageAction = createAsyncThunk(
   "tournamentChat/sendMessage",
   async ({ tournamentId, message }, thunkAPI) => {
-    console.log("🚀 ~ message:", message)
-    console.log("🚀 ~ tournamentId:", tournamentId)
     try {
       if (!tournamentId) throw new Error("Tournament ID is required");
 
@@ -145,7 +142,6 @@ export const sendTournamentMessageAction = createAsyncThunk(
         tournamentId,
         message,
       });
-      console.log("🚀 ~ response:", response)
 
       // assuming API returns { success, chat }
       return response.data.chat;
