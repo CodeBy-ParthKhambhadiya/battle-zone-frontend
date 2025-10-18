@@ -195,24 +195,22 @@ const tournamentReducer = createSlice({
                 state.error = null;
             })
             .addCase(sendTournamentMessageAction.fulfilled, (state, action) => {
-    state.loading = false;
+                state.loading = false;
 
-    // If chat object is null, initialize it with the full chat
-    if (!state.tournamentChatById) {
-        state.tournamentChatById = action.payload.chat;
-    } else {
-        // Merge the new message into the messages array
-        if (action.payload?.newMessage) {
-            state.tournamentChatById.messages.push(action.payload.newMessage);
-        }
+                // Ensure the chat object exists
+                if (!state.tournamentChatById) {
+                    // Initialize the full chat object if it doesn't exist yet
+                    state.tournamentChatById = action.payload.chat;
+                } else if (action.payload?.newMessage) {
+                    // Only push the new message to the messages array
+                    state.tournamentChatById.messages.push(action.payload.newMessage);
 
-        // Optionally update timestamps or other chat info
-        if (action.payload.chat?.updatedAt) {
-            state.tournamentChatById.updatedAt = action.payload.chat.updatedAt;
-        }
-    }
-})
-
+                    // Optionally update timestamps or other chat info
+                    if (action.payload.chat?.updatedAt) {
+                        state.tournamentChatById.updatedAt = action.payload.chat.updatedAt;
+                    }
+                }
+            })
             .addCase(sendTournamentMessageAction.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload?.message || "Failed to send message";
