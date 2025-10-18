@@ -24,7 +24,6 @@ export default function SignupPage() {
     const roles = ["PLAYER", "ORGANIZER"];
 
     const { createUser, loading, user } = useAuth();
-    console.log("🚀 ~ SignupPage ~ user:", user)
 
     useEffect(() => {
         const handleClickOutside = (e) => {

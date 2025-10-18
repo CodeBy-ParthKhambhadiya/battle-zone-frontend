@@ -30,7 +30,7 @@ export default function AuthGuard() {
     };
 
     checkAuth();
-  }, [user, fetchUser, router]);
+  }, [user, router]);
 
   return null;
 }
