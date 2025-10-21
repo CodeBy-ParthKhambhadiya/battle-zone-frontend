@@ -131,3 +131,16 @@ main {
   scrollbar-width: thin;
   scrollbar-color: #9ca3af #252525;
 }
+
+.btn-dark-shadow {
+  transition: box-shadow 0.3s ease-in-out;
+    box-shadow:0 10px 25px rgba(0,0,0,0.5)/* dark shadow */
+
+}
+
+  .tab-dark-shadow {
+  transition: box-shadow 0.3s ease-in-out;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5) /* dark shadow */
+
+}
+

@@ -2,17 +2,22 @@
 
 import { useEffect, useState } from "react";
 import useTournament from "@/hooks/useTournament";
-import { Trophy, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { getRandomColor } from "@/components/getColor";
 import LoaderIcon from "@/components/LoadingButton";
 import useAuth from "@/hooks/useAuth";
 import ConfirmModal from "@/components/player/ConfirmModal";
+import { Trophy, Gamepad, FileText, User, Users, Copy } from 'lucide-react';
+
 import Link from "next/link";
 export default function JoinedPage() {
     const { tournaments, joinDetails, fetchJoinDetails, fetchTournaments, fetchAllTournamentChats, tournamentChats, loading } = useTournament();
     const { user } = useAuth();
     const [expanded, setExpanded] = useState(null);
     const [tournamentColors, setTournamentColors] = useState({});
+    const [activeSection, setActiveSection] = useState("leaderboard");
+    const [copied, setCopied] = useState(false);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -62,8 +67,15 @@ export default function JoinedPage() {
             );
         })
     );
-    // console.log("🚀 ~ TournamentsPage ~ confirmedTournaments:", confirmedTournaments)
+    console.log("🚀 ~ TournamentsPage ~ confirmedTournaments:", confirmedTournaments)
 
+
+    const handleCopy = (text) => {
+        if (!text) return;
+        navigator.clipboard.writeText(text);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000); // revert back after 2 seconds
+    };
 
     return (
         <div className="p-4 sm:p-6 min-h-screen">
@@ -82,25 +94,37 @@ export default function JoinedPage() {
                     {confirmedTournaments.map((t) => {
                         const isExpanded = expanded === t._id;
                         const { bgColor, textColor } = tournamentColors[t._id] || { bgColor: "bg-blue-500", textColor: "text-white" };
-                        const totalPool = t.entry_fee * t.joinedPlayers;
-                        const prizePoolMoney = totalPool * 0.8;
-                        let winnerPlayers = Math.floor(t.joinedPlayers / 2);
-                        if (t.joinedPlayers % 2 !== 0) {
-                            winnerPlayers += 1;
+                        const {
+                            joinedPlayers = 0,
+                            entry_fee = 0
+                        } = t;
+                        const players = joinDetails?.filter(item => item.tournament._id === t._id)
+                            .map(item => item.player) || [];
+
+                        // Initialize all prizes and counts to 0
+                        let totalPool = 0, prizePoolMoney = 0, winnerPlayers = 0, winnerBottomPlayers = 0;
+                        let bottomPlayersReturn = 0, leftoverMoney = 0, firstPrize = 0, secondPrize = 0, thirdPrize = 0, returnedPerPlayer = 0;
+
+                        if (joinedPlayers > 0) {
+                            totalPool = entry_fee * joinedPlayers;
+                            prizePoolMoney = totalPool * 0.8;
+
+                            // Half of players are winners (round up if odd)
+                            winnerPlayers = Math.ceil(joinedPlayers / 2);
+                            winnerBottomPlayers = Math.max(winnerPlayers - 3, 0);
+
+                            bottomPlayersReturn = winnerBottomPlayers * entry_fee;
+                            leftoverMoney = prizePoolMoney - bottomPlayersReturn;
+
+                            firstPrize = Math.floor(leftoverMoney * 0.5);
+                            secondPrize = Math.floor(leftoverMoney * 0.3);
+                            thirdPrize = Math.floor(leftoverMoney * 0.2);
+
+                            // Add any remaining leftover to first prize
+                            firstPrize += Math.floor(leftoverMoney - (firstPrize + secondPrize + thirdPrize));
+
+                            returnedPerPlayer = winnerBottomPlayers > 0 ? Math.floor(bottomPlayersReturn / winnerBottomPlayers) : 0;
                         }
-                        const winnerBottomPlayers = winnerPlayers - 3;
-                        const bottomPlayersReturn = winnerBottomPlayers * t.entry_fee;
-                        const leftoverMoney = prizePoolMoney - bottomPlayersReturn;
-                        let firstPrize = Math.floor(leftoverMoney * 0.5);
-                        let secondPrize = Math.floor(leftoverMoney * 0.3);
-                        let thirdPrize = Math.floor(leftoverMoney * 0.2);
-
-                        const distributed = firstPrize + secondPrize + thirdPrize;
-                        const remaining = Math.floor(leftoverMoney - distributed);
-                        firstPrize += remaining; // add leftover to first prize
-
-                        const returnedPerPlayer = winnerBottomPlayers > 0 ? Math.floor(bottomPlayersReturn / winnerBottomPlayers) : 0;
-
                         return (
                             <div
                                 key={t._id}
@@ -149,7 +173,7 @@ export default function JoinedPage() {
 
                                             <button
                                                 onClick={() => toggleExpand(t._id)}
-                                                className="p-1 rounded hover:bg-gray-100 transition cursor-pointer"
+                                                className="p-1 rounded transition btn-dark-shadow cursor-pointer "
                                             >
                                                 {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                             </button>
@@ -157,86 +181,217 @@ export default function JoinedPage() {
                                     </div>
                                 </div>
 
-                                {/* Expanded details */}
-                                {isExpanded && (
-                                    <div className="mt-2 sm:mt-3 text-xs sm:text-sm space-y-4 w-full">
-                                        <p>{t.description}</p>
-                                        {/* Leaderboard */}
-                                        <div
-                                            className="mt-4 w-full p-4 rounded-lg"
-                                            style={{
-                                                backgroundColor: bgColor,
-                                                color: textColor,
-                                                boxShadow: "0 10px 25px rgba(0,0,0,0.5)", // dark shadow
-                                                border: `2px solid ${textColor}`, // border matching text color
-                                            }}
-                                        >
-                                            <h3 className="font-semibold text-sm mb-2">Leaderboard / Prize Distribution</h3>
-                                            <div className="overflow-x-auto w-full">
-                                                <table className="min-w-full border rounded-lg overflow-hidden w-full">
-                                                    <thead>
-                                                        <tr>
-                                                            <th className="px-4 py-2 text-left">Position</th>
-                                                            <th className="px-4 py-2 text-left">Prize</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td className="px-4 py-2">1st Place</td>
-                                                            <td className="px-4 py-2">₹{firstPrize}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td className="px-4 py-2">2nd Place</td>
-                                                            <td className="px-4 py-2">₹{secondPrize}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td className="px-4 py-2">3rd Place</td>
-                                                            <td className="px-4 py-2">₹{thirdPrize}</td>
-                                                        </tr>
+                                <>
+                                    {isExpanded && (
+                                        <div className="mt-2 sm:mt-3 text-xs sm:text-sm space-y-6 w-full">
 
-                                                        {winnerBottomPlayers > 0 && (
+                                            {/* Description */}
+                                            <p>{t.description}</p>
+
+                                                {/* Tabs Row */}
+                                        <div className="flex flex-wrap gap-2 sm:gap-4">
+                                                {[
+                                                    { key: "leaderboard", label: <><Trophy className="inline w-4 h-4 mr-1" />Leaderboard</> },
+                                                    { key: "game", label: <><Gamepad className="inline w-4 h-4 mr-1" />Game Info</> },
+                                                    { key: "rules", label: <><FileText className="inline w-4 h-4 mr-1" />Rules</> },
+                                                    { key: "organizer", label: <><User className="inline w-4 h-4 mr-1" />Organizer Info</> },
+                                                    { key: "players", label: <><Users className="inline w-4 h-4 mr-1" />Players</> },
+                                                ].map((tab) => (
+                                                    <button
+                                                        key={tab.key}
+                                                        onClick={() => setActiveSection(tab.key)}
+                                                        className={`px-3 py-1.5 rounded-md font-semibold transition-all duration-200 cursor-pointer tab-dark-shadow
+                                                            ${activeSection === tab.key
+                                                                ? "shadow-md border border-gray-600"
+                                                                : "bg-transparent"
+                                                            }`}
+                                                    >
+                                                        {tab.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+
+
+                                            {/* Leaderboard / Prize Distribution */}
+                                            {activeSection === "leaderboard" && t.joinedPlayers > 3 && (
+                                                <div
+                                                    className="mt-4 w-full p-4 rounded-lg overflow-x-auto"
+                                                    style={{
+                                                        backgroundColor: bgColor,
+                                                        color: textColor,
+                                                        boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
+                                                    }}
+                                                >
+                                                    <h3 className="font-semibold text-lg sm:text-xl mb-3 border-b border-gray-500 pb-1 flex items-center gap-2">
+                                                        <Trophy className="w-5 h-5" /> Leaderboard / Prize Distribution
+                                                    </h3>
+
+                                                    <table className="min-w-full border rounded-lg overflow-hidden w-full">
+                                                        <thead>
                                                             <tr>
-                                                                <td className="px-4 py-2">
-                                                                    4th – {winnerPlayers}th Place
-                                                                </td>
-                                                                <td className="px-4 py-2">₹{returnedPerPlayer}</td>
+                                                                <th className="px-4 py-2 text-left">Position</th>
+                                                                <th className="px-4 py-2 text-left">Prize</th>
                                                             </tr>
-                                                        )}
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td className="px-4 py-2">1st Place</td>
+                                                                <td className="px-4 py-2">₹{firstPrize}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td className="px-4 py-2">2nd Place</td>
+                                                                <td className="px-4 py-2">₹{secondPrize}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td className="px-4 py-2">3rd Place</td>
+                                                                <td className="px-4 py-2">₹{thirdPrize}</td>
+                                                            </tr>
+                                                            {winnerBottomPlayers > 0 && (
+                                                                <tr>
+                                                                    <td className="px-4 py-2">4th – {winnerPlayers}th Place</td>
+                                                                    <td className="px-4 py-2">₹{returnedPerPlayer}</td>
+                                                                </tr>
+                                                            )}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            )}
+
+                                            {/* Game Info */}
+                                            {activeSection === "game" && (
+                                                <div>
+                                                    <h3 className="font-semibold text-lg mb-2 border-b border-gray-500 pb-1 flex items-center gap-2">
+                                                        <Gamepad className="w-5 h-5" /> Game Info
+                                                    </h3>
+
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                                                        <div>
+                                                            <p><span className="font-semibold">Game Type:</span> {t.game_type}</p>
+                                                            <p><span className="font-semibold">Max Players:</span> {t.max_players}</p>
+                                                            <p><span className="font-semibold">Prize Pool (Entry × Joined × 0.9):</span> ₹{prizePoolMoney}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p><span className="font-semibold">Start:</span> {new Date(t.start_datetime).toLocaleString()}</p>
+                                                            <p><span className="font-semibold">End:</span> {new Date(t.end_datetime).toLocaleString()}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Rules */}
+                                            {activeSection === "rules" && t.rules?.length > 0 && (
+                                                <div>
+                                                    <h3 className="font-semibold text-lg mb-2 border-b border-gray-500 pb-1 flex items-center gap-2">
+                                                        <FileText className="w-5 h-5" /> Rules
+                                                    </h3>
+                                                    <ul className="list-disc list-inside space-y-1">
+                                                        {t.rules.map((rule, idx) => (
+                                                            <li key={idx}>{rule}</li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            )}
+
+                                            {/* Organizer Info */}
+                                            {activeSection === "organizer" && t.organizer_id && (
+                                                <div>
+                                                    <h3 className="font-semibold text-lg mb-2 border-b border-gray-500 pb-1 flex items-center gap-2">
+                                                        <User className="w-5 h-5" /> Organizer Info
+                                                    </h3>
+
+                                                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
+                                                        <img
+                                                            src={t.organizer_id?.avatar || "/default-avatar.png"}
+                                                            alt={`${t.organizer_id?.firstName || "Unknown"} ${t.organizer_id?.lastName || ""}`}
+                                                            className="w-24 h-24 rounded-full object-cover border-2 border-gray-500 shadow-md"
+                                                        />
+                                                        <div>
+                                                            <p className="text-base font-semibold">{t.organizer_id?.firstName} {t.organizer_id?.lastName}</p>
+                                                            <p className="text-sm">Role: {t.organizer_id?.role} {t.organizer_id?.isVerified && "✅"}</p>
+                                                            <p className="text-sm">Organizer ID: {t.organizer_id?._id}</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                                                        <div className="space-y-1">
+                                                            <p><span className="font-semibold">Email:</span> {t.organizer_id?.email}</p>
+                                                            <p><span className="font-semibold">Mobile:</span> {t.organizer_id?.mobile}</p>
+                                                            <p><span className="font-semibold">Gender:</span> {t.organizer_id?.gender}</p>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <p><span className="font-semibold">Account Holder Name:</span> {t.organizer_id?.accountHolderName}</p>
+                                                            <div className="flex items-center gap-2">
+                                                                <p><span className="font-semibold">UPI ID:</span> {t.organizer_id?.upiId || "N/A"}</p>
+                                                                {t.organizer_id?.upiId && (
+                                                                    <button
+                                                                        onClick={() => handleCopy(t.organizer_id.upiId)}
+                                                                        className="flex items-center gap-1 text-blue-500 hover:text-blue-400 text-sm font-medium cursor-pointer"
+                                                                        title={copied ? "Copied!" : "Copy UPI ID"}
+                                                                    >
+                                                                        <Copy size={16} />
+                                                                        {copied ? "Copied" : "Copy"}
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Players */}
+                                            {activeSection === "players" && players?.length > 0 && (
+                                                <div
+                                                    className="p-4 rounded-lg"
+                                                    style={{
+                                                        boxShadow: "0 10px 25px rgba(0,0,0,0.5)"
+                                                    }}
+                                                >
+                                                    <h3 className="text-lg font-semibold border-b pb-1 mb-2 flex items-center gap-2">
+                                                        <Users className="w-5 h-5" /> Joined Players ({players.length})
+                                                    </h3>
+                                                    <table
+                                                        className="min-w-full border-collapse"
+                                                        style={{
+                                                            backgroundColor: bgColor,
+                                                            color: textColor,
+                                                            border: `1px solid ${textColor}`
+                                                        }}
+                                                    >
+                                                        <thead>
+                                                            <tr>
+                                                                <th className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>#</th>
+                                                                <th className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>Avatar</th>
+                                                                <th className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>Name</th>
+                                                                <th className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>Game Username</th>
+                                                                <th className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>Game ID</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {players.map((p, index) => (
+                                                                <tr key={p._id}>
+                                                                    <td className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>{index + 1}</td>
+                                                                    <td className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>
+                                                                        <img
+                                                                            src={p.avatar || "/default-avatar.png"}
+                                                                            alt={`${p.firstName} ${p.lastName}`}
+                                                                            className="w-10 h-10 rounded-full object-cover mx-auto"
+                                                                        />
+                                                                    </td>
+                                                                    <td className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>{p.firstName} {p.lastName}</td>
+                                                                    <td className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>{p.gameUserName}</td>
+                                                                    <td className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>{p.gameId}</td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            )}
+
                                         </div>
+                                    )}
+                                </>
 
 
-
-
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                                            <div>
-                                                <p><span className="font-semibold">Game Type:</span> {t.game_type}</p>
-                                                <p><span className="font-semibold">Max Players:</span> {t.max_players}</p>
-                                                <p><span className="font-semibold">Prize Pool (Entry × Joined × 0.9):</span> ₹{prizePoolMoney}</p>
-                                            </div>
-
-                                            <div>
-                                                <p><span className="font-semibold">Start:</span> {new Date(t.start_datetime).toLocaleString()}</p>
-                                                <p><span className="font-semibold">End:</span> {new Date(t.end_datetime).toLocaleString()}</p>
-                                            </div>
-                                        </div>
-
-                                        {t.rules?.length > 0 && (
-                                            <div>
-                                                <span className="font-semibold">Rules:</span>
-                                                <ul className="list-disc list-inside">
-                                                    {t.rules.map((rule, idx) => (
-                                                        <li key={idx}>{rule}</li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        )}
-
-
-                                    </div>
-                                )}
 
                             </div>
                         );
