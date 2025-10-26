@@ -74,13 +74,12 @@ export default function TournamentChatPage({ tournamentId }) {
             return (
               <div
                 key={index}
-                className={`p-2 rounded-lg break-words w-fit max-w-[85%] ${
-                  isCurrentUser
+                className={`p-2 rounded-lg break-words w-fit max-w-[85%] ${isCurrentUser
                     ? "bg-indigo-600 text-white self-end ml-auto"
                     : isOrganizer
-                    ? "bg-red-600 text-white self-start"
-                    : "bg-gray-800 text-gray-200 self-start"
-                }`}
+                      ? "bg-red-600 text-white self-start"
+                      : "bg-gray-800 text-gray-200 self-start"
+                  }`}
               >
                 {!isCurrentUser && (
                   <div className="text-xs font-semibold mb-1 flex flex-col">
@@ -109,15 +108,14 @@ export default function TournamentChatPage({ tournamentId }) {
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
           className="flex-1 p-2 rounded-md bg-gray-800 text-gray-200 border border-gray-700 text-sm sm:text-base"
         />
-         <button
-      onClick={handleSend}
-      disabled={loading || !newMessage.trim()}
-      className={`p-2 sm:p-3 rounded-md text-white transition-all ${
-        loading ? "bg-gray-500 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"
-      }`}
-    >
-      {loading ? <LoaderIcon className="animate-spin w-4 h-4 sm:w-5 sm:h-5" /> : <Send className="w-4 h-4 sm:w-5 sm:h-5" />}
-    </button>
+        <button
+          onClick={handleSend}
+          disabled={loading || !newMessage.trim()}
+          className={`p-2 sm:p-3 rounded-md text-white transition-all ${loading ? "bg-gray-500 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"
+            }`}
+        >
+          {loading ? <LoaderIcon className="animate-spin w-4 h-4 sm:w-5 sm:h-5" /> : <Send className="w-4 h-4 sm:w-5 sm:h-5" />}
+        </button>
       </div>
     </div>
   );

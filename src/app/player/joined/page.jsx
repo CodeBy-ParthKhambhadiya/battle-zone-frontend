@@ -8,6 +8,7 @@ import LoaderIcon from "@/components/LoadingButton";
 import useAuth from "@/hooks/useAuth";
 import ConfirmModal from "@/components/player/ConfirmModal";
 import { Trophy, Gamepad, FileText, User, Users, Copy } from 'lucide-react';
+import getTimeLeft from "@/utils/getTimeLeft.js";
 
 import Link from "next/link";
 export default function JoinedPage() {
@@ -17,6 +18,7 @@ export default function JoinedPage() {
     const [tournamentColors, setTournamentColors] = useState({});
     const [activeSection, setActiveSection] = useState("leaderboard");
     const [copied, setCopied] = useState(false);
+    const [currentTime, setCurrentTime] = useState(new Date());
 
     useEffect(() => {
         const fetchData = async () => {
@@ -31,7 +33,12 @@ export default function JoinedPage() {
         fetchData();
     }, []);
 
-
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+        return () => clearInterval(interval);
+    }, []);
     const sortedTournaments = Array.isArray(tournaments)
         ? [...tournaments].sort(
             (a, b) => new Date(a.start_datetime) - new Date(b.start_datetime)
@@ -125,6 +132,30 @@ export default function JoinedPage() {
 
                             returnedPerPlayer = winnerBottomPlayers > 0 ? Math.floor(bottomPlayersReturn / winnerBottomPlayers) : 0;
                         }
+                        const now = new Date();
+                        const startTime = new Date(t.start_datetime);
+                        const endTime = new Date(t.end_datetime);
+
+                        let statusLabel = "";
+                        let statusColor = "";
+
+                        if (t.status === "CANCELLED") {
+                            statusLabel = "CANCELLED";
+                            statusColor = "bg-red-700 text-white";
+                        } else if (now < startTime) {
+                            statusLabel = "UPCOMING";
+                            statusColor = "bg-blue-700 text-white";
+                        } else if (now >= startTime && now <= endTime) {
+                            statusLabel = "ONGOING";
+                            statusColor = "bg-green-700 text-white";
+                        } else if (now > endTime) {
+                            statusLabel = "COMPLETED";
+                            statusColor = "bg-gray-700 text-white";
+                        } else {
+                            statusLabel = "UPCOMING";
+                            statusColor = "bg-blue-700 text-white";
+                        }
+                        console.log(statusLabel);
                         return (
                             <div
                                 key={t._id}
@@ -132,11 +163,27 @@ export default function JoinedPage() {
                                 style={{ backgroundColor: bgColor, color: textColor }}
                             >
                                 <div className="p-4 rounded-lg shadow-md w-full">
-                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3">
+                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2 sm:gap-0">
                                         <h2 className="font-bold text-lg sm:text-xl">{t.name}</h2>
-                                        <p className="text-xs sm:text-sm text-gray-600 font-medium mt-1 sm:mt-0">
-                                            {t.joinedPlayers}/{t.max_players} joined
-                                        </p>
+
+                                        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+                                            {/* Joined Players */}
+                                            <div className="flex flex-col items-end sm:items-center gap-0.5">
+                                                {statusLabel === "UPCOMING" && (
+                                                    <span className="text-[10px] sm:text-xs font-medium text-gray-700">
+                                                        ⏳ Starts in {getTimeLeft(t.start_datetime) || "00:00:00"}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-xs sm:text-sm text-gray-600 font-medium">
+                                                {t.joinedPlayers}/{t.max_players} joined
+                                            </p>
+
+                                            {/* Status */}
+                                            <span className={`px-2 py-1 rounded-full text-xs sm:text-sm font-semibold ${statusColor}`}>
+                                                {statusLabel}
+                                            </span>
+                                        </div>
                                     </div>
 
                                     {/* Progress bar */}
@@ -188,8 +235,8 @@ export default function JoinedPage() {
                                             {/* Description */}
                                             <p>{t.description}</p>
 
-                                                {/* Tabs Row */}
-                                        <div className="flex flex-wrap gap-2 sm:gap-4">
+                                            {/* Tabs Row */}
+                                            <div className="flex flex-wrap gap-2 sm:gap-4">
                                                 {[
                                                     { key: "leaderboard", label: <><Trophy className="inline w-4 h-4 mr-1" />Leaderboard</> },
                                                     { key: "game", label: <><Gamepad className="inline w-4 h-4 mr-1" />Game Info</> },

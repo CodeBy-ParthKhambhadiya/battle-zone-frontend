@@ -8,6 +8,7 @@ import LoaderIcon from "@/components/LoadingButton";
 import useAuth from "@/hooks/useAuth";
 import ConfirmModal from "@/components/player/ConfirmModal";
 import { Trophy, Gamepad, FileText, User, Users, Copy } from 'lucide-react';
+import getTimeLeft from "@/utils/getTimeLeft.js";
 
 export default function TournamentsPage() {
     const { tournaments, joinDetails, fetchJoinDetails, fetchTournaments, joinTournament, cancelJoinTournament, loading } = useTournament();
@@ -22,6 +23,7 @@ export default function TournamentsPage() {
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [activeSection, setActiveSection] = useState("leaderboard");
     const [copied, setCopied] = useState(false);
+    const [currentTime, setCurrentTime] = useState(new Date());
 
 
     useEffect(() => {
@@ -82,6 +84,13 @@ export default function TournamentsPage() {
         setTimeout(() => setCopied(false), 2000); // revert back after 2 seconds
     };
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <div className="p-4 sm:p-6 min-h-screen">
             {/* Header */}
@@ -108,23 +117,7 @@ export default function TournamentsPage() {
 
                         const isJoining = joiningTournamentId === t._id;
                         const isCancelling = joinedRecord && cancellingJoinId === joinedRecord._id;
-                        let buttonText = "Pre-Join";
-                        let buttonDisabled = false;
-                        let showExtraButton = false;
 
-                        if (joinedRecord) {
-                            if (joinedRecord.status === "pending") {
-                                buttonText = "Pending";
-                                buttonDisabled = true;
-                                showExtraButton = true; // Show extra button for pending
-                            } else if (joinedRecord.status === "confirmed") {
-                                buttonText = "Joined";
-                                buttonDisabled = true;
-                            }
-                        } else if (isJoining) {
-                            buttonText = "Joining...";
-                            buttonDisabled = true;
-                        }
                         const {
                             joinedPlayers = 0,
                             entry_fee = 0
@@ -154,20 +147,22 @@ export default function TournamentsPage() {
 
                             returnedPerPlayer = winnerBottomPlayers > 0 ? Math.floor(bottomPlayersReturn / winnerBottomPlayers) : 0;
                         }
-                        // Inside your component
                         const now = new Date(); // Current local time
                         const startTime = new Date(t.start_datetime);
                         const endTime = new Date(t.end_datetime);
 
                         // Format both times as HH:MM (en-IN locale)
-                        const formatTime = (date) => date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
+                        const formatTime = (date) =>
+                            date.toLocaleTimeString("en-IN", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: false,
+                            });
 
                         // Clean console log
-                        console.log(`Start Time: ${formatTime(startTime)}, End Time: ${formatTime(endTime)}`);
-
-                        // console.log("startTimestartTimestartTime", startTime);
-                        // console.log("endTime endTime endTime ", endTime);
-
+                        console.log(
+                            `Start Time: ${formatTime(startTime)}, End Time: ${formatTime(endTime)}`
+                        );
 
                         let statusLabel = "";
                         let statusColor = "";
@@ -185,10 +180,41 @@ export default function TournamentsPage() {
                             statusLabel = "COMPLETED";
                             statusColor = "bg-gray-700 text-white";
                         } else {
-                            // Fallback, should rarely reach here
+                            // Fallback
                             statusLabel = "UPCOMING";
                             statusColor = "bg-blue-700 text-white";
                         }
+
+                
+                        let buttonText = "";
+                        let buttonDisabled = false;
+                        let showExtraButton = false;
+                        let showJoinButton = false; // 👈 new flag
+
+                        // Only allow "Pre-Join" button when tournament is UPCOMING
+                        if (statusLabel === "UPCOMING") {
+                            showJoinButton = true;
+                        }
+
+                        // If user has already joined
+                        if (joinedRecord) {
+                            if (joinedRecord.status === "pending") {
+                                buttonText = "Pending";
+                                buttonDisabled = true;
+                                showExtraButton = true;
+                            } else if (joinedRecord.status === "confirmed") {
+                                buttonText = "Joined";
+                                buttonDisabled = true;
+                            }
+                        } else if (isJoining) {
+                            buttonText = "Joining...";
+                            buttonDisabled = true;
+                        } else if (showJoinButton) {
+                            // Only show join button in UPCOMING tournaments
+                            buttonText = "Pre-Join";
+                            buttonDisabled = false;
+                        }
+
 
                         return (
                             <div
@@ -202,6 +228,13 @@ export default function TournamentsPage() {
 
                                         <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
                                             {/* Joined Players */}
+                                            <div className="flex flex-col items-end sm:items-center gap-0.5">
+                                                {statusLabel === "UPCOMING" && (
+                                                    <span className="text-[10px] sm:text-xs font-medium text-gray-700">
+                                                        ⏳ Starts in {getTimeLeft(t.start_datetime) || "00:00:00"}
+                                                    </span>
+                                                )}
+                                            </div>
                                             <p className="text-xs sm:text-sm text-gray-600 font-medium">
                                                 {t.joinedPlayers}/{t.max_players} joined
                                             </p>
@@ -227,34 +260,67 @@ export default function TournamentsPage() {
                                         </p>
 
                                         <div className="flex gap-2">
-                                            <button
-                                                onClick={() => {
-                                                    setSelectedTournamentToJoin(t);
-                                                    setShowConfirmModal(true);
-                                                }}
-                                                disabled={buttonDisabled}
-                                                className={`bg-blue-600 text-white px-3 py-1 cursor-pointer rounded text-xs sm:text-sm hover:bg-blue-700 transition ${buttonDisabled ? "opacity-50 cursor-not-allowed" : ""
-                                                    }`}
-                                            >
-                                                {isJoining ? <LoaderIcon className="w-4 h-4 inline-block animate-spin" /> : buttonText}
-                                            </button>
+                                            {/* Button rendering */}
+                                            {statusLabel === "UPCOMING" || (joinedRecord && joinedRecord.status === "confirmed") || (joinedRecord && joinedRecord.status === "pending") ? (
+                                                <div className="flex gap-2">
 
-                                            {showExtraButton && (
-                                                <button
-                                                    onClick={() => {
-                                                        setSelectedTournamentToJoin(t);
-                                                        setSelectedJoinToCancel(joinedRecord); // store the join record
-                                                        setShowCancelModal(true); // show confirm modal
-                                                    }}
-                                                    disabled={isCancelling}
-                                                    className={`px-3 py-1 rounded cursor-pointer text-xs sm:text-sm transition ${isCancelling
-                                                        ? "bg-gray-400 cursor-not-allowed"
-                                                        : "bg-red-500 hover:bg-red-600 text-white"
-                                                        }`}
-                                                >
-                                                    {isCancelling ? "Cancelling..." : "Cancel"}
-                                                </button>
-                                            )}
+                                                    {/* Main button: Pre-Join / Joining / Joined / Pending */}
+                                                    <button
+                                                        onClick={() => {
+                                                            if (joinedRecord?.status === "pending") {
+                                                                // Do nothing, waiting for approval
+                                                                return;
+                                                            } else if (joinedRecord?.status !== "confirmed") {
+                                                                // Only allow Pre-Join if not already joined
+                                                                setSelectedTournamentToJoin(t);
+                                                                setShowConfirmModal(true);
+                                                            }
+                                                        }}
+                                                        disabled={
+                                                            joinedRecord?.status === "confirmed" ||
+                                                            joinedRecord?.status === "pending" ||
+                                                            isJoining ||
+                                                            buttonDisabled
+                                                        }
+                                                        className={`bg-blue-600 text-white px-3 py-1 rounded text-xs sm:text-sm hover:bg-blue-700 transition ${joinedRecord?.status === "confirmed" ||
+                                                                joinedRecord?.status === "pending" ||
+                                                                isJoining ||
+                                                                buttonDisabled
+                                                                ? "opacity-50 cursor-not-allowed"
+                                                                : ""
+                                                            }`}
+                                                    >
+                                                        {joinedRecord?.status === "pending"
+                                                            ? "Pending"
+                                                            : joinedRecord?.status === "confirmed"
+                                                                ? "Joined"
+                                                                : isJoining
+                                                                    ? <LoaderIcon className="w-4 h-4 inline-block animate-spin" />
+                                                                    : "Pre-Join"}
+                                                    </button>
+
+                                                    {/* Extra Cancel button if pending */}
+                                                    {joinedRecord?.status === "pending" && (
+                                                        <button
+                                                            onClick={() => {
+                                                                setSelectedTournamentToJoin(t);
+                                                                setSelectedJoinToCancel(joinedRecord);
+                                                                setShowCancelModal(true);
+                                                            }}
+                                                            disabled={isCancelling}
+                                                            className={`px-3 py-1 rounded cursor-pointer text-xs sm:text-sm transition ${isCancelling
+                                                                    ? "bg-gray-400 cursor-not-allowed"
+                                                                    : "bg-red-500 hover:bg-red-600 text-white"
+                                                                }`}
+                                                        >
+                                                            {isCancelling ? "Cancelling..." : "Cancel"}
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            ) : null}
+
+
+
                                             <button
                                                 onClick={() => toggleExpand(t._id)}
                                                 className="p-1 rounded transition btn-dark-shadow cursor-pointer "
@@ -275,7 +341,7 @@ export default function TournamentsPage() {
                                             <p>{t.description}</p>
 
                                             {/* Tabs Row */}
-                                        <div className="flex flex-wrap gap-2 sm:gap-4">
+                                            <div className="flex flex-wrap gap-2 sm:gap-4">
                                                 {[
                                                     { key: "leaderboard", label: <><Trophy className="inline w-4 h-4 mr-1" />Leaderboard</> },
                                                     { key: "game", label: <><Gamepad className="inline w-4 h-4 mr-1" />Game Info</> },
@@ -489,7 +555,7 @@ export default function TournamentsPage() {
                             }}
                             confirmText="Confirm"
                             cancelText="Cancel"
-                            colorKey={selectedTournamentToJoin?._id} // optional: color per tournament
+                            colorKey={selectedTournamentToJoin?._id} 
                         />
 
                     )}
