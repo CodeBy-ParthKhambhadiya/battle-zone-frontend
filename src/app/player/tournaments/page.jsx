@@ -116,9 +116,9 @@ export default function TournamentsPage() {
                                     join?.tournament?._id === t?._id &&
                                     join?.player?._id === user?._id
                             );
-                       const players = (joinDetails || [])
-  .filter(({ tournament }) => tournament?._id === t._id)
-  .map(({ player }) => player);
+                        const players = (joinDetails || [])
+                            .filter(({ tournament }) => tournament?._id === t._id)
+                            .map(({ player }) => player);
 
                         const isJoining = joiningTournamentId === t._id;
                         const isCancelling = joinedRecord && cancellingJoinId === joinedRecord._id;
