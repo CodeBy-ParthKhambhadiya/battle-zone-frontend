@@ -109,11 +109,16 @@ export default function TournamentsPage() {
                         const isExpanded = expanded === t._id;
                         const { bgColor, textColor } = tournamentColors[t._id] || { bgColor: "bg-blue-500", textColor: "text-white" };
 
-                        const joinedRecord = Array.isArray(joinDetails) && joinDetails.find(
-                            (join) => join.tournament._id === t._id && join.player._id === user._id
-                        );
-                        const players = joinDetails?.filter(item => item.tournament._id === t._id)
-                            .map(item => item.player) || [];
+                        const joinedRecord =
+                            Array.isArray(joinDetails) &&
+                            joinDetails.find(
+                                (join) =>
+                                    join?.tournament?._id === t?._id &&
+                                    join?.player?._id === user?._id
+                            );
+                       const players = (joinDetails || [])
+  .filter(({ tournament }) => tournament?._id === t._id)
+  .map(({ player }) => player);
 
                         const isJoining = joiningTournamentId === t._id;
                         const isCancelling = joinedRecord && cancellingJoinId === joinedRecord._id;
@@ -185,7 +190,7 @@ export default function TournamentsPage() {
                             statusColor = "bg-blue-700 text-white";
                         }
 
-                
+
                         let buttonText = "";
                         let buttonDisabled = false;
                         let showExtraButton = false;
@@ -283,11 +288,11 @@ export default function TournamentsPage() {
                                                             buttonDisabled
                                                         }
                                                         className={`bg-blue-600 text-white px-3 py-1 rounded text-xs sm:text-sm hover:bg-blue-700 transition ${joinedRecord?.status === "confirmed" ||
-                                                                joinedRecord?.status === "pending" ||
-                                                                isJoining ||
-                                                                buttonDisabled
-                                                                ? "opacity-50 cursor-not-allowed"
-                                                                : ""
+                                                            joinedRecord?.status === "pending" ||
+                                                            isJoining ||
+                                                            buttonDisabled
+                                                            ? "opacity-50 cursor-not-allowed"
+                                                            : ""
                                                             }`}
                                                     >
                                                         {joinedRecord?.status === "pending"
@@ -309,8 +314,8 @@ export default function TournamentsPage() {
                                                             }}
                                                             disabled={isCancelling}
                                                             className={`px-3 py-1 rounded cursor-pointer text-xs sm:text-sm transition ${isCancelling
-                                                                    ? "bg-gray-400 cursor-not-allowed"
-                                                                    : "bg-red-500 hover:bg-red-600 text-white"
+                                                                ? "bg-gray-400 cursor-not-allowed"
+                                                                : "bg-red-500 hover:bg-red-600 text-white"
                                                                 }`}
                                                         >
                                                             {isCancelling ? "Cancelling..." : "Cancel"}
@@ -555,7 +560,7 @@ export default function TournamentsPage() {
                             }}
                             confirmText="Confirm"
                             cancelText="Cancel"
-                            colorKey={selectedTournamentToJoin?._id} 
+                            colorKey={selectedTournamentToJoin?._id}
                         />
 
                     )}

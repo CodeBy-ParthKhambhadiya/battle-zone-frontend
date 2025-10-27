@@ -17,22 +17,6 @@ export const fetchTournamentsAction = createAsyncThunk(
     }
 );
 
-// ✅ Create new tournament
-export const createTournamentAction = createAsyncThunk(
-    "tournament/create",
-    async (tournamentData, thunkAPI) => {
-        try {
-            const response = await apiRequest.post("/tournaments", tournamentData);
-            Toast.success("Tournament created successfully!");
-            return response.data; // newly created tournament object
-        } catch (error) {
-            const message = error.response?.data?.message || "Failed to create tournament!";
-            Toast.error(message);
-            return thunkAPI.rejectWithValue(error.response?.data || { message });
-        }
-    }
-);
-
 // ✅ Fetch single tournament by ID
 export const fetchTournamentByIdAction = createAsyncThunk(
     "tournament/fetchById",
@@ -150,6 +134,124 @@ export const sendTournamentMessageAction = createAsyncThunk(
         error.response?.data?.message || error.message || "Failed to send message!";
       Toast.error(message);
       return thunkAPI.rejectWithValue(error.response?.data || { message });
+    }
+  }
+);
+
+export const createTournamentAction = createAsyncThunk(
+  "tournaments/createTournament",
+  async (tournamentData, thunkAPI) => {
+    try {
+      const response = await apiRequest.post("/tournaments", tournamentData);
+
+      // ✅ Assuming backend returns: { success: true, tournament: {...} }
+      Toast.success("Tournament created successfully!");
+
+      return response.data.tournament || response.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to create tournament!";
+      Toast.error(message);
+
+      return thunkAPI.rejectWithValue({ message });
+    }
+  }
+);
+
+// 📋 Fetch tournaments created by the logged-in organizer
+export const fetchOrganizerTournaments = createAsyncThunk(
+  "tournaments/fetchOrganizer",
+  async (_, thunkAPI) => {
+    try {
+      const response = await apiRequest.get("/tournaments/organizer");
+
+      // ✅ Expecting backend format: { success: true, count: n, data: [...] }
+      const tournaments = response.data.data || [];
+
+      return tournaments;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch organizer tournaments";
+
+      Toast.error(message);
+
+      return thunkAPI.rejectWithValue({ message });
+    }
+  }
+);
+
+export const updateTournamentAction = createAsyncThunk(
+  "tournaments/update",
+  async ({ tournamentId, formData }, thunkAPI) => {
+    try {
+      const response = await apiRequest.put(`/tournaments/${tournamentId}`, formData);
+      const message = response.data.message || "Tournament updated successfully!";
+      Toast.success(message);
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || { message: "Update failed" }
+      );
+    }
+  }
+);
+
+
+export const deleteTournamentAction = createAsyncThunk(
+  "tournaments/delete",
+  async ({ tournamentId }, thunkAPI) => {
+    try {
+      const response = await apiRequest.delete(`/tournaments/${tournamentId}`);
+      console.log("🚀 ~ Delete Tournament Response:", response);
+
+      // ✅ Expecting: { status: "success", message: "...", data: {...} }
+      const { status, message, data } = response.data;
+
+      if (status === "success") {
+        Toast.success(message || "Tournament deleted successfully!");
+        // Return useful data so reducer can remove it from the list
+        return data?._id || tournamentId;
+      } else {
+        Toast.error(message || "Failed to delete tournament");
+        return thunkAPI.rejectWithValue({ message });
+      }
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to delete tournament";
+
+      Toast.error(message);
+      return thunkAPI.rejectWithValue({ message });
+    }
+  }
+);
+
+export const fetchPendingPlayersByTournament = createAsyncThunk(
+  "tournamentJoin/fetchPendingPlayersByTournament",
+  async (tournamentId, thunkAPI) => {
+    try {
+      const response = await apiRequest.get(
+        `/tournament-join/${tournamentId}/pending`
+      );
+
+      // ✅ Expecting backend format: { success: true, count, data: [...] }
+      const pendingPlayers = response.data.data || [];
+
+      return pendingPlayers;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to fetch pending players";
+
+      Toast.error(message);
+
+      return thunkAPI.rejectWithValue({ message });
     }
   }
 );

@@ -9,10 +9,16 @@ import {
     fetchAllTournamentChatsAction,
     fetchTournamentChatsByIdAction,
     sendTournamentMessageAction,
+    fetchOrganizerTournaments,
+    updateTournamentAction,
+    deleteTournamentAction,
+    fetchPendingPlayersByTournament,
 } from "@/store/actions/tournament.action";
 
 const initialState = {
     tournaments: [],
+    organizerTournaments: [],
+    pendingPlayers: [],
     selectedTournament: null,
     tournamentChats: null,
     tournamentChatById: null,
@@ -64,15 +70,29 @@ const tournamentReducer = createSlice({
                 state.success = false;
             })
             .addCase(createTournamentAction.fulfilled, (state, action) => {
+                console.log("🚀 ~ action:", action);
                 state.loading = false;
                 state.success = true;
-                state.tournaments.unshift(action.payload); // add new tournament on top
+
+                // Add to both tournaments and organizerTournaments
+                if (action.payload) {
+                    state.tournaments.unshift(action.payload);
+
+                    // Ensure organizerTournaments exists
+                    if (!state.organizerTournaments) {
+                        state.organizerTournaments = [];
+                    }
+
+                    // Add the tournament at the top of organizerTournaments too
+                    state.organizerTournaments.unshift(action.payload.tournament);
+                }
             })
             .addCase(createTournamentAction.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload || action.error.message;
                 state.success = false;
             });
+
 
         // 🔹 Fetch single tournament
         builder
@@ -215,6 +235,88 @@ const tournamentReducer = createSlice({
                 state.loading = false;
                 state.error = action.payload?.message || "Failed to send message";
             });
+
+        builder
+            .addCase(fetchOrganizerTournaments.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchOrganizerTournaments.fulfilled, (state, action) => {
+                state.loading = false;
+                state.organizerTournaments = action.payload;
+            })
+            .addCase(fetchOrganizerTournaments.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
+
+        builder
+            .addCase(updateTournamentAction.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = false;
+            })
+            .addCase(updateTournamentAction.fulfilled, (state, action) => {
+                console.log("🚀 ~ action.payload:", action.payload);
+
+                state.loading = false;
+                state.success = true;
+
+                // ✅ Get updated tournament from payload.data
+                const updatedTournament = action.payload.data;
+
+                if (updatedTournament && state.organizerTournaments) {
+                    // ✅ Update the specific tournament in the list
+                    state.organizerTournaments = state.organizerTournaments.map((t) =>
+                        t._id === updatedTournament._id ? updatedTournament : t
+                    );
+                }
+            })
+            .addCase(updateTournamentAction.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.message || "Failed to update tournament.";
+            });
+
+        builder
+            .addCase(deleteTournamentAction.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(deleteTournamentAction.fulfilled, (state, action) => {
+                state.loading = false;
+                state.success = true;
+
+                const deletedId = action.payload; // ✅ this is the tournament ID
+
+                // ✅ Remove from both lists *without* re-fetching
+                if (Array.isArray(state.tournaments)) {
+                    state.tournaments = state.tournaments.filter((t) => t._id !== deletedId);
+                }
+
+                if (Array.isArray(state.organizerTournaments)) {
+                    state.organizerTournaments = state.organizerTournaments.filter(
+                        (t) => t._id !== deletedId
+                    );
+                }
+            })
+            .addCase(deleteTournamentAction.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.message || "Failed to delete tournament";
+            });
+
+        builder
+            .addCase(fetchPendingPlayersByTournament.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchPendingPlayersByTournament.fulfilled, (state, action) => {
+                state.loading = false;
+                state.pendingPlayers = action.payload;
+            })
+            .addCase(fetchPendingPlayersByTournament.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.message || "Something went wrong";
+            });
+
 
     },
 });
