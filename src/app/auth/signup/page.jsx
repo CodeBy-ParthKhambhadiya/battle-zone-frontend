@@ -58,8 +58,9 @@ export default function SignupPage() {
         try {
             const result = await createUser(form);
             if (result.meta?.requestStatus === "fulfilled") {
-                Toast.success("Account created! Check email for verification.");
-                router.push("/auth/verify");
+                // Toast.success("Account created! Check email for verification.");
+                // router.push("/auth/verify");
+                router.push("/auth/login");
             }
         } catch (err) {
             console.error(err);
