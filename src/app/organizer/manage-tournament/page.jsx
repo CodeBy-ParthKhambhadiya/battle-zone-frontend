@@ -144,7 +144,7 @@ export default function ManageTournamentPage() {
             {/* Loading / Error / Empty States */}
             {loading ? (
                 <div className="flex justify-center items-center min-h-[50vh]">
-                    <LoaderIcon size={16} colorClass="text-blue-600" />
+                    <LoaderIcon size={15} colorClass="text-blue-600" />
                 </div>
             ) : error ? (
                 <p className="text-red-500 text-center">{error}</p>

@@ -77,7 +77,7 @@ export default function ChatIndexPage() {
 
       {loading ? (
         <div className="flex items-center justify-center w-full mt-4">
-          <LoaderIcon className="animate-spin w-8 h-8 text-accent-primary" />
+                    <LoaderIcon size={15} colorClass="text-blue-600" />
         </div>
       ) : error ? (
         <p className="text-red-500">{error}</p>

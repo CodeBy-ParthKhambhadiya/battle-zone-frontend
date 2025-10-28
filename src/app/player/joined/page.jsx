@@ -106,7 +106,7 @@ export default function JoinedPage() {
 
             {loading && confirmedTournaments.length === 0 ? (
                 <div className="flex justify-center items-center min-h-[60vh]">
-                    <LoaderIcon size={16} colorClass="text-blue-600" />
+                    <LoaderIcon size={15} colorClass="text-blue-600" />
                 </div>
             ) : (
                 <div className="flex flex-col gap-3 sm:gap-4">
