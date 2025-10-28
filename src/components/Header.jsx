@@ -25,55 +25,41 @@ const Header = ({ colors }) => {
       </div>
 
       {/* Desktop Buttons */}
-      <div
-        className="hidden md:flex rounded-full overflow-hidden shadow-md border transition-all duration-300"
-        style={{ borderColor: colors.textColor }}
-      >
-        {/* Login */}
-        <Link
-          href="/auth/login"
-          className="px-6 py-2 font-medium transition-all duration-300 cursor-pointer"
-          style={{
-            backgroundColor: colors.textColor,
-            color: colors.bgColor,
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = colors.bgColor;
-            e.target.style.color = colors.textColor;
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = colors.textColor;
-            e.target.style.color = colors.bgColor;
-          }}
-        >
-          Login
-        </Link>
+<div
+  className="hidden md:flex rounded-full overflow-hidden shadow-md border transition-all duration-300"
+  style={{ borderColor: colors.textColor }}
+>
+  {/* Login */}
+  <Link
+    href="/auth/login"
+    className="px-6 py-2 font-medium transition-all duration-300 cursor-pointer"
+    style={{
+      backgroundColor: colors.textColor,
+      color: colors.bgColor,
+    }}
+   
+  >
+    Login
+  </Link>
 
-        <span
-          className="w-[1px]"
-          style={{ backgroundColor: colors.textColor }}
-        ></span>
+  <span
+    className="w-[1px]"
+    style={{ backgroundColor: colors.textColor }}
+  ></span>
 
-        {/* Signup */}
-        <Link
-          href="/auth/signup"
-          className="px-6 py-2 font-medium transition-all duration-300 cursor-pointer"
-          style={{
-            backgroundColor: colors.bgColor,
-            color: colors.textColor,
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.backgroundColor = colors.textColor;
-            e.target.style.color = colors.bgColor;
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = colors.bgColor;
-            e.target.style.color = colors.textColor;
-          }}
-        >
-          Signup
-        </Link>
-      </div>
+  {/* Signup */}
+  <Link
+    href="/auth/signup"
+    className="px-6 py-2 font-medium transition-all duration-300 cursor-pointer"
+    style={{
+      backgroundColor: colors.bgColor,
+      color: colors.textColor,
+    }}
+  
+  >
+    Signup
+  </Link>
+</div>
 
       {/* Mobile Menu */}
       <div className="md:hidden">

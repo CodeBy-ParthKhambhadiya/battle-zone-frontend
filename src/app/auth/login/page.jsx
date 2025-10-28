@@ -184,7 +184,7 @@ export default function LoginPage() {
                             opacity: loading ? 0.7 : 1,
                         }}
                     >
-                        {loading ? <Loader className="animate-spin w-5 h-5" /> : "Login"}
+                        {loading ? <Loader className="animate-spin w-5 h-5 bgColor" /> : "Login"}
                     </button>
                 </form>
 

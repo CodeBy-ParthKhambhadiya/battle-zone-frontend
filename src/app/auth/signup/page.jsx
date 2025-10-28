@@ -354,7 +354,7 @@ export default function SignupPage() {
               cursor: loading ? "not-allowed" : "pointer",
             }}
           >
-            {loading ? <Loader className="animate-spin w-5 h-5" /> : "Sign Up"}
+            {loading ? <Loader className="animate-spin w-5 h-5 bgColor" />: "Sign Up"}
           </button>
         </form>
 

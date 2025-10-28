@@ -183,7 +183,7 @@ export default function ForgotPasswordPage() {
               cursor: loading ? "not-allowed" : "pointer",
             }}
           >
-            {loading ? <LoaderIcon className="animate-spin" /> : "Update Password"}
+            {loading ? <Loader className="animate-spin w-5 h-5 bgColor" /> : "Update Password"}
           </button>
         </form>
 
