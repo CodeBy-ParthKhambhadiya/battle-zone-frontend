@@ -25,7 +25,6 @@ export default function AuthGuard({ children }) {
       localStorage.removeItem("user");
     }
 
-    console.log("🚀 ~ AuthGuard ~ user:", user);
 
     // 🚫 If no token or user → redirect to login
     if (!token || !user || !user.role) {

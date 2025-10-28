@@ -72,20 +72,24 @@ const tournamentReducer = createSlice({
                 state.success = false;
             })
             .addCase(createTournamentAction.fulfilled, (state, action) => {
+                console.log("🚀 ~ createTournamentAction fulfilled:", action);
                 state.loading = false;
                 state.success = true;
 
-                // Add to both tournaments and organizerTournaments
-                if (action.payload) {
-                    state.tournaments.unshift(action.payload);
+                // 🧩 Extract the tournament from the payload safely
+                const newTournament = action.payload?.data?.tournament;
 
-                    // Ensure organizerTournaments exists
-                    if (!state.organizerTournaments) {
+                if (newTournament) {
+                    // Add to main tournaments list
+                    state.tournaments = [newTournament, ...(state.tournaments || [])];
+
+                    // Ensure organizerTournaments array exists
+                    if (!Array.isArray(state.organizerTournaments)) {
                         state.organizerTournaments = [];
                     }
 
-                    // Add the tournament at the top of organizerTournaments too
-                    state.organizerTournaments.unshift(action.payload.tournament);
+                    // Add to organizer tournaments too
+                    state.organizerTournaments = [newTournament, ...state.organizerTournaments];
                 }
             })
             .addCase(createTournamentAction.rejected, (state, action) => {
@@ -369,7 +373,7 @@ const tournamentReducer = createSlice({
                 state.loading = false;
                 state.error = action.payload?.message || "Failed to reject player.";
             });
-},
+    },
 });
 
 export const { resetTournamentState, clearSelectedTournament } =
