@@ -33,7 +33,7 @@ export default function ChatRoomPage() {
   return (
     <div className="flex flex-col bg-gray-900 text-gray-200 p-4 
                     rounded-lg sm:rounded-xl md:rounded-2xl lg:rounded-3xl 
-                    overflow-hidden h-[750px] w-full max-w-[900px] mx-auto">
+                    overflow-hidden h-[675px] w-full max-w-[900px] mx-auto">
 
       {/* Chat Header */}
       <div className="flex items-center gap-4 mb-4">
