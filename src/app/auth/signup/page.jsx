@@ -106,7 +106,7 @@ export default function SignupPage() {
     "transition-all duration-500 ease-in-out text-red-500 text-xs mt-1";
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[85vh] px-4">
+    <div className="flex flex-col items-center justify-center min-h-[90vh] px-4">
       <div
         className="w-full max-w-md p-8 rounded-lg shadow-lg transition-all duration-500"
         style={{ backgroundColor: bgColor, color: textColor }}
