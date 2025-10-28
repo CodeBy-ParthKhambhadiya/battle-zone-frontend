@@ -62,9 +62,10 @@ export default function JoinedPage() {
 
     // Filter only confirmed joined tournaments
     const confirmedTournaments = sortedTournaments.filter((t) =>
-        Array.isArray(joinDetails) && joinDetails.some((join) => {
+        Array.isArray(joinDetails) &&
+        joinDetails.some((join) => {
             // make sure join.tournament and join.player exist
-            if (!join.tournament || !join.player) return false;
+            if (!join.tournament || !join.player || !user || !user._id) return false;
 
             // compare as strings (in case of ObjectId)
             return (
@@ -74,6 +75,7 @@ export default function JoinedPage() {
             );
         })
     );
+
 
     const handleCopy = (text) => {
         if (!text) return;

@@ -1,6 +1,5 @@
-// src/app/auth/layout.js
 import { Nunito } from "next/font/google";
-import ClientLayout from "./ClientLayout"; // Auth-specific client layout
+import ClientLayout from "./ClientLayout";
 
 const nunito = Nunito({
   subsets: ["latin"],
@@ -12,14 +11,11 @@ export const metadata = {
   title: "BattleZone Auth",
   description: "Authentication pages for BattleZone",
 };
+
 export default function AuthLayout({ children }) {
   return (
-    // Just wrap with ClientLayout or a div
     <ClientLayout>
-      {/* You can optionally add an extra wrapper for styling */}
-      <main>
-        {children}
-      </main>
+      <main className={`${nunito.variable} font-sans`}>{children}</main>
     </ClientLayout>
   );
 }

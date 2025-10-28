@@ -1,36 +1,59 @@
-// src/components/AuthGuard.jsx
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import useAuth from "@/hooks/useAuth"; // make sure you import your auth hook
+import { useRouter, usePathname } from "next/navigation";
 
-export default function AuthGuard() {
+export default function AuthGuard({ children }) {
   const router = useRouter();
-  const { user, fetchUser } = useAuth();
+  const pathname = usePathname();
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = localStorage.getItem("token");
-      const role = localStorage.getItem("role");
+    // ✅ Allow all routes that start with /auth (public routes)
+    if (pathname.startsWith("/auth")) {
+      return; // Skip all checks for auth pages
+    }
 
-      if (!token) {
-        router.push("/auth/login");
+    const token = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+
+    // Parse user safely
+    let user = null;
+    try {
+      user = storedUser ? JSON.parse(storedUser) : null;
+    } catch (err) {
+      console.error("❌ Failed to parse user from localStorage:", err);
+      localStorage.removeItem("user");
+    }
+
+    console.log("🚀 ~ AuthGuard ~ user:", user);
+
+    // 🚫 If no token or user → redirect to login
+    if (!token || !user || !user.role) {
+      router.replace("/auth/login");
+      return;
+    }
+
+    const role = user.role;
+
+    // ✅ Role-based route access
+    if (role === "ORGANIZER") {
+      if (!pathname.startsWith("/organizer")) {
+        router.replace("/organizer/dashboard");
         return;
       }
-
-      // Fetch user if not already loaded
-      if (!user || (Array.isArray(user) && user.length === 0)) {
-        await fetchUser();
+    } else if (role === "PLAYER") {
+      if (!pathname.startsWith("/player")) {
+        router.replace("/player/home");
+        return;
       }
+    } else {
+      // 🚫 Unknown role → force logout
+      localStorage.clear();
+      router.replace("/auth/login");
+      return;
+    }
 
-      // Redirect based on role
-      if (role === "PLAYER") router.push("/player/home");
-      else if (role === "ORGANIZER") router.push("/organizer/dashboard");
-    };
+  }, [router, pathname]);
 
-    checkAuth();
-  }, [user, router]);
-
-  return null;
+  return children || null;
 }

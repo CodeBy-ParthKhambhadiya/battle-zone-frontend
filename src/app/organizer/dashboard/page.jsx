@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { getRandomColor } from "@/components/getColor";
+import LoaderIcon from "@/components/LoadingButton";
 
 export default function OrganizerDashboard() {
   const [colors, setColors] = useState(null);
@@ -20,7 +21,8 @@ export default function OrganizerDashboard() {
   if (!colors) {
     return (
       <div className="min-h-screen flex justify-center items-center text-lg font-semibold">
-        Loading Dashboard...
+                  <LoaderIcon className="animate-spin w-5 h-5" />
+        
       </div>
     );
   }
