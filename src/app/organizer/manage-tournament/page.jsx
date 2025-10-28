@@ -47,6 +47,7 @@ export default function ManageTournamentPage() {
         error,
         fetchOrganizerTournamentsList,
         deleteTournament, // ✅ must exist in your useTournament hook
+        updateTournament,
     } = useTournament();
 
     useEffect(() => {
@@ -351,7 +352,7 @@ export default function ManageTournamentPage() {
                                                                 {t.game_type || "N/A"}
                                                             </p>
 
-                                                            <p>
+                                                            <div>
                                                                 <span className="font-semibold">Rules:</span>{" "}
                                                                 {t.rules && t.rules.length > 0 ? (
                                                                     <ul className="list-disc list-inside mt-1">
@@ -360,10 +361,11 @@ export default function ManageTournamentPage() {
                                                                         ))}
                                                                     </ul>
                                                                 ) : (
-                                                                    "No rules specified"
+                                                                    <span>No rules specified</span>
                                                                 )}
-                                                            </p>
+                                                            </div>
                                                         </div>
+
                                                     )}
 
 

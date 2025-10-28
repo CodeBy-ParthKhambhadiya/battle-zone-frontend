@@ -30,15 +30,21 @@ export default function TournamentsPage() {
         fetchTournaments();
         fetchJoinDetails();
     }, []);
-    // console.log(joinDetails);
 
 
-    const sortedTournaments = Array.isArray(tournaments)
-        ? [...tournaments].sort(
-            (a, b) => new Date(a.start_datetime) - new Date(b.start_datetime)
-        )
-        : [];
-    console.log(sortedTournaments);
+  const sortedTournaments = Array.isArray(tournaments)
+    ? [...tournaments]
+        // ✅ Filter only upcoming and ongoing tournaments
+        .filter((t) => {
+            const now = new Date();
+            const start = new Date(t.start_datetime);
+            const end = new Date(t.end_datetime);
+            return t.status !== "CANCELLED" && (now < start || (now >= start && now <= end));
+        })
+        // ✅ Sort by start date
+        .sort((a, b) => new Date(a.start_datetime) - new Date(b.start_datetime))
+    : [];
+
 
     const toggleExpand = (id) => {
         setExpanded(expanded === id ? null : id);
@@ -164,11 +170,7 @@ export default function TournamentsPage() {
                                 hour12: false,
                             });
 
-                        // Clean console log
-                        console.log(
-                            `Start Time: ${formatTime(startTime)}, End Time: ${formatTime(endTime)}`
-                        );
-
+                  
                         let statusLabel = "";
                         let statusColor = "";
 

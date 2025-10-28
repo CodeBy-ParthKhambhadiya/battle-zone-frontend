@@ -4,7 +4,9 @@ import { useState, useEffect } from "react";
 import useAuth from "@/hooks/useAuth";
 import LoaderIcon from "@/components/LoadingButton";
 import CropperModal from "@/components/player/CropperModal";
-import { Upload } from 'lucide-react';
+import { LogOut, Upload } from 'lucide-react';
+import Link from "next/link";
+import Toast from "@/utils/toast";
 
 export default function ProfilePage() {
   const { updateUser, loading } = useAuth();
@@ -71,7 +73,10 @@ export default function ProfilePage() {
       });
   };
 
-
+  const handleLogout = () => {
+    localStorage.clear();
+    sessionStorage.clear();
+  };
   const handleSave = async (e) => {
     e.preventDefault();
 
@@ -89,7 +94,6 @@ export default function ProfilePage() {
       };
 
       await updateUser(userId, updatedData); // now it’s called on Save click
-      console.log("Profile updated!");
     } catch (err) {
       console.error("Error updating profile:", err);
     }
@@ -119,26 +123,26 @@ export default function ProfilePage() {
           )}
 
           {/* Upload Button */}
-      {/* Upload Button */}
-<div>
-  <input
-    type="file"
-    accept="image/*"
-    onChange={handleImageUpload}
-    className="hidden"
-    id="avatar-upload"
-  />
-  <label
-    htmlFor="avatar-upload"
-    className={`flex items-center justify-center px-4 sm:px-6 py-2 rounded-md text-white bg-gray-700 shadow-md hover:bg-gray-600 transition-all ${loading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-  >
-    {/* Upload Icon (always visible) */}
-    <Upload className="w-5 h-5" />
-    
-    {/* Text: hidden on small screens, visible on sm+ */}
-    <span className="hidden sm:inline ml-2">Choose Image</span>
-  </label>
-</div>
+          {/* Upload Button */}
+          <div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+              id="avatar-upload"
+            />
+            <label
+              htmlFor="avatar-upload"
+              className={`flex items-center justify-center px-4 sm:px-6 py-2 rounded-md text-white bg-gray-700 shadow-md hover:bg-gray-600 transition-all ${loading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+            >
+              {/* Upload Icon (always visible) */}
+              <Upload className="w-5 h-5" />
+
+              {/* Text: hidden on small screens, visible on sm+ */}
+              <span className="hidden sm:inline ml-2">Choose Image</span>
+            </label>
+          </div>
 
 
         </div>
@@ -249,20 +253,30 @@ export default function ProfilePage() {
         </div>
 
         {/* Submit Button */}
-        <div className="md:col-span-2 flex justify-center mt-4">
-          <button
-            type="submit"
-            className={`flex items-center justify-center px-6 py-2 rounded-md text-white bg-gray-700 shadow-md hover:bg-gray-600 transition-all ${loading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-            disabled={loading}
-          >
-            {loading ? (
-              <LoaderIcon className="animate-spin w-5 h-5" />
-            ) : (
-              "Save Changes"
-            )}
-          </button>
-        </div>
+       <div className="md:col-span-2 flex justify-center mt-4 gap-4">
+      <button
+        type="submit"
+        className={`flex items-center justify-center px-6 py-2 rounded-md text-white bg-gray-700 shadow-md hover:bg-gray-600 transition-all ${
+          loading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+        }`}
+        disabled={loading}
+      >
+        {loading ? (
+          <LoaderIcon className="animate-spin w-5 h-5" />
+        ) : (
+          "Save Changes"
+        )}
+      </button>
 
+      <Link
+        href="/auth/login"
+        onClick={handleLogout}
+        className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-md shadow-md transition-all duration-300"
+      >
+        <LogOut size={18} />
+        Logout
+      </Link>
+    </div>
       </form>
     </div>
   );

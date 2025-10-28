@@ -13,12 +13,14 @@ import {
     updateTournamentAction,
     deleteTournamentAction,
     fetchPendingPlayersByTournament,
+    confirmTournamentJoinAction,
+    deleteTournamentJoinAction,
 } from "@/store/actions/tournament.action";
 
 const initialState = {
     tournaments: [],
     organizerTournaments: [],
-    pendingPlayers: [],
+    ManagePendingPlayers: [],
     selectedTournament: null,
     tournamentChats: null,
     tournamentChatById: null,
@@ -70,7 +72,6 @@ const tournamentReducer = createSlice({
                 state.success = false;
             })
             .addCase(createTournamentAction.fulfilled, (state, action) => {
-                console.log("🚀 ~ action:", action);
                 state.loading = false;
                 state.success = true;
 
@@ -257,8 +258,6 @@ const tournamentReducer = createSlice({
                 state.success = false;
             })
             .addCase(updateTournamentAction.fulfilled, (state, action) => {
-                console.log("🚀 ~ action.payload:", action.payload);
-
                 state.loading = false;
                 state.success = true;
 
@@ -310,15 +309,67 @@ const tournamentReducer = createSlice({
             })
             .addCase(fetchPendingPlayersByTournament.fulfilled, (state, action) => {
                 state.loading = false;
-                state.pendingPlayers = action.payload;
+                state.ManagePendingPlayers = action.payload;
             })
             .addCase(fetchPendingPlayersByTournament.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload?.message || "Something went wrong";
             });
+        builder
+            .addCase(confirmTournamentJoinAction.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = false;
+                state.lastAction = "confirm";
+            })
+            .addCase(confirmTournamentJoinAction.fulfilled, (state, action) => {
+                state.loading = false;
+                state.success = true;
 
+                // ✅ Update ManagePendingPlayers locally
+                const joinId = action.meta.arg.joinId;
+                state.ManagePendingPlayers = state.ManagePendingPlayers.map((tournament) => {
+                    const updatedPending = tournament.pendingPlayers.filter(p => p._id !== joinId);
+                    const movedPlayer = tournament.pendingPlayers.find(p => p._id === joinId);
 
-    },
+                    return movedPlayer
+                        ? {
+                            ...tournament,
+                            pendingPlayers: updatedPending,
+                            confirmedPlayers: [...(tournament.confirmedPlayers || []), { ...movedPlayer, status: "confirmed" }],
+                        }
+                        : tournament;
+                });
+            })
+            .addCase(confirmTournamentJoinAction.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.message || "Failed to confirm player.";
+            })
+
+            // ----- Reject -----
+            .addCase(deleteTournamentJoinAction.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.success = false;
+                state.lastAction = "reject";
+            })
+            .addCase(deleteTournamentJoinAction.fulfilled, (state, action) => {
+                state.loading = false;
+                state.success = true;
+
+                const joinId = action.meta.arg.joinId;
+
+                state.ManagePendingPlayers = state.ManagePendingPlayers.map((tournament) => ({
+                    ...tournament,
+                    pendingPlayers: tournament.pendingPlayers.filter((p) => p._id !== joinId),
+                    confirmedPlayers: tournament.confirmedPlayers?.filter((p) => p._id !== joinId) || [],
+                }));
+            })
+            .addCase(deleteTournamentJoinAction.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.message || "Failed to reject player.";
+            });
+},
 });
 
 export const { resetTournamentState, clearSelectedTournament } =

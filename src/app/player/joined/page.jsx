@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import useTournament from "@/hooks/useTournament";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Home, Lock } from "lucide-react";
 import { getRandomColor } from "@/components/getColor";
 import LoaderIcon from "@/components/LoadingButton";
 import useAuth from "@/hooks/useAuth";
@@ -74,8 +74,6 @@ export default function JoinedPage() {
             );
         })
     );
-    console.log("🚀 ~ TournamentsPage ~ confirmedTournaments:", confirmedTournaments)
-
 
     const handleCopy = (text) => {
         if (!text) return;
@@ -83,6 +81,18 @@ export default function JoinedPage() {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000); // revert back after 2 seconds
     };
+    const [ishandleCopyRoomIdAndPassword, setHandleCopyRoomIdAndPassword] = useState({ id: null, field: "" });
+
+    const handleCopyRoomIdAndPassword = (value, field, tournamentId) => {
+        navigator.clipboard.writeText(value);
+
+        // set copied for specific tournament
+        setHandleCopyRoomIdAndPassword({ id: tournamentId, field });
+
+        // reset after 1.5 seconds
+        setTimeout(() => setHandleCopyRoomIdAndPassword({ id: null, field: "" }), 1500);
+    };
+
 
     return (
         <div className="p-4 sm:p-6 min-h-screen">
@@ -105,8 +115,11 @@ export default function JoinedPage() {
                             joinedPlayers = 0,
                             entry_fee = 0
                         } = t;
-                        const players = joinDetails?.filter(item => item.tournament._id === t._id)
-                            .map(item => item.player) || [];
+                        const players = Array.isArray(joinDetails)
+                            ? joinDetails
+                                .filter(item => item?.tournament?._id && t?._id && item.tournament._id === t._id)
+                                .map(item => item.player)
+                            : [];
 
                         // Initialize all prizes and counts to 0
                         let totalPool = 0, prizePoolMoney = 0, winnerPlayers = 0, winnerBottomPlayers = 0;
@@ -155,7 +168,6 @@ export default function JoinedPage() {
                             statusLabel = "UPCOMING";
                             statusColor = "bg-blue-700 text-white";
                         }
-                        console.log(statusLabel);
                         return (
                             <div
                                 key={t._id}
@@ -180,7 +192,9 @@ export default function JoinedPage() {
                                             </p>
 
                                             {/* Status */}
-                                            <span className={`px-2 py-1 rounded-full text-xs sm:text-sm font-semibold ${statusColor}`}>
+                                            <span
+                                                className={`px-2 py-1 rounded-full text-xs sm:text-sm font-semibold ${statusColor}`}
+                                            >
                                                 {statusLabel}
                                             </span>
                                         </div>
@@ -194,23 +208,89 @@ export default function JoinedPage() {
                                         ></div>
                                     </div>
 
-                                    {/* Entry Fee & Prize Pool */}
-                                    <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
-                                        <p className="text-xs sm:text-sm">
-                                            <span className="font-semibold">Entry Fee:</span> ₹{t.entry_fee}
-                                        </p>
+                                    {/* Entry Fee, Prize Pool, Room Info */}
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                        <div className="flex flex-wrap gap-4 sm:gap-6 items-center">
+                                            <p className="text-xs sm:text-sm">
+                                                <span className="font-semibold">Entry Fee:</span> ₹{t.entry_fee}
+                                            </p>
 
-                                        <p className="text-xs sm:text-sm">
-                                            <span className="font-semibold">Prize Pool:</span> ₹{firstPrize} / ₹{secondPrize} / ₹{thirdPrize} (1st / 2nd / 3rd)
-                                        </p>
+                                            <p className="text-xs sm:text-sm">
+                                                <span className="font-semibold">Prize Pool:</span> ₹{firstPrize} / ₹{secondPrize} / ₹{thirdPrize} (1st / 2nd / 3rd)
+                                            </p>
+                                        </div>
 
-                                        {/* Joined button & Expand toggle */}
-                                        <div className="flex gap-2">
+
+                                    </div>
+
+                                    {/* Joined button & Expand toggle */}
+                                    <div
+                                        className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-3 p-3 rounded-lg"
+                                    >
+                                        {/* 🎮 Room Info Section */}
+                                        {(t.roomID || t.password) && (
+                                            <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
+                                                {/* 🏠 Room ID Card */}
+                                                {t.roomID && (
+                                                    <div
+                                                        className="flex items-center gap-2 px-3 py-2 rounded-lg shadow-md transition-all duration-300"
+                                                        style={{ backgroundColor: bgColor, color: textColor }}
+                                                    >
+                                                        <p className="text-xs sm:text-sm font-medium flex items-center gap-2">
+                                                            <Home size={14} className="text-gray-700" />
+                                                            <span className="font-semibold">Room ID:</span> {t.roomID}
+                                                        </p>
+
+                                                        <button
+                                                            onClick={() =>
+                                                                handleCopyRoomIdAndPassword(t.roomID, "roomID", t._id)
+                                                            }
+                                                            className="flex items-center gap-1 px-2 py-1 text-xs sm:text-sm rounded-md border border-gray-300 hover:bg-gray-200 transition-all"
+                                                            style={{ color: textColor }}
+                                                        >
+                                                            <Copy size={14} />
+                                                            {ishandleCopyRoomIdAndPassword.id === t._id && ishandleCopyRoomIdAndPassword.field === "roomID"
+                                                                ? "Copied!"
+                                                                : "Copy"}
+                                                        </button>
+                                                    </div>
+                                                )}
+
+                                                {/* 🔐 Password Card */}
+                                                {t.password && (
+                                                    <div
+                                                        className="flex items-center gap-2 px-3 py-2 rounded-lg shadow-md transition-all duration-300"
+                                                        style={{ backgroundColor: bgColor, color: textColor }}
+                                                    >
+                                                        <p className="text-xs sm:text-sm font-medium flex items-center gap-2">
+                                                            <Lock size={14} className="text-gray-700" />
+                                                            <span className="font-semibold">Password:</span> {t.password}
+                                                        </p>
+                                                        <button
+                                                            onClick={() =>
+                                                                handleCopyRoomIdAndPassword(t.password, "password", t._id)
+                                                            }
+                                                            className="flex items-center gap-1 px-2 py-1 text-xs sm:text-sm rounded-md border border-gray-300 hover:bg-gray-200 transition-all"
+                                                            style={{ color: textColor }}
+                                                        >
+                                                            <Copy size={14} />
+                                                            {ishandleCopyRoomIdAndPassword.id === t._id && ishandleCopyRoomIdAndPassword.field === "password"
+                                                                ? "Copied!"
+                                                                : "Copy"}
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {/* 🎯 Action Buttons Section */}
+                                        <div className="flex items-center gap-2">
                                             <Link href={`/player/joined/${t._id}`}>
                                                 <button className="bg-green-600 text-white px-3 py-1 cursor-pointer rounded text-xs sm:text-sm">
                                                     Messages
                                                 </button>
                                             </Link>
+
                                             <button
                                                 disabled
                                                 className="bg-blue-600 text-white px-3 py-1 cursor-not-allowed rounded text-xs sm:text-sm"
@@ -220,12 +300,13 @@ export default function JoinedPage() {
 
                                             <button
                                                 onClick={() => toggleExpand(t._id)}
-                                                className="p-1 rounded transition btn-dark-shadow cursor-pointer "
+                                                className="p-1 rounded transition btn-dark-shadow cursor-pointer"
                                             >
                                                 {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                             </button>
                                         </div>
                                     </div>
+
                                 </div>
 
                                 <>

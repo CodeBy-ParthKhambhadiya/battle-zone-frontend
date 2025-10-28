@@ -14,7 +14,6 @@ export default function ConfirmModal({
     style = {}, // optional custom style for positioning
 }) {
     const { bgColor, textColor } = getRandomColor() || { bgColor: "#fff", textColor: "#000" };
-    console.log("new");
 
     return (
         <div

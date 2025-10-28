@@ -24,6 +24,8 @@ export default function CreateTournament({ onClose }) {
         status: "UPCOMING",
         prize_pool: "",
         rules: [""],
+        roomID: "",
+        password: "",
     });
 
     const handleChange = (e) => {
@@ -183,7 +185,39 @@ export default function CreateTournament({ onClose }) {
                             />
                         </div>
 
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block mb-1 font-semibold">Room ID</label>
+                                <input
+                                    type="text"
+                                    name="roomID"
+                                    value={formData.roomID}
+                                    onChange={handleChange}
+                                    placeholder="Enter room ID"
+                                    className="w-full px-3 py-2 rounded-lg bg-transparent border border-gray-500 focus:outline-none focus:ring-2 transition"
+                                    style={{
+                                        color: color.textColor,
+                                        borderColor: color.textColor,
+                                    }}
+                                />
+                            </div>
 
+                            <div>
+                                <label className="block mb-1 font-semibold">Password</label>
+                                <input
+                                    type="text"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    placeholder="Enter room password"
+                                    className="w-full px-3 py-2 rounded-lg bg-transparent border border-gray-500 focus:outline-none focus:ring-2 transition"
+                                    style={{
+                                        color: color.textColor,
+                                        borderColor: color.textColor,
+                                    }}
+                                />
+                            </div>
+                        </div>
 
                         <div>
                             <label className="block mb-1 font-semibold">Rules</label>

@@ -12,7 +12,9 @@ import {
     fetchOrganizerTournaments,
     updateTournamentAction, // ✅ new
     deleteTournamentAction,
-    fetchPendingPlayersByTournament, // ✅ optional
+    fetchPendingPlayersByTournament,
+    confirmTournamentJoinAction,
+    deleteTournamentJoinAction, // ✅ optional
 } from "@/store/actions/tournament.action";
 
 const useTournament = () => {
@@ -24,7 +26,7 @@ const useTournament = () => {
         selectedTournament,
         tournamentChats,
         tournamentChatById,
-        pendingPlayers,
+        ManagePendingPlayers,
         loading,
         error,
         success,
@@ -95,6 +97,13 @@ const useTournament = () => {
         return await dispatch(sendTournamentMessageAction({ tournamentId, message }));
     };
 
+    const confirmTournamentJoin = async ({ joinId }) => {
+        return await dispatch(confirmTournamentJoinAction({ joinId }));
+    };
+
+    const deleteTournamentJoin = async ({ joinId }) => {
+        return await dispatch(deleteTournamentJoinAction({ joinId }));
+    };
     return {
         tournaments,
         joinDetails,
@@ -102,7 +111,7 @@ const useTournament = () => {
         tournamentChats,
         tournamentChatById,
         organizerTournaments,
-        pendingPlayers,
+        ManagePendingPlayers,
         loading,
         error,
         success,
@@ -121,6 +130,8 @@ const useTournament = () => {
         sendTournamentMessage,
         fetchOrganizerTournamentsList,
         fetchTournamentsPendingPlayerList,
+        confirmTournamentJoin,
+        deleteTournamentJoin,
     };
 };
 

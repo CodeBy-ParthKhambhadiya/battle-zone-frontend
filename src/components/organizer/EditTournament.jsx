@@ -7,9 +7,8 @@ import LoaderIcon from "../LoadingButton";
 
 export default function EditTournament({ onClose, tournament }) {
     const { updateTournament, loading } = useTournament();
-    const [color, setColor] = useState({ bgColor: "#1f2937", textColor: "#fff" }); // default dark
+    const [color, setColor] = useState({ bgColor: "#1f2937", textColor: "#fff" });
 
-    // 🎨 Random color each mount
     useEffect(() => {
         setColor(getRandomColor());
     }, []);
@@ -24,22 +23,26 @@ export default function EditTournament({ onClose, tournament }) {
         end_datetime: tournament?.end_datetime || "",
         status: tournament?.status || "UPCOMING",
         prize_pool: tournament?.prize_pool || "",
-        rules: Array.isArray(tournament?.rules) && tournament.rules.length > 0 ? tournament.rules : [""],
+        rules:
+            Array.isArray(tournament?.rules) && tournament.rules.length > 0
+                ? tournament.rules
+                : [""],
+        roomID: tournament?.roomID || "",
+        password: tournament?.password || "",
     });
-    // 🔄 Handle input changes
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    // 💾 Handle submit
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             if (tournament._id) {
-                await updateTournament({ tournamentId: tournament._id, formData }); // ✅ sends body JSON
+                await updateTournament({ tournamentId: tournament._id, formData });
             }
-            onClose(); // Close modal after update
+            onClose();
         } catch (err) {
             console.error("Update failed:", err);
         }
@@ -118,7 +121,11 @@ export default function EditTournament({ onClose, tournament }) {
                             <input
                                 type="datetime-local"
                                 name="start_datetime"
-                                value={formData.start_datetime ? formData.start_datetime.slice(0, 16) : ""}
+                                value={
+                                    formData.start_datetime
+                                        ? formData.start_datetime.slice(0, 16)
+                                        : ""
+                                }
                                 onChange={(e) =>
                                     setFormData((prev) => ({
                                         ...prev,
@@ -134,7 +141,11 @@ export default function EditTournament({ onClose, tournament }) {
                             <input
                                 type="datetime-local"
                                 name="end_datetime"
-                                value={formData.end_datetime ? formData.end_datetime.slice(0, 16) : ""}
+                                value={
+                                    formData.end_datetime
+                                        ? formData.end_datetime.slice(0, 16)
+                                        : ""
+                                }
                                 onChange={(e) =>
                                     setFormData((prev) => ({
                                         ...prev,
@@ -163,11 +174,12 @@ export default function EditTournament({ onClose, tournament }) {
 
                         <div>
                             <label className="block mb-1 font-semibold">Rules</label>
-
-                            {/* Scrollable wrapper */}
                             <div
-                                className={`max-h-[190px] overflow-y-auto pr-1 ${formData.rules.length > 3 ? "border border-gray-600 rounded-lg p-2" : ""
-                                    }`}
+                                className={`max-h-[190px] overflow-y-auto pr-1 ${
+                                    formData.rules.length > 3
+                                        ? "border border-gray-600 rounded-lg p-2"
+                                        : ""
+                                }`}
                             >
                                 {formData.rules.map((rule, index) => (
                                     <div key={index} className="flex items-center gap-2 mb-2">
@@ -180,13 +192,18 @@ export default function EditTournament({ onClose, tournament }) {
                                                 setFormData({ ...formData, rules: updated });
                                             }}
                                             className="w-full px-3 py-2 rounded-lg bg-transparent border border-gray-500 focus:outline-none transition"
-                                            style={{ color: color.textColor, borderColor: color.textColor }}
+                                            style={{
+                                                color: color.textColor,
+                                                borderColor: color.textColor,
+                                            }}
                                         />
                                         {formData.rules.length > 1 && (
                                             <button
                                                 type="button"
                                                 onClick={() => {
-                                                    const updated = formData.rules.filter((_, i) => i !== index);
+                                                    const updated = formData.rules.filter(
+                                                        (_, i) => i !== index
+                                                    );
                                                     setFormData({ ...formData, rules: updated });
                                                 }}
                                                 className="px-3 py-2 bg-red-600 hover:bg-red-700 rounded text-white"
@@ -198,10 +215,11 @@ export default function EditTournament({ onClose, tournament }) {
                                 ))}
                             </div>
 
-                            {/* Add Rule Button */}
                             <button
                                 type="button"
-                                onClick={() => setFormData({ ...formData, rules: [...formData.rules, ""] })}
+                                onClick={() =>
+                                    setFormData({ ...formData, rules: [...formData.rules, ""] })
+                                }
                                 className="mt-2 px-4 py-2 rounded font-medium transition transform hover:scale-[1.05]"
                                 style={{
                                     backgroundColor: color.bgColor,
@@ -212,7 +230,34 @@ export default function EditTournament({ onClose, tournament }) {
                                 ➕ Add Rule
                             </button>
                         </div>
+                    </div>
 
+                    {/* 🆕 Room ID & Password */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label className="block mb-1 font-semibold">Room ID</label>
+                            <input
+                                type="text"
+                                name="roomID"
+                                value={formData.roomID}
+                                onChange={handleChange}
+                                placeholder="Enter room ID"
+                                className="w-full px-3 py-2 rounded-lg bg-transparent border border-gray-500 focus:outline-none transition"
+                                style={{ color: color.textColor, borderColor: color.textColor }}
+                            />
+                        </div>
+                        <div>
+                            <label className="block mb-1 font-semibold">Password</label>
+                            <input
+                                type="text"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                placeholder="Enter room password"
+                                className="w-full px-3 py-2 rounded-lg bg-transparent border border-gray-500 focus:outline-none transition"
+                                style={{ color: color.textColor, borderColor: color.textColor }}
+                            />
+                        </div>
                     </div>
 
                     {/* 🚀 Submit Button */}
@@ -226,7 +271,11 @@ export default function EditTournament({ onClose, tournament }) {
                             cursor: loading ? "not-allowed" : "pointer",
                         }}
                     >
-                        {loading ? <LoaderIcon size={5} colorClass="text-white" /> : "Update Tournament"}
+                        {loading ? (
+                            <LoaderIcon size={5} colorClass="text-white" />
+                        ) : (
+                            "Update Tournament"
+                        )}
                     </button>
                 </form>
             </div>

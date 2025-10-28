@@ -82,24 +82,31 @@ export const resendOtpAction = createAsyncThunk(
 
 export const forgotPasswordAction = createAsyncThunk(
   "auth/forgotPassword",
-  async ({ email, role }, thunkAPI) => {
+  async ({ email, mobile, role, newPassword }, thunkAPI) => {
     try {
       const response = await apiRequest({
         method: "POST",
         url: "/auth/forgot-password",
-        data: { email, role },
+        data: { email, mobile, role, newPassword },
       });
 
-      if (!response || !response.success) {
-        return thunkAPI.rejectWithValue(response?.message);
+      // ✅ Basic response validation
+      if (!response || response.error) {
+        return thunkAPI.rejectWithValue(
+          response?.message || "Password reset failed"
+        );
       }
 
-      Toast.success(response.message || "Reset link sent to your email");
+      // ✅ Show success message
+      Toast.success(response.message || "Password updated successfully!");
       return response;
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || error.message || "Something went wrong";
-      if (errorMessage) Toast.error(errorMessage);
+        error.response?.data?.message ||
+        error.message ||
+        "Something went wrong while updating your password";
+
+      Toast.error(errorMessage);
       return thunkAPI.rejectWithValue(errorMessage);
     }
   }

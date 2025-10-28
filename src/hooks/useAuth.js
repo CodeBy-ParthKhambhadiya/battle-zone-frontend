@@ -29,8 +29,8 @@ const useAuth = () => {
   };
 
   // Forgot password
-  const forgotPassword = async ({ email, role }) => {
-    return await dispatch(forgotPasswordAction({ email, role }));
+  const forgotPassword = async ({ email, mobile, role, newPassword }) => {
+    return await dispatch(forgotPasswordAction({ email, mobile, role, newPassword }));
   };
 
   // Login

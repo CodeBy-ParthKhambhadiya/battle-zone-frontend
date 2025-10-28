@@ -206,7 +206,6 @@ export const deleteTournamentAction = createAsyncThunk(
   async ({ tournamentId }, thunkAPI) => {
     try {
       const response = await apiRequest.delete(`/tournaments/${tournamentId}`);
-      console.log("🚀 ~ Delete Tournament Response:", response);
 
       // ✅ Expecting: { status: "success", message: "...", data: {...} }
       const { status, message, data } = response.data;
@@ -236,19 +235,75 @@ export const fetchPendingPlayersByTournament = createAsyncThunk(
   async (tournamentId, thunkAPI) => {
     try {
       const response = await apiRequest.get(
-        `/tournament-join/${tournamentId}/pending`
+        `/tournament-join/pending`
       );
 
       // ✅ Expecting backend format: { success: true, count, data: [...] }
-      const pendingPlayers = response.data.data || [];
+      const ManagePendingPlayers = response.data.data || [];
 
-      return pendingPlayers;
+      return ManagePendingPlayers;
     } catch (error) {
       const message =
         error.response?.data?.message ||
         error.message ||
         "Failed to fetch pending players";
 
+      Toast.error(message);
+
+      return thunkAPI.rejectWithValue({ message });
+    }
+  }
+);
+
+export const confirmTournamentJoinAction = createAsyncThunk(
+  "tournamentJoin/confirm",
+  async ({ joinId }, thunkAPI) => {
+    try {
+      const response = await apiRequest.post(
+        "/tournament-join/confirm",
+        { joinId }
+      );
+
+      // ✅ Assuming backend returns { success: true, message: "Player confirmed", data: {...} }
+      if (response.data?.success) {
+        Toast.success(response.data.message || "Player confirmed successfully!");
+      } else {
+        Toast.error(response.data?.message || "Failed to confirm player!");
+      }
+
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Error confirming player!";
+      Toast.error(message);
+
+      return thunkAPI.rejectWithValue({ message });
+    }
+  }
+);
+
+export const deleteTournamentJoinAction = createAsyncThunk(
+  "tournamentJoin/delete",
+  async ({ joinId }, thunkAPI) => {
+
+    try {
+      const response = await apiRequest.delete("/tournament-join/cancel", {
+        data: { joinId },
+      });
+      if (response?.data?.success) {
+        Toast.success(response.data.message || "Player removed successfully!");
+      } else {
+        Toast.error(response.data?.message || "Failed to remove player!");
+      }
+
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Error removing player!";
       Toast.error(message);
 
       return thunkAPI.rejectWithValue({ message });
