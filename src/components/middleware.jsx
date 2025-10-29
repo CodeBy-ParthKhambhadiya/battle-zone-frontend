@@ -8,8 +8,13 @@ export default function AuthGuard({ children }) {
   const router = useRouter();
   const pathname = usePathname();
   const { user, fetchUser } = useAuth();
-
+useEffect(() => {
+  if (!user || Object.keys(user).length === 0) {
+    fetchUser();
+  }
+}, []);
   useEffect(() => {
+
     // Allow all /auth routes (login, signup, forgot-password)
     if (pathname.startsWith("/auth")) return;
 
@@ -33,7 +38,6 @@ export default function AuthGuard({ children }) {
 
     // ✅ Fetch user if not already loaded
     if (!parsedUser && token) {
-      fetchUser(); // Fetch from API
       return;
     }
 
