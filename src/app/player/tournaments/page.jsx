@@ -50,16 +50,29 @@ export default function TournamentsPage() {
         setExpanded(expanded === id ? null : id);
     };
 
+    // useEffect(() => {
+    //     if (Array.isArray(tournaments) && tournaments.length) {
+    //         const colors = {};
+    //         tournaments.forEach((t) => {
+    //             const color = getRandomColor();
+    //             colors[t._id] = color || { bgColor: "bg-blue-500", textColor: "text-white" };
+    //         });
+    //         setTournamentColors(colors);
+    //     }
+    // }, [tournaments]);
     useEffect(() => {
         if (Array.isArray(tournaments) && tournaments.length) {
             const colors = {};
             tournaments.forEach((t) => {
-                const color = getRandomColor();
-                colors[t._id] = color || { bgColor: "bg-blue-500", textColor: "text-white" };
+                colors[t._id] = {
+                    bgColor: "#0D1117",  // dark background
+                    textColor: "#00E5FF" // glowing cyan text
+                };
             });
             setTournamentColors(colors);
         }
     }, [tournaments]);
+
 
     const handleJoin = async (tournamentId, playerId) => {
         setJoiningTournamentId(tournamentId); // ✅ mark this tournament as joining
@@ -101,9 +114,12 @@ export default function TournamentsPage() {
         <div className="p-4 sm:p-6">
             {/* Header */}
             <div className="flex items-center gap-2 mb-4 sm:mb-6">
-                <Trophy className="text-yellow-500" size={24} />
-                <h1 className="text-xl sm:text-2xl font-bold">All Tournaments</h1>
+                <Trophy className="text-[#00E5FF]" size={24} />
+                <h1 className="text-xl sm:text-2xl font-bold text-[#00E5FF]">
+                    All Tournaments
+                </h1>
             </div>
+
 
             {loading && sortedTournaments.length === 0 ? (
                 <div className="flex justify-center items-center min-h-[60vh]">
@@ -176,20 +192,20 @@ export default function TournamentsPage() {
 
                         if (t.status === "CANCELLED") {
                             statusLabel = "CANCELLED";
-                            statusColor = "bg-red-700 text-white";
+                            statusColor = "border border-red-500 text-red-400 bg-[#0D1117]";
                         } else if (now < startTime) {
                             statusLabel = "UPCOMING";
-                            statusColor = "bg-blue-700 text-white";
+                            statusColor = "border border-[#00E5FF] text-[#00E5FF] bg-[#0D1117]";
                         } else if (now >= startTime && now <= endTime) {
                             statusLabel = "ONGOING";
-                            statusColor = "bg-green-700 text-white";
+                            statusColor = "border border-green-400 text-green-400 bg-[#0D1117]";
                         } else if (now > endTime) {
                             statusLabel = "COMPLETED";
-                            statusColor = "bg-gray-700 text-white";
+                            statusColor = "border border-gray-500 text-gray-400 bg-[#0D1117] ";
                         } else {
                             // Fallback
                             statusLabel = "UPCOMING";
-                            statusColor = "bg-blue-700 text-white";
+                            statusColor = "border border-[#00E5FF] text-[#00E5FF] bg-[#0D1117]";
                         }
 
 
@@ -230,36 +246,62 @@ export default function TournamentsPage() {
                                 style={{ backgroundColor: bgColor, color: textColor }}
                             >
                                 <div className="p-4 rounded-lg shadow-md w-full">
-                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2 sm:gap-0">
-                                        <h2 className="font-bold text-lg sm:text-xl">{t.name}</h2>
+                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2 sm:gap-0 text-[#00E5FF]">
+                                        <h2
+                                            className="font-bold text-lg sm:text-xl"
+                                            style={{
+                                                color: "#00E5FF",
+                                            }}
+                                        >
+                                            {t.name}
+                                        </h2>
 
                                         <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
-                                            {/* Joined Players */}
+                                            {/* Joined Players + Timer */}
                                             <div className="flex flex-col items-end sm:items-center gap-0.5">
                                                 {statusLabel === "UPCOMING" && (
-                                                    <span className="text-[10px] sm:text-xs font-medium text-gray-700">
+                                                    <span
+                                                        className="text-[10px] sm:text-xs font-medium"
+                                                        style={{
+                                                            color: "#00E5FF",
+                                                        }}
+                                                    >
                                                         ⏳ Starts in {getTimeLeft(t.start_datetime) || "00:00:00"}
                                                     </span>
                                                 )}
                                             </div>
-                                            <p className="text-xs sm:text-sm text-gray-600 font-medium">
+
+                                            <p
+                                                className="text-xs sm:text-sm font-medium"
+                                                style={{
+                                                    color: "#00E5FF",
+                                                }}
+                                            >
                                                 {t.joinedPlayers}/{t.max_players} joined
                                             </p>
 
-                                            {/* Status */}
-                                            <span className={`px-2 py-1 rounded-full text-xs sm:text-sm font-semibold ${statusColor}`}>
+                                            {/* Status Badge */}
+                                            <span
+                                                className={`px-2 py-1 rounded-full text-xs sm:text-sm font-semibold ${statusColor}`}
+
+                                            >
                                                 {statusLabel}
                                             </span>
                                         </div>
                                     </div>
 
 
-                                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-3 overflow-hidden">
+                                    <div className="w-full bg-[#0D1117] rounded-full h-2.5 mb-3 overflow-hidden border border-[#00E5FF]">
                                         <div
-                                            className="bg-green-500 h-2.5 rounded-full transition-all duration-500"
-                                            style={{ width: `${(t.joinedPlayers / t.max_players) * 100}%` }}
+                                            className="h-2.5 rounded-full transition-all duration-500"
+                                            style={{
+                                                width: `${(t.joinedPlayers / t.max_players) * 100}%`,
+                                                backgroundColor: "#00E5FF",
+                                                //   boxShadow: "0 0 10px #00E5FF, 0 0 20px #00E5FF",
+                                            }}
                                         ></div>
                                     </div>
+
 
                                     <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2">
                                         <p className="text-xs sm:text-sm">
@@ -289,13 +331,33 @@ export default function TournamentsPage() {
                                                             isJoining ||
                                                             buttonDisabled
                                                         }
-                                                        className={`bg-blue-600 text-white px-3 py-1 rounded text-xs sm:text-sm hover:bg-blue-700 transition ${joinedRecord?.status === "confirmed" ||
+                                                        className={`px-3 py-1 rounded text-xs sm:text-sm transition border ${joinedRecord?.status === "confirmed" ||
                                                             joinedRecord?.status === "pending" ||
                                                             isJoining ||
                                                             buttonDisabled
-                                                            ? "opacity-50 cursor-not-allowed"
-                                                            : ""
+                                                            ? "cursor-not-allowed opacity-70"
+                                                            : "hover:opacity-90"
                                                             }`}
+                                                        style={{
+                                                            backgroundColor:
+                                                                joinedRecord?.status === "confirmed"
+                                                                    ? "#0D1117"
+                                                                    : joinedRecord?.status === "pending"
+                                                                        ? "#1C1F26"
+                                                                        : "#0D1117",
+                                                            color:
+                                                                joinedRecord?.status === "confirmed"
+                                                                    ? "#00E5FF"
+                                                                    : joinedRecord?.status === "pending"
+                                                                        ? "#999"
+                                                                        : "#00E5FF",
+                                                            borderColor:
+                                                                joinedRecord?.status === "confirmed"
+                                                                    ? "#00E5FF"
+                                                                    : joinedRecord?.status === "pending"
+                                                                        ? "#555"
+                                                                        : "#00E5FF",
+                                                        }}
                                                     >
                                                         {joinedRecord?.status === "pending"
                                                             ? "Pending"
@@ -306,6 +368,8 @@ export default function TournamentsPage() {
                                                                     : "Pre-Join"}
                                                     </button>
 
+
+
                                                     {/* Extra Cancel button if pending */}
                                                     {joinedRecord?.status === "pending" && (
                                                         <button
@@ -315,14 +379,25 @@ export default function TournamentsPage() {
                                                                 setShowCancelModal(true);
                                                             }}
                                                             disabled={isCancelling}
-                                                            className={`px-3 py-1 rounded cursor-pointer text-xs sm:text-sm transition ${isCancelling
-                                                                ? "bg-gray-400 cursor-not-allowed"
-                                                                : "bg-red-500 hover:bg-red-600 text-white"
+                                                            className={`px-3 py-1 rounded cursor-pointer text-xs sm:text-sm transition border ${isCancelling
+                                                                ? "cursor-not-allowed opacity-70"
+                                                                : "hover:opacity-90"
                                                                 }`}
+                                                            style={{
+                                                                backgroundColor: isCancelling ? "#1C1F26" : "#0D1117",
+                                                                color: isCancelling ? "#999" : "#00E5FF",
+                                                                borderColor: isCancelling ? "#555" : "#00E5FF",
+                                                            }}
                                                         >
-                                                            {isCancelling ? <LoaderIcon className="w-4 h-4 inline-block animate-spin" /> : "Cancel"}
+                                                            {isCancelling ? (
+                                                                <LoaderIcon className="w-4 h-4 inline-block animate-spin" />
+                                                            ) : (
+                                                                "Cancel"
+                                                            )}
                                                         </button>
                                                     )}
+
+
                                                 </div>
                                             ) : null}
 
@@ -330,10 +405,18 @@ export default function TournamentsPage() {
 
                                             <button
                                                 onClick={() => toggleExpand(t._id)}
-                                                className="p-1 rounded transition btn-dark-shadow cursor-pointer "
+                                                className="p-1 rounded transition cursor-pointer border hover:shadow-[0_0_12px_#00E5FF]"
+                                                style={{
+                                                    color: "#00E5FF",
+                                                    borderColor: "#00E5FF",
+                                                    backgroundColor: "#0D1117",
+                                                    boxShadow: "0 0 6px #00E5FF", // subtle cyan glow around the button
+                                                    textShadow: "0 0 8px #00E5FF", // glowing effect on icon
+                                                }}
                                             >
                                                 {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                             </button>
+
 
                                         </div>
                                     </div>
@@ -359,16 +442,30 @@ export default function TournamentsPage() {
                                                     <button
                                                         key={tab.key}
                                                         onClick={() => setActiveSection(tab.key)}
-                                                        className={`px-3 py-1.5 rounded-md font-semibold transition-all duration-200 cursor-pointer tab-dark-shadow
+                                                        className={`px-3 py-1.5 rounded-md transition-all duration-300 cursor-pointer
                                                             ${activeSection === tab.key
-                                                                ? "shadow-md border border-gray-600"
-                                                                : "bg-transparent"
+                                                                ? "bg-[#0D1117] text-[#00E5FF] border border-[#00E5FF]"
+                                                                : " border border-00E5FF hover:text-[#00E5FF] hover:border-[#00E5FF]"
                                                             }`}
+                                                        style={{
+                                                            boxShadow:
+                                                                activeSection === tab.key
+                                                                    ? "0 0 10px #00E5FF"
+                                                                    : "0 0 6px rgba(0, 0, 0, 0.5)",
+                                                            textShadow:
+                                                                activeSection === tab.key
+                                                                    ? "0 0 8px #00E5FF"
+                                                                    : "none",
+                                                            backgroundColor: activeSection === tab.key ? "#0D1117" : "transparent",
+                                                            transition: "all 0.3s ease-in-out",
+                                                        }}
                                                     >
                                                         {tab.label}
                                                     </button>
+
                                                 ))}
                                             </div>
+
 
 
                                             {/* Leaderboard / Prize Distribution */}

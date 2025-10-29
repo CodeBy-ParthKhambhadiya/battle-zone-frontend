@@ -49,17 +49,28 @@ export default function JoinedPage() {
         setExpanded(expanded === id ? null : id);
     };
 
+    // useEffect(() => {
+    //     if (Array.isArray(tournaments) && tournaments.length) {
+    //         const colors = {};
+    //         tournaments.forEach((t) => {
+    //             const color = getRandomColor();
+    //             colors[t._id] = color || { bgColor: "bg-blue-500", textColor: "text-white" };
+    //         });
+    //         setTournamentColors(colors);
+    //     }
+    // }, [tournaments]);
     useEffect(() => {
         if (Array.isArray(tournaments) && tournaments.length) {
             const colors = {};
             tournaments.forEach((t) => {
-                const color = getRandomColor();
-                colors[t._id] = color || { bgColor: "bg-blue-500", textColor: "text-white" };
+                colors[t._id] = {
+                    bgColor: "#0D1117",  // dark background
+                    textColor: "#00E5FF" // glowing cyan text
+                };
             });
             setTournamentColors(colors);
         }
     }, [tournaments]);
-
     // Filter only confirmed joined tournaments
     const confirmedTournaments = sortedTournaments.filter((t) =>
         Array.isArray(joinDetails) &&
