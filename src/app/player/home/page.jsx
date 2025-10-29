@@ -10,7 +10,7 @@ export default function HomePage() {
   const headerColor = getRandomColor();
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
+    <div className="p-4 md:p-8">
       {/* Page Header */}
       <h2
         style={{

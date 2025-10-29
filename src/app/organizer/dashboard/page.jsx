@@ -28,7 +28,7 @@ export default function OrganizerDashboard() {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-8">
+    <div className="p-4 md:p-8">
       {/* Header */}
       <h2
         className="text-3xl md:text-4xl font-bold mb-6 text-center rounded-2xl p-4"
