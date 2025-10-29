@@ -45,7 +45,7 @@ export default function AccountPage() {
 
   const buttonStyle = {
     backgroundColor: textColor || "#444",
-    color: "#fff",
+    color: "#000000ff",
   };
 
   return (

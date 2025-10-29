@@ -9,13 +9,17 @@ import { getRandomColor } from "@/components/getColor";
 import { ThemeContext } from "@/context/ThemeContext";
 
 export default function ClientLayout({ children }) {
-  const [colors, setColors] = useState(null); // start as null, not default colors
+  // const [colors, setColors] = useState(null); // start as null, not default colors
 
-  useEffect(() => {
-    // Generate and set colors before rendering
-    const generatedColors = getRandomColor();
-    setColors(generatedColors);
-  }, []);
+const [colors, setColors] = useState({
+  bgColor: "#0D1117",   // dark card background
+  textColor: "#00E5FF", // glowing cyan text
+}); 
+ // useEffect(() => {
+  //   // Generate and set colors before rendering
+  //   const generatedColors = getRandomColor();
+  //   setColors(generatedColors);
+  // }, []);
 
   // 💡 Prevent rendering until colors are ready
   if (!colors) {

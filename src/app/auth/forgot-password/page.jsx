@@ -5,7 +5,7 @@ import useAuth from "@/hooks/useAuth";
 import LoaderIcon from "@/components/LoadingButton";
 import Link from "next/link";
 import { useTheme } from "@/context/ThemeContext";
-import { ChevronDown, Eye, EyeOff } from "lucide-react";
+import { ChevronDown, Eye, EyeOff, Loader } from "lucide-react";
 
 export default function ForgotPasswordPage() {
   const { bgColor, textColor } = useTheme() || {};

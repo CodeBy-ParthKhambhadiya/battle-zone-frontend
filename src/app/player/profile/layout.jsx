@@ -9,13 +9,15 @@ import { getRandomColor } from "@/components/getColor";
 export default function ProfileLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [colors, setColors] = useState(null);
-
-  useEffect(() => {
-    // Generate and set colors when component mounts
-    const generatedColors = getRandomColor();
-    setColors(generatedColors);
-  }, []);
+const [colors, setColors] = useState({
+  bgColor: "#0D1117",   // dark card background
+  textColor: "#00E5FF", // glowing cyan text
+});
+  // useEffect(() => {
+  //   // Generate and set colors when component mounts
+  //   const generatedColors = getRandomColor();
+  //   setColors(generatedColors);
+  // }, []);
 
   const tabs = [
     { id: "update-user", label: "Profile", icon: User },

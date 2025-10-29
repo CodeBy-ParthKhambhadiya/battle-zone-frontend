@@ -117,12 +117,12 @@ export default function ProfilePage() {
 
   const buttonStyle = {
     backgroundColor: textColor || "#444",
-    color: "#fff",
+    color: "#000000ff",
   };
 
   const logoutStyle = {
     backgroundColor: "#dc2626", // red
-    color: "#fff",
+    color: "#000000ff",
   };
 
   return (

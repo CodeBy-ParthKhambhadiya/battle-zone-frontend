@@ -10,52 +10,54 @@ export default function AuthGuard({ children }) {
   const { user, fetchUser } = useAuth();
 
   useEffect(() => {
-    fetchUser();
-    // ✅ Allow all routes that start with /auth (public routes)
-    if (pathname.startsWith("/auth")) {
-      return; // Skip all checks for auth pages
-    }
+    // Allow all /auth routes (login, signup, forgot-password)
+    if (pathname.startsWith("/auth")) return;
 
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
 
     // Parse user safely
-    let user = null;
+    let parsedUser = null;
     try {
-      user = storedUser ? JSON.parse(storedUser) : null;
+      parsedUser = storedUser ? JSON.parse(storedUser) : null;
     } catch (err) {
       console.error("❌ Failed to parse user from localStorage:", err);
       localStorage.removeItem("user");
     }
 
-
-    // 🚫 If no token or user → redirect to login
-    if (!token || !user || !user.role) {
+    // 🚫 If no token, redirect to login
+    if (!token) {
       router.replace("/auth/login");
       return;
     }
 
-    const role = user.role;
+    // ✅ Fetch user if not already loaded
+    if (!parsedUser && token) {
+      fetchUser(); // Fetch from API
+      return;
+    }
 
     // ✅ Role-based route access
-    if (role === "ORGANIZER") {
-      if (!pathname.startsWith("/organizer")) {
-        router.replace("/organizer/dashboard");
-        return;
-      }
-    } else if (role === "PLAYER") {
-      if (!pathname.startsWith("/player")) {
-        router.replace("/player/home");
-        return;
-      }
-    } else {
-      // 🚫 Unknown role → force logout
+    const role = parsedUser?.role;
+
+    if (role === "ORGANIZER" && !pathname.startsWith("/organizer")) {
+      router.replace("/organizer/dashboard");
+      return;
+    }
+
+    if (role === "PLAYER" && !pathname.startsWith("/player")) {
+      router.replace("/player/home");
+      return;
+    }
+
+    // 🚫 Unknown role → logout
+    if (!role) {
       localStorage.clear();
       router.replace("/auth/login");
       return;
     }
 
-  }, [router, pathname]);
+  }, [pathname]);
 
   return children || null;
 }

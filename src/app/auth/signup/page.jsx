@@ -127,11 +127,10 @@ export default function SignupPage() {
                 style={inputStyle("firstName")}
               />
               <p
-                className={`${fadeClass} ${
-                  errors.firstName
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 -translate-y-1"
-                }`}
+                className={`${fadeClass} ${errors.firstName
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 -translate-y-1"
+                  }`}
               >
                 {errors.firstName || ""}
               </p>
@@ -148,120 +147,121 @@ export default function SignupPage() {
                 style={inputStyle("lastName")}
               />
               <p
-                className={`${fadeClass} ${
-                  errors.lastName
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 -translate-y-1"
-                }`}
+                className={`${fadeClass} ${errors.lastName
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 -translate-y-1"
+                  }`}
               >
                 {errors.lastName || ""}
               </p>
             </div>
           </div>
-
-          {/* Email */}
-          <div className="relative">
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={form.email}
-              onChange={handleChange}
-              className="w-full p-3 rounded-md border focus:outline-none focus:ring-2 transition-all duration-200"
-              style={inputStyle("email")}
-            />
-            <p
-              className={`${fadeClass} ${
-                errors.email
+          <div className="flex gap-3">  {/* Email */}
+            <div className="relative">
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={form.email}
+                onChange={handleChange}
+                className="w-full p-3 rounded-md border focus:outline-none focus:ring-2 transition-all duration-200"
+                style={inputStyle("email")}
+              />
+              <p
+                className={`${fadeClass} ${errors.email
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 -translate-y-1"
-              }`}
-            >
-              {errors.email || ""}
-            </p>
-          </div>
+                  }`}
+              >
+                {errors.email || ""}
+              </p>
+            </div>
+
+            {/* Mobile */}
+            <div className="relative">
+              <input
+                type="tel"
+                name="mobile"
+                placeholder="Mobile Number"
+                value={form.mobile}
+                onChange={handleChange}
+                className="w-full p-3 rounded-md border focus:outline-none focus:ring-2 transition-all duration-200"
+                style={inputStyle("mobile")}
+              />
+              <p
+                className={`${fadeClass} ${errors.mobile
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 -translate-y-1"
+                  }`}
+              >
+                {errors.mobile || ""}
+              </p>
+            </div></div>
+
 
           {/* Password */}
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              placeholder="Password"
-              value={form.password}
-              onChange={handleChange}
-              className="w-full p-3 rounded-md border focus:outline-none focus:ring-2 transition-all duration-200 pr-10"
-              style={inputStyle("password")}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
-              style={{ color: textColor }}
-            >
-              {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-            </button>
-            <p
-              className={`${fadeClass} ${
-                errors.password
+          <div className="flex gap-3">
+
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={form.password}
+                onChange={handleChange}
+                className="w-full p-3 rounded-md border focus:outline-none focus:ring-2 transition-all duration-200 pr-10"
+                style={inputStyle("password")}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6"
+                style={{ color: textColor }}
+              >
+                {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+              </button>
+
+              <p
+                className={`${fadeClass} ${errors.password
                   ? "opacity-100 translate-y-0"
                   : "opacity-0 -translate-y-1"
-              }`}
-            >
-              {errors.password || ""}
-            </p>
+                  }`}
+              >
+                {errors.password || ""}
+              </p>
+            </div>
+
+            {/* Confirm Password */}
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                className="w-full p-3 rounded-md border focus:outline-none focus:ring-2 transition-all duration-200 pr-10"
+                style={inputStyle("confirmPassword")}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-6 h-6"
+                style={{ color: textColor }}
+              >
+                {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+              </button>
+
+              <p
+                className={`${fadeClass} ${errors.confirmPassword
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 -translate-y-1"
+                  }`}
+              >
+                {errors.confirmPassword || ""}
+              </p>
+            </div>
           </div>
 
-          {/* Confirm Password */}
-          <div className="relative">
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              value={form.confirmPassword}
-              onChange={handleChange}
-              className="w-full p-3 rounded-md border focus:outline-none focus:ring-2 transition-all duration-200 pr-10"
-              style={inputStyle("confirmPassword")}
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
-              style={{ color: textColor }}
-            >
-              {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-            </button>
-            <p
-              className={`${fadeClass} ${
-                errors.confirmPassword
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 -translate-y-1"
-              }`}
-            >
-              {errors.confirmPassword || ""}
-            </p>
-          </div>
-
-          {/* Mobile */}
-          <div className="relative">
-            <input
-              type="tel"
-              name="mobile"
-              placeholder="Mobile Number"
-              value={form.mobile}
-              onChange={handleChange}
-              className="w-full p-3 rounded-md border focus:outline-none focus:ring-2 transition-all duration-200"
-              style={inputStyle("mobile")}
-            />
-            <p
-              className={`${fadeClass} ${
-                errors.mobile
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 -translate-y-1"
-              }`}
-            >
-              {errors.mobile || ""}
-            </p>
-          </div>
 
           {/* Gender Buttons */}
           <div className="flex justify-between gap-3">
@@ -270,9 +270,8 @@ export default function SignupPage() {
                 key={g}
                 type="button"
                 onClick={() => setForm((p) => ({ ...p, gender: g }))}
-                className={`flex-1 py-3 rounded-md border font-semibold transition-all duration-300 ${
-                  form.gender === g ? "shadow-md scale-105" : ""
-                }`}
+                className={`flex-1 py-3 rounded-md border font-semibold transition-all duration-300 ${form.gender === g ? "shadow-md scale-105" : ""
+                  }`}
                 style={{
                   borderColor: textColor,
                   backgroundColor:
@@ -300,17 +299,15 @@ export default function SignupPage() {
               {form.role}
               <ChevronDown
                 size={20}
-                className={`transition-transform duration-300 ${
-                  dropdownOpen ? "rotate-180" : ""
-                }`}
+                className={`transition-transform duration-300 ${dropdownOpen ? "rotate-180" : ""
+                  }`}
                 style={{ color: textColor }}
               />
             </button>
 
             <ul
-              className={`absolute w-full mt-1 rounded-md overflow-hidden shadow-lg transition-all duration-300 origin-top ${
-                dropdownOpen ? "scale-y-100 opacity-100" : "scale-y-0 opacity-0"
-              }`}
+              className={`absolute w-full mt-1 rounded-md overflow-hidden shadow-lg transition-all duration-300 origin-top ${dropdownOpen ? "scale-y-100 opacity-100" : "scale-y-0 opacity-0"
+                }`}
               style={{
                 backgroundColor: bgColor,
                 border: `1px solid ${textColor}`,
@@ -354,7 +351,7 @@ export default function SignupPage() {
               cursor: loading ? "not-allowed" : "pointer",
             }}
           >
-            {loading ? <Loader className="animate-spin w-5 h-5 bgColor" />: "Sign Up"}
+            {loading ? <Loader className="animate-spin w-5 h-5 bgColor" /> : "Sign Up"}
           </button>
         </form>
 
