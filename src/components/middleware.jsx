@@ -2,12 +2,15 @@
 
 import { useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import useAuth from "@/hooks/useAuth";
 
 export default function AuthGuard({ children }) {
   const router = useRouter();
   const pathname = usePathname();
+  const { user, fetchUser } = useAuth();
 
   useEffect(() => {
+    fetchUser();
     // ✅ Allow all routes that start with /auth (public routes)
     if (pathname.startsWith("/auth")) {
       return; // Skip all checks for auth pages

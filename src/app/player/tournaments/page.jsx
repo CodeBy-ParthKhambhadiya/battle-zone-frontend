@@ -32,18 +32,18 @@ export default function TournamentsPage() {
     }, []);
 
 
-  const sortedTournaments = Array.isArray(tournaments)
-    ? [...tournaments]
-        // ✅ Filter only upcoming and ongoing tournaments
-        .filter((t) => {
-            const now = new Date();
-            const start = new Date(t.start_datetime);
-            const end = new Date(t.end_datetime);
-            return t.status !== "CANCELLED" && (now < start || (now >= start && now <= end));
-        })
-        // ✅ Sort by start date
-        .sort((a, b) => new Date(a.start_datetime) - new Date(b.start_datetime))
-    : [];
+    const sortedTournaments = Array.isArray(tournaments)
+        ? [...tournaments]
+            // ✅ Filter only upcoming and ongoing tournaments
+            .filter((t) => {
+                const now = new Date();
+                const start = new Date(t.start_datetime);
+                const end = new Date(t.end_datetime);
+                return t.status !== "CANCELLED" && (now < start || (now >= start && now <= end));
+            })
+            // ✅ Sort by start date
+            .sort((a, b) => new Date(a.start_datetime) - new Date(b.start_datetime))
+        : [];
 
 
     const toggleExpand = (id) => {
@@ -170,7 +170,7 @@ export default function TournamentsPage() {
                                 hour12: false,
                             });
 
-                  
+
                         let statusLabel = "";
                         let statusColor = "";
 
@@ -320,7 +320,7 @@ export default function TournamentsPage() {
                                                                 : "bg-red-500 hover:bg-red-600 text-white"
                                                                 }`}
                                                         >
-                                                            {isCancelling ? "Cancelling..." : "Cancel"}
+                                                            {isCancelling ? <LoaderIcon className="w-4 h-4 inline-block animate-spin" /> : "Cancel"}
                                                         </button>
                                                     )}
                                                 </div>
@@ -557,15 +557,30 @@ export default function TournamentsPage() {
                             onCancel={() => setShowConfirmModal(false)}
                             onConfirm={async () => {
                                 setShowConfirmModal(false);
-                                await handleJoin(selectedTournamentToJoin._id, user._id);
-                                setSelectedTournamentToJoin(null);
+
+                                // ✅ Safety check for missing data
+                                if (!selectedTournamentToJoin?._id) {
+                                    console.error("No tournament selected");
+                                    return;
+                                }
+                                if (!user?._id) {
+                                    console.error("User not logged in or user data missing");
+                                    return;
+                                }
+
+                                try {
+                                    await handleJoin(selectedTournamentToJoin._id, user._id);
+                                    setSelectedTournamentToJoin(null);
+                                } catch (error) {
+                                    console.error("Error joining tournament:", error);
+                                }
                             }}
                             confirmText="Confirm"
                             cancelText="Cancel"
                             colorKey={selectedTournamentToJoin?._id}
                         />
-
                     )}
+
                     {showCancelModal && selectedJoinToCancel && (
                         <ConfirmModal
                             title="Cancel Join Request"
