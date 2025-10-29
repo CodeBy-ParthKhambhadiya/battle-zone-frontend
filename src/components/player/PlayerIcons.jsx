@@ -1,4 +1,3 @@
-
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
@@ -35,8 +34,14 @@ export default function PlayerIcons() {
   ];
 
   return (
-    <footer className="w-full shadow-t pt-2">
-      <div className="flex justify-center space-x-6 pb-2">
+    <footer
+      className="w-full shadow-t py-3 md:py-4"
+      style={{
+        backgroundColor: bgColor,
+        boxShadow: `0 -2px 10px rgba(0, 229, 255, 0.15)`,
+      }}
+    >
+      <div className="flex justify-center space-x-6 pb-1">
         {tabs.map((tab) => {
           const isActive = pathname === tab.path;
           const Icon = tab.icon;
@@ -65,7 +70,6 @@ export default function PlayerIcons() {
             );
           }
 
-          // Default button for other tabs
           return (
             <button
               key={tab.name}

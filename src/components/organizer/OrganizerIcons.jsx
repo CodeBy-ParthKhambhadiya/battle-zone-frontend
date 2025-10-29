@@ -34,8 +34,15 @@ export default function OrganizerIcons() {
   ];
 
   return (
-    <footer className="w-full shadow-t pt-2">
-      <div className="flex justify-center space-x-6 pb-2">
+    <footer
+      className="w-full shadow-t py-3 md:py-4  left-0"
+      style={{
+        backgroundColor: bgColor,
+        boxShadow: `0 -2px 15px rgba(0, 229, 255, 0.15)`, // top cyan glow
+        zIndex: 50,
+      }}
+    >
+      <div className="flex justify-center items-center space-x-6 md:space-x-10">
         {tabs.map((tab) => {
           const isActive = pathname === tab.path;
           const Icon = tab.icon;
@@ -49,7 +56,7 @@ export default function OrganizerIcons() {
                 className="p-1 rounded-full transition-all duration-200 cursor-pointer flex items-center justify-center"
                 style={{
                   backgroundColor: bgColor,
-                  boxShadow: isActive ? `0 0 8px ${textColor}` : "none",
+                  boxShadow: isActive ? `0 0 10px ${textColor}` : "none",
                 }}
               >
                 {avatar ? (
@@ -58,13 +65,17 @@ export default function OrganizerIcons() {
                     alt="Organizer Avatar"
                     className="w-10 h-10 rounded-full object-cover"
                     style={{
-                      border: isActive ? `2px solid ${textColor}` : "none",
+                      border: isActive ? `2px solid ${textColor}` : "2px solid transparent",
+                      boxShadow: isActive ? `0 0 8px ${textColor}` : "none",
                     }}
                   />
                 ) : (
                   <User
                     className="w-10 h-10 transition-colors duration-200"
-                    style={{ color: textColor }}
+                    style={{
+                      color: textColor,
+                      filter: isActive ? `drop-shadow(0 0 5px ${textColor})` : "none",
+                    }}
                   />
                 )}
               </button>
@@ -79,12 +90,15 @@ export default function OrganizerIcons() {
               className="p-2 rounded-full transition-all duration-200 cursor-pointer"
               style={{
                 backgroundColor: bgColor,
-                boxShadow: isActive ? `0 0 8px ${textColor}` : "none",
+                boxShadow: isActive ? `0 0 10px ${textColor}` : "none",
               }}
             >
               <Icon
                 className="w-8 h-8 transition-colors duration-200"
-                style={{ color: textColor }}
+                style={{
+                  color: textColor,
+                  filter: isActive ? `drop-shadow(0 0 5px ${textColor})` : "none",
+                }}
               />
             </button>
           );
