@@ -117,12 +117,12 @@ export default function ProfilePage() {
 
   const buttonStyle = {
     backgroundColor: textColor || "#444",
-    color: "#fff",
+    color: "#000000ff",
   };
 
   const logoutStyle = {
     backgroundColor: "#dc2626", // red
-    color: "#fff",
+    color: "#000000ff",
   };
 
   return (
@@ -217,66 +217,29 @@ export default function ProfilePage() {
                 className="w-full p-2 rounded-md focus:outline-none focus:ring-2 transition-all"
                 style={{
                   ...inputStyle,
-
+                 
                 }}
               />
             </div>
           ))}
 
           {/* Gender */}
-          <div className="md:col-span-2 transition-all duration-300">
-            <label className="block mb-1 text-sm font-medium tracking-wide" style={labelStyle}>
+          <div className="md:col-span-2">
+            <label className="block mb-1 text-sm" style={labelStyle}>
               Gender
             </label>
-
             <select
-              className="w-full p-3 rounded-md "
-              style={{
-                ...inputStyle,
-
-              }}
+              className="w-full p-2 rounded-md focus:outline-none focus:ring-2 transition-all"
+              style={inputStyle}
               value={gender}
               onChange={(e) => setGender(e.target.value)}
             >
-              <option
-                value=""
-                style={{
-                  backgroundColor: bgColor,
-                  color: textColor,
-                }}
-              >
-                Select Gender
-              </option>
-              <option
-                value="MALE"
-                style={{
-                  backgroundColor: bgColor,
-                  color: textColor,
-                }}
-              >
-                Male
-              </option>
-              <option
-                value="FEMALE"
-                style={{
-                  backgroundColor: bgColor,
-                  color: textColor,
-                }}
-              >
-                Female
-              </option>
-              <option
-                value="OTHER"
-                style={{
-                  backgroundColor: bgColor,
-                  color: textColor,
-                }}
-              >
-                Other
-              </option>
+              <option value="">Select Gender</option>
+              <option value="MALE">Male</option>
+              <option value="FEMALE">Female</option>
+              <option value="OTHER">Other</option>
             </select>
           </div>
-
 
           {/* Bio */}
           <div className="md:col-span-2">

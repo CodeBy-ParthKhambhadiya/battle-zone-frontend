@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function ProfileRootRedirect() {
-  redirect("/organizer/profile/update-user");
+  redirect("/player/profile/update-user");
 }

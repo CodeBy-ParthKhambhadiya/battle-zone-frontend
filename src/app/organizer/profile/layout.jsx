@@ -9,13 +9,15 @@ import { getRandomColor } from "@/components/getColor";
 export default function ProfileLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [colors, setColors] = useState(null);
-
-  useEffect(() => {
-    // Generate and set colors when component mounts
-    const generatedColors = getRandomColor();
-    setColors(generatedColors);
-  }, []);
+const [colors, setColors] = useState({
+  bgColor: "#0D1117",   // dark card background
+  textColor: "#00E5FF", // glowing cyan text
+});
+  // useEffect(() => {
+  //   // Generate and set colors when component mounts
+  //   const generatedColors = getRandomColor();
+  //   setColors(generatedColors);
+  // }, []);
 
   const tabs = [
     { id: "update-user", label: "Profile", icon: User },
@@ -50,7 +52,7 @@ export default function ProfileLayout({ children }) {
             return (
               <button
                 key={id}
-                onClick={() => router.push(`/organizer/profile/${id}`)}
+                onClick={() => router.push(`/player/profile/${id}`)}
                 className="flex-1 md:flex-none flex items-center justify-center md:justify-start gap-2 px-4 py-2 md:mb-2 rounded-md font-medium transition-all duration-300 hover:scale-105 cursor-pointer"
                 style={{
                   backgroundColor: isActive ? colors.bgColor : "transparent", // 🌈 Use theme bg color on active
