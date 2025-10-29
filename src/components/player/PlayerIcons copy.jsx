@@ -1,18 +1,14 @@
-
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
 import { Swords, Home, Trophy, MessageSquareText, User } from "lucide-react";
 
 export default function PlayerIcons() {
   const router = useRouter();
   const pathname = usePathname();
   const [avatar, setAvatar] = useState(null);
-
-  // Custom colors
-  const bgColor = "#0D1117";   // dark card background
-  const textColor = "#00E5FF"; // glowing cyan text
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -35,31 +31,31 @@ export default function PlayerIcons() {
   ];
 
   return (
-    <footer className="w-full shadow-t pt-2">
-      <div className="flex justify-center space-x-6 pb-2">
+    <footer className="w-full shadow-t pt-2 ">
+      <div className="flex justify-center space-x-6">
         {tabs.map((tab) => {
           const isActive = pathname === tab.path;
-          const Icon = tab.icon;
 
           if (tab.name === "Profile") {
+            // Special styling for Profile button
             return (
               <button
                 key={tab.name}
                 onClick={() => router.push(tab.path)}
-                className="p-1 rounded-full transition-all duration-200 cursor-pointer flex items-center justify-center"
-                style={{ backgroundColor: bgColor }}
+                className="p-1 rounded-full transition-all duration-200 cursor-pointer
+                  flex items-center justify-center
+                 
+                  "
               >
                 {avatar ? (
                   <img
                     src={avatar}
                     alt="User Avatar"
-                    className="w-10 h-10 rounded-full object-cover"
+                    className={`w-10 h-10 rounded-full object-cover transition-all duration-200
+                     `}
                   />
                 ) : (
-                  <User
-                    className="w-10 h-10 transition-colors duration-200"
-                    style={{ color: textColor }}
-                  />
+                  <User className={`w-10 h-10 text-gray-600 ${isActive ? "text-blue-600" : ""}`} />
                 )}
               </button>
             );
@@ -70,15 +66,11 @@ export default function PlayerIcons() {
             <button
               key={tab.name}
               onClick={() => router.push(tab.path)}
-              className="p-2 rounded-full transition-all duration-200 cursor-pointer"
-              style={{
-                backgroundColor: bgColor,
-                boxShadow: isActive ? `0 0 8px ${textColor}` : "none",
-              }}
+              className={`p-2 rounded-full transition-colors duration-200 cursor-pointer
+                ${isActive ? "bg-blue-100" : "hover:bg-gray-100"}`}
             >
-              <Icon
-                className="w-8 h-8 transition-colors duration-200"
-                style={{ color: textColor }}
+              <tab.icon
+                className={`w-8 h-8 ${isActive ? "text-blue-600" : "text-gray-600"} transition-colors duration-200`}
               />
             </button>
           );
@@ -87,3 +79,4 @@ export default function PlayerIcons() {
     </footer>
   );
 }
+

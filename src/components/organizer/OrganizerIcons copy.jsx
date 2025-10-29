@@ -1,18 +1,13 @@
-
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Swords, Home, Trophy, MessageSquareText, User } from "lucide-react";
+import { LayoutDashboard, Trophy, Users, MessageSquareText, User } from "lucide-react";
 
-export default function PlayerIcons() {
+export default function OrganizerIcons() {
   const router = useRouter();
   const pathname = usePathname();
   const [avatar, setAvatar] = useState(null);
-
-  // Custom colors
-  const bgColor = "#0D1117";   // dark card background
-  const textColor = "#00E5FF"; // glowing cyan text
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -27,58 +22,59 @@ export default function PlayerIcons() {
   }, []);
 
   const tabs = [
-    { name: "Home", icon: Home, path: "/player/home" },
-    { name: "Tournaments", icon: Trophy, path: "/player/tournaments" },
-    { name: "Joined", icon: Swords, path: "/player/joined" },
-    { name: "Chat", icon: MessageSquareText, path: "/player/chat" },
-    { name: "Profile", icon: User, path: "/player/profile" },
+    { name: "Dashboard", icon: LayoutDashboard, path: "/organizer/dashboard" },
+    { name: "Tournaments", icon: Trophy, path: "/organizer/manage-tournament" },
+    { name: "Players", icon: Users, path: "/organizer/manage-players" },
+    { name: "Chat", icon: MessageSquareText, path: "/organizer/chat" },
+    { name: "Profile", icon: User, path: "/organizer/profile" },
   ];
 
   return (
     <footer className="w-full shadow-t pt-2">
-      <div className="flex justify-center space-x-6 pb-2">
+      <div className="flex justify-center space-x-6">
         {tabs.map((tab) => {
           const isActive = pathname === tab.path;
-          const Icon = tab.icon;
 
           if (tab.name === "Profile") {
+            // Special avatar icon for profile
             return (
               <button
                 key={tab.name}
                 onClick={() => router.push(tab.path)}
                 className="p-1 rounded-full transition-all duration-200 cursor-pointer flex items-center justify-center"
-                style={{ backgroundColor: bgColor }}
               >
                 {avatar ? (
                   <img
                     src={avatar}
-                    alt="User Avatar"
-                    className="w-10 h-10 rounded-full object-cover"
+                    alt="Organizer Avatar"
+                    className={`w-10 h-10 rounded-full object-cover transition-all duration-200 ${
+                      isActive ? "ring-2 ring-blue-500" : ""
+                    }`}
                   />
                 ) : (
                   <User
-                    className="w-10 h-10 transition-colors duration-200"
-                    style={{ color: textColor }}
+                    className={`w-10 h-10 ${
+                      isActive ? "text-blue-600" : "text-gray-600"
+                    } transition-colors duration-200`}
                   />
                 )}
               </button>
             );
           }
 
-          // Default button for other tabs
+          // Default icon buttons
           return (
             <button
               key={tab.name}
               onClick={() => router.push(tab.path)}
-              className="p-2 rounded-full transition-all duration-200 cursor-pointer"
-              style={{
-                backgroundColor: bgColor,
-                boxShadow: isActive ? `0 0 8px ${textColor}` : "none",
-              }}
+              className={`p-2 rounded-full transition-colors duration-200 cursor-pointer ${
+                isActive ? "bg-blue-100" : "hover:bg-gray-100"
+              }`}
             >
-              <Icon
-                className="w-8 h-8 transition-colors duration-200"
-                style={{ color: textColor }}
+              <tab.icon
+                className={`w-8 h-8 ${
+                  isActive ? "text-blue-600" : "text-gray-600"
+                } transition-colors duration-200`}
               />
             </button>
           );

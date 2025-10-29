@@ -9,6 +9,10 @@ export default function OrganizerIcons() {
   const pathname = usePathname();
   const [avatar, setAvatar] = useState(null);
 
+  // Custom color theme
+  const bgColor = "#0D1117";   // dark background
+  const textColor = "#00E5FF"; // glowing cyan
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -31,50 +35,56 @@ export default function OrganizerIcons() {
 
   return (
     <footer className="w-full shadow-t pt-2">
-      <div className="flex justify-center space-x-6">
+      <div className="flex justify-center space-x-6 pb-2">
         {tabs.map((tab) => {
           const isActive = pathname === tab.path;
+          const Icon = tab.icon;
 
           if (tab.name === "Profile") {
-            // Special avatar icon for profile
+            // Profile Avatar Button
             return (
               <button
                 key={tab.name}
                 onClick={() => router.push(tab.path)}
                 className="p-1 rounded-full transition-all duration-200 cursor-pointer flex items-center justify-center"
+                style={{
+                  backgroundColor: bgColor,
+                  boxShadow: isActive ? `0 0 8px ${textColor}` : "none",
+                }}
               >
                 {avatar ? (
                   <img
                     src={avatar}
                     alt="Organizer Avatar"
-                    className={`w-10 h-10 rounded-full object-cover transition-all duration-200 ${
-                      isActive ? "ring-2 ring-blue-500" : ""
-                    }`}
+                    className="w-10 h-10 rounded-full object-cover"
+                    style={{
+                      border: isActive ? `2px solid ${textColor}` : "none",
+                    }}
                   />
                 ) : (
                   <User
-                    className={`w-10 h-10 ${
-                      isActive ? "text-blue-600" : "text-gray-600"
-                    } transition-colors duration-200`}
+                    className="w-10 h-10 transition-colors duration-200"
+                    style={{ color: textColor }}
                   />
                 )}
               </button>
             );
           }
 
-          // Default icon buttons
+          // Other icons
           return (
             <button
               key={tab.name}
               onClick={() => router.push(tab.path)}
-              className={`p-2 rounded-full transition-colors duration-200 cursor-pointer ${
-                isActive ? "bg-blue-100" : "hover:bg-gray-100"
-              }`}
+              className="p-2 rounded-full transition-all duration-200 cursor-pointer"
+              style={{
+                backgroundColor: bgColor,
+                boxShadow: isActive ? `0 0 8px ${textColor}` : "none",
+              }}
             >
-              <tab.icon
-                className={`w-8 h-8 ${
-                  isActive ? "text-blue-600" : "text-gray-600"
-                } transition-colors duration-200`}
+              <Icon
+                className="w-8 h-8 transition-colors duration-200"
+                style={{ color: textColor }}
               />
             </button>
           );

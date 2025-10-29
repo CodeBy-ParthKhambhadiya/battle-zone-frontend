@@ -8,11 +8,11 @@ export default function OrganizerLayout({ children }) {
     return (
         <div className="flex flex-col min-h-screen bg-black">
             <OrganizerHeader />
+            <OrganizerIcons />
 
             <div className="flex-grow overflow-y-auto scrollbar-custom">
                 {children}
             </div>
-            <OrganizerIcons />
             {/* <OrganizerFooter /> */}
         </div>
     );
