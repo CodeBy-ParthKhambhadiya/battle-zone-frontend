@@ -650,7 +650,72 @@ export default function TournamentsPage() {
                     {showConfirmModal && selectedTournamentToJoin && (
                         <ConfirmModal
                             title="Confirm Pre-Join"
-                            message={`Are you sure you want to pre-join "${selectedTournamentToJoin.name}"?`}
+message={
+  <div className="space-y-3 text-sm sm:text-base text-gray-200">
+    <p className="leading-relaxed">
+      Are you sure you want to pre-join{" "}
+      <span className="font-semibold text-cyan-400">
+        "{selectedTournamentToJoin.name}"
+      </span>
+      ?
+    </p>
+
+    <div className="mt-2 p-3 sm:p-4 border border-cyan-800/50 rounded-xl bg-[#0D1117] shadow-md shadow-cyan-900/30">
+      {/* Payment Instructions */}
+      <p className="text-cyan-400 font-semibold mb-2">
+        💸 Please send the entry fee before confirming:
+      </p>
+
+      {/* Account Holder */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-gray-700/60 pb-2 mb-2">
+        <p className="font-medium">
+          <span className="text-gray-400">Account Holder:</span>{" "}
+          <span className="text-white">
+            {selectedTournamentToJoin.organizer_id?.accountHolderName || "N/A"}
+          </span>
+        </p>
+      </div>
+
+      {/* UPI ID */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-700/60 pb-2 mb-2">
+        <p className="font-medium">
+          <span className="text-gray-400">UPI ID:</span>{" "}
+          <span className="text-white">
+            {selectedTournamentToJoin.organizer_id?.upiId || "N/A"}
+          </span>
+        </p>
+        {selectedTournamentToJoin.organizer_id?.upiId && (
+          <button
+            onClick={() =>
+              handleCopy(selectedTournamentToJoin.organizer_id.upiId)
+            }
+            className="flex items-center gap-1 text-cyan-400 hover:text-cyan-300 transition text-sm font-medium"
+            title={copied ? 'Copied!' : 'Copy UPI ID'}
+          >
+            <Copy size={14} />
+            {copied ? 'Copied' : 'Copy'}
+          </button>
+        )}
+      </div>
+
+      {/* Entry Fee */}
+      <div className="flex items-center justify-between">
+        <p className="font-medium">
+          <span className="text-gray-400">Entry Fee :</span>{" "}
+          <span className="text-cyan-400 font-semibold">
+            ₹{selectedTournamentToJoin.entry_fee}
+          </span>
+        </p>
+      </div>
+    </div>
+
+    <p className="text-xs sm:text-sm text-gray-400">
+      Once payment is done, click <span className="text-cyan-400">Confirm</span> to
+      complete your pre-join request.
+    </p>
+  </div>
+}
+  
                             onCancel={() => setShowConfirmModal(false)}
                             onConfirm={async () => {
                                 setShowConfirmModal(false);

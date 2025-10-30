@@ -34,7 +34,7 @@ export default function ConfirmModal({
 
         {/* Body */}
         <div className="p-4 text-sm sm:text-base">
-          <p>{message}</p>
+<div className="text-sm sm:text-base">{message}</div>
         </div>
 
         {/* Footer / Buttons */}
