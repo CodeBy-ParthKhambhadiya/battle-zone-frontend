@@ -167,20 +167,22 @@ export default function JoinedPage() {
 
                         if (t.status === "CANCELLED") {
                             statusLabel = "CANCELLED";
-                            statusColor = "bg-red-700 text-white";
+                            statusColor = "border border-red-500 text-red-400 bg-[#0D1117]";
                         } else if (now < startTime) {
                             statusLabel = "UPCOMING";
-                            statusColor = "bg-blue-700 text-white";
+                            statusColor = "border border-[#00E5FF] text-[#00E5FF] bg-[#0D1117]";
                         } else if (now >= startTime && now <= endTime) {
                             statusLabel = "ONGOING";
-                            statusColor = "bg-green-700 text-white";
+                            statusColor = "border border-green-400 text-green-400 bg-[#0D1117]";
                         } else if (now > endTime) {
                             statusLabel = "COMPLETED";
-                            statusColor = "bg-gray-700 text-white";
+                            statusColor = "border border-gray-500 text-gray-400 bg-[#0D1117] ";
                         } else {
+                            // Fallback
                             statusLabel = "UPCOMING";
-                            statusColor = "bg-blue-700 text-white";
+                            statusColor = "border border-[#00E5FF] text-[#00E5FF] bg-[#0D1117]";
                         }
+
                         return (
                             <div
                                 key={t._id}
@@ -195,14 +197,26 @@ export default function JoinedPage() {
                                             {/* Joined Players */}
                                             <div className="flex flex-col items-end sm:items-center gap-0.5">
                                                 {statusLabel === "UPCOMING" && (
-                                                    <span className="text-[10px] sm:text-xs font-medium text-gray-700">
+                                                    <span
+                                                        className="text-[10px] sm:text-xs font-medium"
+                                                        style={{
+                                                            color: "#00E5FF",
+                                                        }}
+                                                    >
                                                         ⏳ Starts in {getTimeLeft(t.start_datetime) || "00:00:00"}
                                                     </span>
                                                 )}
                                             </div>
-                                            <p className="text-xs sm:text-sm text-gray-600 font-medium">
+
+                                            <p
+                                                className="text-xs sm:text-sm font-medium"
+                                                style={{
+                                                    color: "#00E5FF",
+                                                }}
+                                            >
                                                 {t.joinedPlayers}/{t.max_players} joined
                                             </p>
+
 
                                             {/* Status */}
                                             <span
@@ -214,12 +228,17 @@ export default function JoinedPage() {
                                     </div>
 
                                     {/* Progress bar */}
-                                    <div className="w-full bg-gray-200 rounded-full h-2.5 mb-3 overflow-hidden">
+                                    <div className="w-full bg-[#0D1117] rounded-full h-2.5 mb-3 overflow-hidden border border-[#00E5FF]">
                                         <div
-                                            className="bg-green-500 h-2.5 rounded-full transition-all duration-500"
-                                            style={{ width: `${(t.joinedPlayers / t.max_players) * 100}%` }}
+                                            className="h-2.5 rounded-full transition-all duration-500"
+                                            style={{
+                                                width: `${(t.joinedPlayers / t.max_players) * 100}%`,
+                                                backgroundColor: "#00E5FF",
+                                                //   boxShadow: "0 0 10px #00E5FF, 0 0 20px #00E5FF",
+                                            }}
                                         ></div>
                                     </div>
+
 
                                     {/* Entry Fee, Prize Pool, Room Info */}
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -227,42 +246,47 @@ export default function JoinedPage() {
                                             <p className="text-xs sm:text-sm">
                                                 <span className="font-semibold">Entry Fee:</span> ₹{t.entry_fee}
                                             </p>
-
-                                            <p className="text-xs sm:text-sm">
-                                                <span className="font-semibold">Prize Pool:</span> ₹{firstPrize} / ₹{secondPrize} / ₹{thirdPrize} (1st / 2nd / 3rd)
-                                            </p>
                                         </div>
 
 
                                     </div>
 
-                                    {/* Joined button & Expand toggle */}
                                     <div
                                         className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-3 p-3 rounded-lg"
                                     >
                                         {/* 🎮 Room Info Section */}
                                         {(t.roomID || t.password) && (
-                                            <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
+                                            <div className="flex flex-col sm:flex-row gap-3 items-center justify-center w-full sm:w-auto">
                                                 {/* 🏠 Room ID Card */}
                                                 {t.roomID && (
                                                     <div
-                                                        className="flex items-center gap-2 px-3 py-2 rounded-lg shadow-md transition-all duration-300"
-                                                        style={{ backgroundColor: bgColor, color: textColor }}
+                                                        className="flex items-center justify-between gap-2 w-full sm:w-auto px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg shadow-md transition-all duration-300 border cursor-pointer text-[11px] sm:text-sm"
+                                                        style={{
+                                                            backgroundColor: "#0D1117",
+                                                            color: "#00E5FF",
+                                                            borderColor: "#00E5FF",
+                                                            boxShadow: "0 0 8px #00E5FF",
+                                                            textShadow: "0 0 6px #00E5FF",
+                                                        }}
                                                     >
-                                                        <p className="text-xs sm:text-sm font-medium flex items-center gap-2">
-                                                            <Home size={14} className="text-gray-700" />
+                                                        <p className="font-medium flex items-center gap-2">
+                                                            <Home size={12} className="text-[#00E5FF]" />
                                                             <span className="font-semibold">Room ID:</span> {t.roomID}
                                                         </p>
 
                                                         <button
-                                                            onClick={() =>
-                                                                handleCopyRoomIdAndPassword(t.roomID, "roomID", t._id)
-                                                            }
-                                                            className="flex items-center gap-1 px-2 py-1 text-xs sm:text-sm rounded-md border border-gray-300 hover:bg-gray-200 transition-all"
-                                                            style={{ color: textColor }}
+                                                            onClick={() => handleCopyRoomIdAndPassword(t.roomID, "roomID", t._id)}
+                                                            className="flex items-center gap-1 px-2 py-[2px] rounded-md border transition-all text-[10px] sm:text-xs"
+                                                            style={{
+                                                                color: "#00E5FF",
+                                                                borderColor: "#00E5FF",
+                                                                backgroundColor: "transparent",
+                                                                boxShadow: "0 0 4px #00E5FF",
+                                                            }}
                                                         >
-                                                            <Copy size={14} />
-                                                            {ishandleCopyRoomIdAndPassword.id === t._id && ishandleCopyRoomIdAndPassword.field === "roomID"
+                                                            <Copy size={12} />
+                                                            {ishandleCopyRoomIdAndPassword.id === t._id &&
+                                                                ishandleCopyRoomIdAndPassword.field === "roomID"
                                                                 ? "Copied!"
                                                                 : "Copy"}
                                                         </button>
@@ -272,22 +296,33 @@ export default function JoinedPage() {
                                                 {/* 🔐 Password Card */}
                                                 {t.password && (
                                                     <div
-                                                        className="flex items-center gap-2 px-3 py-2 rounded-lg shadow-md transition-all duration-300"
-                                                        style={{ backgroundColor: bgColor, color: textColor }}
+                                                        className="flex items-center justify-between gap-2 w-full sm:w-auto px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg shadow-md transition-all duration-300 border cursor-pointer text-[11px] sm:text-sm"
+                                                        style={{
+                                                            backgroundColor: "#0D1117",
+                                                            color: "#00E5FF",
+                                                            borderColor: "#00E5FF",
+                                                            boxShadow: "0 0 8px #00E5FF",
+                                                            textShadow: "0 0 6px #00E5FF",
+                                                        }}
                                                     >
-                                                        <p className="text-xs sm:text-sm font-medium flex items-center gap-2">
-                                                            <Lock size={14} className="text-gray-700" />
+                                                        <p className="font-medium flex items-center gap-2">
+                                                            <Lock size={12} className="text-[#00E5FF]" />
                                                             <span className="font-semibold">Password:</span> {t.password}
                                                         </p>
+
                                                         <button
-                                                            onClick={() =>
-                                                                handleCopyRoomIdAndPassword(t.password, "password", t._id)
-                                                            }
-                                                            className="flex items-center gap-1 px-2 py-1 text-xs sm:text-sm rounded-md border border-gray-300 hover:bg-gray-200 transition-all"
-                                                            style={{ color: textColor }}
+                                                            onClick={() => handleCopyRoomIdAndPassword(t.password, "password", t._id)}
+                                                            className="flex items-center gap-1 px-2 py-[2px] rounded-md border transition-all text-[10px] sm:text-xs"
+                                                            style={{
+                                                                color: "#00E5FF",
+                                                                borderColor: "#00E5FF",
+                                                                backgroundColor: "transparent",
+                                                                boxShadow: "0 0 4px #00E5FF",
+                                                            }}
                                                         >
-                                                            <Copy size={14} />
-                                                            {ishandleCopyRoomIdAndPassword.id === t._id && ishandleCopyRoomIdAndPassword.field === "password"
+                                                            <Copy size={12} />
+                                                            {ishandleCopyRoomIdAndPassword.id === t._id &&
+                                                                ishandleCopyRoomIdAndPassword.field === "password"
                                                                 ? "Copied!"
                                                                 : "Copy"}
                                                         </button>
@@ -297,27 +332,62 @@ export default function JoinedPage() {
                                         )}
 
                                         {/* 🎯 Action Buttons Section */}
-                                        <div className="flex items-center gap-2">
-                                            <Link href={`/player/joined/${t._id}`}>
-                                                <button className="bg-green-600 text-white px-3 py-1 cursor-pointer rounded text-xs sm:text-sm">
+                                        <div className="flex items-center justify-center gap-2 w-full sm:w-auto">
+                                            {/* 💬 Messages Button */}
+                                            <Link href={`/player/joined/${t._id}`} className="w-full sm:w-auto">
+                                                <button
+                                                    className="w-full sm:w-auto px-2 sm:px-3 py-1 sm:py-1.5 rounded text-[11px] sm:text-sm transition-all duration-300"
+                                                    style={{
+                                                        color: "#00E5FF",
+                                                        backgroundColor: "#0D1117",
+                                                        border: "1px solid #00E5FF",
+                                                        boxShadow: "0 0 6px #00E5FF",
+                                                        textShadow: "0 0 5px #00E5FF",
+                                                        width: "100%",
+                                                    }}
+                                                >
                                                     Messages
                                                 </button>
                                             </Link>
 
+                                            {/* ✅ Joined Button */}
                                             <button
                                                 disabled
-                                                className="bg-blue-600 text-white px-3 py-1 cursor-not-allowed rounded text-xs sm:text-sm"
+                                                className="w-full sm:w-auto px-2 sm:px-3 py-1 sm:py-1.5 rounded text-[11px] sm:text-sm cursor-not-allowed transition-all duration-300"
+                                                style={{
+                                                    color: "#00E5FF",
+                                                    backgroundColor: "#0D1117",
+                                                    border: "1px solid #00E5FF",
+                                                    opacity: 0.6,
+                                                    boxShadow: "0 0 4px #00E5FF inset",
+                                                    textShadow: "0 0 4px #00E5FF",
+                                                }}
                                             >
                                                 Joined
                                             </button>
 
+                                            {/* 🔽 Expand / Collapse Button */}
                                             <button
                                                 onClick={() => toggleExpand(t._id)}
-                                                className="p-1 rounded transition btn-dark-shadow cursor-pointer"
+                                                className="p-1 rounded transition cursor-pointer border"
+                                                style={{
+                                                    color: "#00E5FF",
+                                                    borderColor: "#00E5FF",
+                                                    backgroundColor: "#0D1117",
+                                                    boxShadow: "0 0 6px #00E5FF",
+                                                    textShadow: "0 0 8px #00E5FF",
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.boxShadow = "0 0 12px #00E5FF";
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.boxShadow = "0 0 6px #00E5FF";
+                                                }}
                                             >
                                                 {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                             </button>
                                         </div>
+
                                     </div>
 
                                 </div>
@@ -341,11 +411,23 @@ export default function JoinedPage() {
                                                     <button
                                                         key={tab.key}
                                                         onClick={() => setActiveSection(tab.key)}
-                                                        className={`px-3 py-1.5 rounded-md font-semibold transition-all duration-200 cursor-pointer tab-dark-shadow
+                                                        className={`px-3 py-1.5 rounded-md transition-all duration-300 cursor-pointer
                                                             ${activeSection === tab.key
-                                                                ? "shadow-md border border-gray-600"
-                                                                : "bg-transparent"
+                                                                ? "bg-[#0D1117] text-[#00E5FF] border border-[#00E5FF]"
+                                                                : " border border-00E5FF hover:text-[#00E5FF] hover:border-[#00E5FF]"
                                                             }`}
+                                                        style={{
+                                                            boxShadow:
+                                                                activeSection === tab.key
+                                                                    ? "0 0 10px #00E5FF"
+                                                                    : "0 0 6px rgba(0, 0, 0, 0.5)",
+                                                            textShadow:
+                                                                activeSection === tab.key
+                                                                    ? "0 0 8px #00E5FF"
+                                                                    : "none",
+                                                            backgroundColor: activeSection === tab.key ? "#0D1117" : "transparent",
+                                                            transition: "all 0.3s ease-in-out",
+                                                        }}
                                                     >
                                                         {tab.label}
                                                     </button>
@@ -490,43 +572,49 @@ export default function JoinedPage() {
                                                     <h3 className="text-lg font-semibold border-b pb-1 mb-2 flex items-center gap-2">
                                                         <Users className="w-5 h-5" /> Joined Players ({players.length})
                                                     </h3>
-                                                    <table
-                                                        className="min-w-full border-collapse"
-                                                        style={{
-                                                            backgroundColor: bgColor,
-                                                            color: textColor,
-                                                            border: `1px solid ${textColor}`
-                                                        }}
-                                                    >
-                                                        <thead>
-                                                            <tr>
-                                                                <th className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>#</th>
-                                                                <th className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>Avatar</th>
-                                                                <th className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>Name</th>
-                                                                <th className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>Game Username</th>
-                                                                <th className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>Game ID</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {players.map((p, index) => (
-                                                                <tr key={p._id}>
-                                                                    <td className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>{index + 1}</td>
-                                                                    <td className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>
-                                                                        <img
-                                                                            src={p.avatar || "/default-avatar.png"}
-                                                                            alt={`${p.firstName} ${p.lastName}`}
-                                                                            className="w-10 h-10 rounded-full object-cover mx-auto"
-                                                                        />
-                                                                    </td>
-                                                                    <td className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>{p.firstName} {p.lastName}</td>
-                                                                    <td className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>{p.gameUserName}</td>
-                                                                    <td className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>{p.gameId}</td>
+
+                                                    {/* 🌀 Responsive scroll wrapper */}
+                                                    <div className="overflow-x-auto">
+                                                        <table
+                                                            className="min-w-full border-collapse"
+                                                            style={{
+                                                                backgroundColor: bgColor,
+                                                                color: textColor,
+                                                                border: `1px solid ${textColor}`,
+                                                                minWidth: "600px", // ensures proper structure when scrolling
+                                                            }}
+                                                        >
+                                                            <thead>
+                                                                <tr>
+                                                                    <th className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>#</th>
+                                                                    <th className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>Avatar</th>
+                                                                    <th className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>Name</th>
+                                                                    <th className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>Game Username</th>
+                                                                    <th className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>Game ID</th>
                                                                 </tr>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
+                                                            </thead>
+                                                            <tbody>
+                                                                {players.map((p, index) => (
+                                                                    <tr key={p._id}>
+                                                                        <td className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>{index + 1}</td>
+                                                                        <td className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>
+                                                                            <img
+                                                                                src={p.avatar || "/default-avatar.png"}
+                                                                                alt={`${p.firstName} ${p.lastName}`}
+                                                                                className="w-10 h-10 rounded-full object-cover mx-auto"
+                                                                            />
+                                                                        </td>
+                                                                        <td className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>{p.firstName} {p.lastName}</td>
+                                                                        <td className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>{p.gameUserName}</td>
+                                                                        <td className="px-4 py-2 text-center" style={{ border: `1px solid ${textColor}` }}>{p.gameId}</td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             )}
+
 
                                         </div>
                                     )}
