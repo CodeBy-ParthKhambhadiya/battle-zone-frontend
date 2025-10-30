@@ -205,7 +205,7 @@ export default function JoinedPage() {
                                                             color: "#00E5FF",
                                                         }}
                                                     >
-                                                        ⏳ Starts in {getTimeLeft(t.start_datetime) || "00:00:00"}
+                                                        Starts in {getTimeLeft(t.start_datetime) || "00:00:00"}
                                                     </span>
                                                 )}
                                             </div>

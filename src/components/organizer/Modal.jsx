@@ -19,7 +19,7 @@ export default function Modal({ open, onClose, children }) {
         </button>
 
         {/* Modal Content */}
-        <div className="p-4">{children}</div>
+        <div className="">{children}</div>
       </div>
     </div>
   );

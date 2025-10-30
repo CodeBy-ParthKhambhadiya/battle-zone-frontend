@@ -7,11 +7,11 @@ import LoaderIcon from "../LoadingButton";
 
 export default function EditTournament({ onClose, tournament }) {
     const { updateTournament, loading } = useTournament();
-    const [color, setColor] = useState({ bgColor: "#1f2937", textColor: "#fff" });
+    const [color, setColor] = useState({ bgColor: "#0D1117", textColor: "#00E5FF" });
 
-    useEffect(() => {
-        setColor(getRandomColor());
-    }, []);
+    // useEffect(() => {
+    //     setColor(getRandomColor());
+    // }, []);
 
     // 🧩 Initialize form
     const [formData, setFormData] = useState({
@@ -51,11 +51,15 @@ export default function EditTournament({ onClose, tournament }) {
     return (
         <div className="flex justify-center items-center w-full">
             <div
-                className="w-full max-w-3xl p-6 rounded-2xl shadow-2xl max-h-[80vh] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800 transition-shadow duration-300"
+                className="
+    w-full max-w-3xl p-6 rounded-2xl shadow-2xl 
+    max-h-[80vh] overflow-y-auto overflow-x-hidden
+    scrollbar-thin transition-shadow duration-300
+  "
                 style={{
                     backgroundColor: color.bgColor,
                     color: color.textColor,
-                    boxShadow: `0 10px 25px rgba(0, 0, 0, 0.4), 0 0 15px ${color.bgColor}80`,
+                    scrollbarColor: `${color.textColor} ${color.bgColor}`, // For Firefox
                 }}
             >
                 <h2 className="text-2xl font-bold mb-4 text-center">Edit Tournament</h2>
@@ -266,10 +270,18 @@ export default function EditTournament({ onClose, tournament }) {
                         disabled={loading}
                         className="w-full py-3 rounded-lg font-semibold mt-6 flex justify-center items-center gap-2 transition transform hover:scale-[1.02]"
                         style={{
-                            backgroundColor: loading ? "#4b5563" : color.bgColor,
-                            color: color.textColor,
-                            cursor: loading ? "not-allowed" : "pointer",
-                        }}
+                                                                color: "#00E5FF",
+                                                                borderColor: "#00E5FF",
+                                                                backgroundColor: "#0D1117",
+                                                                boxShadow: "0 0 6px #00E5FF",
+                                                                textShadow: "0 0 8px #00E5FF",
+                                                            }}
+                                                            onMouseEnter={(e) => {
+                                                                e.currentTarget.style.boxShadow = "0 0 12px #00E5FF";
+                                                            }}
+                                                            onMouseLeave={(e) => {
+                                                                e.currentTarget.style.boxShadow = "0 0 6px #00E5FF";
+                                                            }}
                     >
                         {loading ? (
                             <LoaderIcon size={5} colorClass="text-white" />

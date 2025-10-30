@@ -31,7 +31,12 @@ export default function ManageTournamentPage() {
     const [selectedTournament, setSelectedTournament] = useState(null);
     const [tournamentColors, setTournamentColors] = useState({});
     const [activeTab, setActiveTab] = useState("details");
-    const [color, setColor] = useState(() => getRandomColor());
+    const [color, setColor] = useState({
+        bgColor: "#0D1117",   // Dark background for consistency
+        textColor: "#00E5FF", // Glowing cyan text
+        border: `1px solid #00E5FF55`,
+        boxShadow: `0 0 15px #00E5FF33`,
+    });
     const [editOpen, setEditOpen] = useState(false);
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
@@ -73,11 +78,20 @@ export default function ManageTournamentPage() {
             const colors = {};
             organizerTournaments.forEach((t) => {
                 if (!t || !t._id) return;
-                colors[t._id] = getRandomColor();
+
+                // Apply consistent glowing cyan theme
+                colors[t._id] = {
+                    bgColor: "#0D1117",   // Dark background
+                    textColor: "#00E5FF", // Cyan text glow
+                    border: `1px solid #00E5FF55`,
+                    boxShadow: `0 0 15px #00E5FF22`,
+                };
             });
+
             setTournamentColors(colors);
         }
     }, [organizerTournaments]);
+
 
     const toggleExpand = (id) => {
         setExpanded(expanded === id ? null : id);
@@ -123,23 +137,41 @@ export default function ManageTournamentPage() {
     return (
         <div className="p-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">Organizer Dashboard</h1>
-                <button
-                    onClick={() => {
-                        setOpen(true);
-                        setEditMode(false);
-                        setSelectedTournament(null);
-                    }}
-                    style={{
-                        backgroundColor: color.bgColor,
-                        color: color.textColor,
-                    }}
-                    className="hover:scale-105 px-5 py-2 rounded-lg font-semibold transition-all mt-4 sm:mt-0 shadow-md"
-                >
-                    Add Tournament
-                </button>
-            </div>
+        <div
+  className="
+    flex flex-wrap items-center justify-between 
+    gap-3 mb-6
+  "
+>
+  <h1 className="text-2xl sm:text-3xl font-bold text-[#00E5FF]">
+    Tournaments 
+  </h1>
+
+  <button
+    onClick={() => {
+      setOpen(true);
+      setEditMode(false);
+      setSelectedTournament(null);
+    }}
+    style={{
+      color: "#00E5FF",
+      backgroundColor: "#0D1117",
+      border: "1px solid #00E5FF",
+      boxShadow: "0 0 6px #00E5FF",
+      textShadow: "0 0 5px #00E5FF",
+    }}
+    className="
+      hover:scale-105 
+      px-3 py-1.5 sm:px-5 sm:py-2 
+      rounded-lg font-semibold 
+      text-sm sm:text-base
+      transition-all shadow-md
+    "
+  >
+    Add Tournament
+  </button>
+</div>
+
 
             {/* Loading / Error / Empty States */}
             {loading ? (
@@ -165,24 +197,27 @@ export default function ManageTournamentPage() {
                                         };
 
                                     const now = new Date();
-                                    const start = new Date(t.start_datetime);
-                                    const end = new Date(t.end_datetime);
-
+                                    const startTime = new Date(t.start_datetime);
+                                    const endTime = new Date(t.end_datetime);
                                     let statusLabel = "";
                                     let statusColor = "";
 
                                     if (t.status === "CANCELLED") {
                                         statusLabel = "CANCELLED";
-                                        statusColor = "bg-red-700 text-white";
-                                    } else if (now < start) {
+                                        statusColor = "border border-red-500 text-red-400 bg-[#0D1117]";
+                                    } else if (now < startTime) {
                                         statusLabel = "UPCOMING";
-                                        statusColor = "bg-blue-700 text-white";
-                                    } else if (now >= start && now <= end) {
+                                        statusColor = "border border-[#00E5FF] text-[#00E5FF] bg-[#0D1117]";
+                                    } else if (now >= startTime && now <= endTime) {
                                         statusLabel = "ONGOING";
-                                        statusColor = "bg-green-700 text-white";
-                                    } else {
+                                        statusColor = "border border-green-400 text-green-400 bg-[#0D1117]";
+                                    } else if (now > endTime) {
                                         statusLabel = "COMPLETED";
-                                        statusColor = "bg-gray-600 text-white";
+                                        statusColor = "border border-gray-500 text-gray-400 bg-[#0D1117] ";
+                                    } else {
+                                        // Fallback
+                                        statusLabel = "UPCOMING";
+                                        statusColor = "border border-[#00E5FF] text-[#00E5FF] bg-[#0D1117]";
                                     }
 
                                     return (
@@ -201,8 +236,12 @@ export default function ManageTournamentPage() {
                                                     <div className="flex items-center gap-2">
                                                         <div className="flex flex-col items-end sm:items-center gap-0.5">
                                                             {statusLabel === "UPCOMING" && (
-                                                                <span className="flex items-center gap-1 text-[10px] sm:text-xs font-medium text-gray-700">
-                                                                    <Timer size={12} className="text-gray-600" />
+                                                                <span
+                                                                    className="text-[10px] sm:text-xs font-medium"
+                                                                    style={{
+                                                                        color: "#00E5FF",
+                                                                    }}
+                                                                >
                                                                     Starts in {getTimeLeft(t.start_datetime) || "00:00:00"}
                                                                 </span>
                                                             )}
@@ -217,7 +256,21 @@ export default function ManageTournamentPage() {
                                                         {/* 🖊️ Edit */}
                                                         <button
                                                             onClick={() => handleEditClick(t)}
-                                                            className="p-2 rounded-md bg-black/20 hover:bg-black/30 transition cursor-pointer"
+                                                            style={{
+                                                                color: "#00E5FF",
+                                                                borderColor: "#00E5FF",
+                                                                backgroundColor: "#0D1117",
+                                                                boxShadow: "0 0 6px #00E5FF",
+                                                                textShadow: "0 0 8px #00E5FF",
+                                                            }}
+                                                            onMouseEnter={(e) => {
+                                                                e.currentTarget.style.boxShadow = "0 0 12px #00E5FF";
+                                                            }}
+                                                            onMouseLeave={(e) => {
+                                                                e.currentTarget.style.boxShadow = "0 0 6px #00E5FF";
+                                                            }}
+                                                            className="p-1 rounded transition cursor-pointer border"
+                                                            title="Edit"
                                                         >
                                                             <Pencil size={18} />
                                                         </button>
@@ -225,21 +278,47 @@ export default function ManageTournamentPage() {
                                                         {/* 🗑️ Delete */}
                                                         <button
                                                             onClick={() => handleDeleteClick(t._id)}
-                                                            className="p-2 rounded-md bg-black/20 hover:bg-red-500/60 transition cursor-pointer"
+                                                            style={{
+                                                                color: "#00E5FF",
+                                                                borderColor: "#00E5FF",
+                                                                backgroundColor: "#0D1117",
+                                                                boxShadow: "0 0 6px #00E5FF",
+                                                                textShadow: "0 0 8px #00E5FF",
+                                                            }}
+                                                            onMouseEnter={(e) => {
+                                                                e.currentTarget.style.boxShadow = "0 0 12px #00E5FF";
+                                                            }}
+                                                            onMouseLeave={(e) => {
+                                                                e.currentTarget.style.boxShadow = "0 0 6px #00E5FF";
+                                                            }}
+                                                            className="p-1 rounded transition cursor-pointer border"
                                                             title="Delete"
                                                         >
-                                                            <Trash2 size={18} />
+                                                            <Trash2 size={20} />
                                                         </button>
-
 
                                                         {/* ⬇ Expand */}
                                                         <button
                                                             onClick={() => toggleExpand(t._id)}
-                                                            className="p-2 rounded-md bg-black/20 hover:bg-black/30 transition cursor-pointer"
+                                                            className="p-1 rounded transition cursor-pointer border"
+                                                            style={{
+                                                                color: "#00E5FF",
+                                                                borderColor: "#00E5FF",
+                                                                backgroundColor: "#0D1117",
+                                                                boxShadow: "0 0 6px #00E5FF",
+                                                                textShadow: "0 0 8px #00E5FF",
+                                                            }}
+                                                            onMouseEnter={(e) => {
+                                                                e.currentTarget.style.boxShadow = "0 0 12px #00E5FF";
+                                                            }}
+                                                            onMouseLeave={(e) => {
+                                                                e.currentTarget.style.boxShadow = "0 0 6px #00E5FF";
+                                                            }}
                                                         >
                                                             {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                                         </button>
                                                     </div>
+
                                                 </div>
 
                                                 {/* Joined/Left Progress */}
@@ -313,10 +392,23 @@ export default function ManageTournamentPage() {
                                                             <button
                                                                 key={tab.key}
                                                                 onClick={() => setActiveTab(tab.key)}
-                                                                className={`px-3 py-1.5 rounded-md font-semibold transition-all duration-200 ${activeTab === tab.key
-                                                                    ? "bg-black/40 border border-white/30"
-                                                                    : "bg-transparent hover:bg-black/20"
+                                                                className={`px-3 py-1.5 rounded-md transition-all duration-300 cursor-pointer
+                                                            ${activeTab === tab.key
+                                                                        ? "bg-[#0D1117] text-[#00E5FF] border border-[#00E5FF]"
+                                                                        : " border border-00E5FF hover:text-[#00E5FF] hover:border-[#00E5FF]"
                                                                     }`}
+                                                                style={{
+                                                                    boxShadow:
+                                                                        activeTab === tab.key
+                                                                            ? "0 0 10px #00E5FF"
+                                                                            : "0 0 6px rgba(0, 0, 0, 0.5)",
+                                                                    textShadow:
+                                                                        activeTab === tab.key
+                                                                            ? "0 0 8px #00E5FF"
+                                                                            : "none",
+                                                                    backgroundColor: activeTab === tab.key ? "#0D1117" : "transparent",
+                                                                    transition: "all 0.3s ease-in-out",
+                                                                }}
                                                             >
                                                                 {tab.label}
                                                             </button>

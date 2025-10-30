@@ -8,11 +8,11 @@ import { PlusCircle, Trash2 } from "lucide-react";
 
 export default function CreateTournament({ onClose }) {
     const { createTournament, loading } = useTournament();
-    const [color, setColor] = useState({ bgColor: "#1f2937", textColor: "#fff" }); // default dark
+    const [color, setColor] = useState({ bgColor: "#0D1117", textColor: "#00E5FF" });
 
-    useEffect(() => {
-        setColor(getRandomColor());
-    }, []);
+    // useEffect(() => {
+    //     setColor(getRandomColor());
+    // }, []);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -43,11 +43,15 @@ export default function CreateTournament({ onClose }) {
         <div className="flex justify-center items-center w-full">
             {/* Outer wrapper with random background */}
             <div
-                className="w-full max-w-3xl p-6 rounded-2xl shadow-2xl max-h-[80vh] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800 transition-shadow duration-300"
+                className="
+    w-full max-w-3xl p-6 rounded-2xl shadow-2xl 
+    max-h-[80vh] overflow-y-auto overflow-x-hidden
+    scrollbar-thin transition-shadow duration-300
+  "
                 style={{
                     backgroundColor: color.bgColor,
                     color: color.textColor,
-                    boxShadow: `0 10px 25px rgba(0, 0, 0, 0.4), 0 0 15px ${color.bgColor}80`,
+                    scrollbarColor: `${color.textColor} ${color.bgColor}`, // For Firefox
                 }}
             >
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -285,16 +289,23 @@ export default function CreateTournament({ onClose }) {
                     </div>
 
                     {/* Submit Button */}
-                    <div className="flex justify-center items-center w-full mt-4">
+                    <div className="flex justify-center items-center w-full">
                         <button
                             type="submit"
                             disabled={loading}
-                            className="mt-2 px-4 py-2 rounded font-medium flex items-center gap-2 justify-center transition transform hover:scale-[1.05] active:scale-[0.95]"
+                            className="w-full py-3 rounded-lg font-semibold  flex justify-center items-center gap-1 transition transform hover:scale-[1.02]"
                             style={{
-                                backgroundColor: color.bgColor,
-                                color: color.textColor,
-                                boxShadow: `0 4px 12px ${color.bgColor}80, 0 0 10px ${color.bgColor}60`,
-
+                                color: "#00E5FF",
+                                borderColor: "#00E5FF",
+                                backgroundColor: "#0D1117",
+                                boxShadow: "0 0 6px #00E5FF",
+                                textShadow: "0 0 8px #00E5FF",
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.boxShadow = "0 0 12px #00E5FF";
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.boxShadow = "0 0 6px #00E5FF";
                             }}
                         >
                             {loading ? (

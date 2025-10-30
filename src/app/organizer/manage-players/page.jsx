@@ -67,17 +67,28 @@ export default function ManageTournamentPage() {
         fetchTournamentsPendingPlayerList();
     }, []);
 
+    // useEffect(() => {
+    //     if (Array.isArray(ManagePendingPlayers) && ManagePendingPlayers.length > 0) {
+    //         const colors = {};
+    //         ManagePendingPlayers.forEach((t) => {
+    //             if (!t || !t._id) return;
+    //             colors[t._id] = getRandomColor();
+    //         });
+    //         setTournamentColors(colors);
+    //     }
+    // }, [ManagePendingPlayers]);
     useEffect(() => {
-        if (Array.isArray(ManagePendingPlayers) && ManagePendingPlayers.length > 0) {
+        if (Array.isArray(ManagePendingPlayers) && ManagePendingPlayers.length) {
             const colors = {};
             ManagePendingPlayers.forEach((t) => {
-                if (!t || !t._id) return;
-                colors[t._id] = getRandomColor();
+                colors[t._id] = {
+                    bgColor: "#0D1117",  // dark background
+                    textColor: "#00E5FF" // glowing cyan text
+                };
             });
             setTournamentColors(colors);
         }
     }, [ManagePendingPlayers]);
-
     const toggleExpand = (id) => {
         setExpanded(expanded === id ? null : id);
     };
@@ -86,10 +97,13 @@ export default function ManageTournamentPage() {
     return (
         <div className="p-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">Pending Player Management</h1>
-            </div>
 
+
+            <div className="flex items-center gap-2 mb-4 sm:mb-6">
+                <h1 className="text-xl sm:text-2xl font-bold text-[#00E5FF]">
+                    Pending Player Management
+                </h1>
+            </div>
             {/* Loading / Error / Empty States */}
             {loading ? (
                 <div className="flex justify-center items-center min-h-[50vh]">
@@ -107,25 +121,30 @@ export default function ManageTournamentPage() {
                         };
 
                         const now = new Date();
-                        const start = new Date(tournament.start_datetime);
-                        const end = new Date(tournament.end_datetime);
+                        const startTime = new Date(tournament.start_datetime);
+                        const endTime = new Date(tournament.end_datetime);
 
                         let statusLabel = "";
                         let statusColor = "";
 
                         if (tournament.status === "CANCELLED") {
                             statusLabel = "CANCELLED";
-                            statusColor = "bg-red-700 text-white";
-                        } else if (now < start) {
+                            statusColor = "border border-red-500 text-red-400 bg-[#0D1117]";
+                        } else if (now < startTime) {
                             statusLabel = "UPCOMING";
-                            statusColor = "bg-blue-700 text-white";
-                        } else if (now >= start && now <= end) {
+                            statusColor = "border border-[#00E5FF] text-[#00E5FF] bg-[#0D1117]";
+                        } else if (now >= startTime && now <= endTime) {
                             statusLabel = "ONGOING";
-                            statusColor = "bg-green-700 text-white";
-                        } else {
+                            statusColor = "border border-green-400 text-green-400 bg-[#0D1117]";
+                        } else if (now > endTime) {
                             statusLabel = "COMPLETED";
-                            statusColor = "bg-gray-600 text-white";
+                            statusColor = "border border-gray-500 text-gray-400 bg-[#0D1117] ";
+                        } else {
+                            // Fallback
+                            statusLabel = "UPCOMING";
+                            statusColor = "border border-[#00E5FF] text-[#00E5FF] bg-[#0D1117]";
                         }
+
 
                         // ✅ Player ratio for progress bar
                         const joinedPlayers = tournament.joinedPlayers || 0;
@@ -152,8 +171,12 @@ export default function ManageTournamentPage() {
 
                                         <div className="flex items-center gap-2">
                                             {statusLabel === "UPCOMING" && (
-                                                <span className="flex items-center gap-1 text-[10px] sm:text-xs font-medium text-gray-700">
-                                                    <Timer size={12} className="text-gray-600" />
+                                                <span
+                                                    className="text-[10px] sm:text-xs font-medium"
+                                                    style={{
+                                                        color: "#00E5FF",
+                                                    }}
+                                                >
                                                     Starts in {getTimeLeft(tournament.start_datetime) || "00:00:00"}
                                                 </span>
                                             )}
@@ -163,13 +186,36 @@ export default function ManageTournamentPage() {
                                                 {statusLabel}
                                             </span>
                                             <Link href={`/organizer/manage-players/${tournament._id}`}>
-                                                <button className="bg-green-600 text-white px-3 py-1 cursor-pointer rounded text-xs sm:text-sm">
+                                                <button
+                                                    className="w-full sm:w-auto px-2 sm:px-3 py-1 sm:py-1.5 rounded text-[11px] sm:text-sm transition-all duration-300"
+                                                    style={{
+                                                        color: "#00E5FF",
+                                                        backgroundColor: "#0D1117",
+                                                        border: "1px solid #00E5FF",
+                                                        boxShadow: "0 0 6px #00E5FF",
+                                                        textShadow: "0 0 5px #00E5FF",
+                                                        width: "100%",
+                                                    }}
+                                                >
                                                     Messages
                                                 </button>
                                             </Link>
                                             <button
                                                 onClick={() => toggleExpand(tournament._id)}
-                                                className="p-2 rounded-md bg-black/20 hover:bg-black/30 transition cursor-pointer"
+                                                className="p-1 rounded transition cursor-pointer border"
+                                                style={{
+                                                    color: "#00E5FF",
+                                                    borderColor: "#00E5FF",
+                                                    backgroundColor: "#0D1117",
+                                                    boxShadow: "0 0 6px #00E5FF",
+                                                    textShadow: "0 0 8px #00E5FF",
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.currentTarget.style.boxShadow = "0 0 12px #00E5FF";
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.boxShadow = "0 0 6px #00E5FF";
+                                                }}
                                             >
                                                 {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                                             </button>
@@ -193,20 +239,25 @@ export default function ManageTournamentPage() {
                                             {/* Status + Timer */}
                                             <div className="flex flex-col sm:items-end gap-1">
                                                 {statusLabel === "UPCOMING" && (
-                                                    <span className={`flex items-center gap-1 text-xs font-medium ${textColor}`}>
-                                                        <Timer size={12} className="text-gray-300" />
+                                                    <span
+                                                        className="text-[10px] sm:text-xs font-medium"
+                                                        style={{
+                                                            color: "#00E5FF",
+                                                        }}
+                                                    >
                                                         Starts in {getTimeLeft(tournament.start_datetime) || "00:00:00"}
                                                     </span>
                                                 )}
-                                               
+
                                             </div>
                                         </div>
 
                                         {/* Progress Bar */}
                                         <div className="w-full bg-gray-300/40 rounded-full h-2.5 overflow-hidden">
                                             <div
-                                                className="bg-green-500 h-2.5 rounded-full transition-all duration-500"
-                                                style={{ width: `${progressPercent}%` }}
+                                                className=" h-2.5 rounded-full transition-all duration-500"
+                                                style={{ width: `${progressPercent}%`, backgroundColor: "#00E5FF", }}
+
                                             ></div>
                                         </div>
 
@@ -227,10 +278,23 @@ export default function ManageTournamentPage() {
                                                 <button
                                                     key={tab.key}
                                                     onClick={() => setActiveTab(tab.key)}
-                                                    className={`px-3 py-1.5 rounded-md font-semibold transition-all duration-200 ${activeTab === tab.key
-                                                            ? "bg-black/40 border border-white/30"
-                                                            : "bg-transparent hover:bg-black/20"
+                                                    className={`px-3 py-1.5 rounded-md transition-all duration-300 cursor-pointer
+                                                            ${activeTab === tab.key
+                                                            ? "bg-[#0D1117] text-[#00E5FF] border border-[#00E5FF]"
+                                                            : " border border-00E5FF hover:text-[#00E5FF] hover:border-[#00E5FF]"
                                                         }`}
+                                                    style={{
+                                                        boxShadow:
+                                                            activeTab === tab.key
+                                                                ? "0 0 10px #00E5FF"
+                                                                : "0 0 6px rgba(0, 0, 0, 0.5)",
+                                                        textShadow:
+                                                            activeTab === tab.key
+                                                                ? "0 0 8px #00E5FF"
+                                                                : "none",
+                                                        backgroundColor: activeTab === tab.key ? "#0D1117" : "transparent",
+                                                        transition: "all 0.3s ease-in-out",
+                                                    }}
                                                 >
                                                     {tab.label}
                                                 </button>
