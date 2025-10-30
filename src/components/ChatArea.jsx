@@ -1,35 +1,24 @@
 import { useState, useEffect, useRef } from "react";
-import { Send } from "lucide-react";
+import { Send, Check } from "lucide-react";
 import usePrivateChat from "@/hooks/usePrivateChat";
 import useAuth from "@/hooks/useAuth";
-import { Check } from "lucide-react";
 
 export default function ChatArea({ roomId }) {
   const [newMessage, setNewMessage] = useState("");
-  const inputRef = useRef(null); // input ref
-  const messagesEndRef = useRef(null); // ref to scroll to bottom
+  const inputRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
-  const { chat, messages, sendMessage, fetchMessages } = usePrivateChat();
+  const { chat, sendMessage, fetchMessages } = usePrivateChat();
+  const { user } = useAuth();
 
-  let currentUserId = null;
+  const bgColor = "#0D1117";
+  const textColor = "#00E5FF";
 
-  if (typeof window !== "undefined") {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        currentUserId = parsedUser._id;
-      } catch (e) {
-        console.error("Failed to parse user from localStorage:", e);
-      }
-    }
-  }
-
-  const messageList = Array.isArray(chat?.messages) ? chat?.messages : [];
+  const messageList = Array.isArray(chat?.messages) ? chat.messages : [];
 
   // Focus input on mount
   useEffect(() => {
-    if (inputRef.current) inputRef.current.focus();
+    inputRef.current?.focus();
   }, []);
 
   // Fetch messages initially
@@ -39,11 +28,9 @@ export default function ChatArea({ roomId }) {
     }
   }, [roomId, messageList.length]);
 
-  // Scroll to bottom whenever messages change
+  // Scroll to bottom when messages update
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messageList]);
 
   const handleSend = async () => {
@@ -53,7 +40,7 @@ export default function ChatArea({ roomId }) {
       await sendMessage({ chatId: chat._id, message: newMessage });
       await fetchMessages(roomId);
       setNewMessage("");
-      if (inputRef.current) inputRef.current.focus(); // refocus input
+      inputRef.current?.focus();
     } catch (error) {
       console.error("Failed to send message:", error);
     }
@@ -69,43 +56,84 @@ export default function ChatArea({ roomId }) {
   };
 
   return (
-    <div className="flex flex-col flex-1 bg-gray-900 rounded-lg shadow-md overflow-hidden border border-gray-800">
-      {/* Messages container */}
-      <div className="flex-1 overflow-y-auto space-y-3 p-3 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
-        {messageList.map((msg) => {
-          const isCurrentUser = msg.sender === currentUserId;
-          return (
-            <div
-              key={msg._id}
-              className={`p-2 rounded-lg break-words w-fit max-w-[85%] sm:max-w-[75%] ${msg.sender === currentUserId
-                  ? "bg-indigo-600 text-white self-end ml-auto"
-                  : "bg-gray-700 text-gray-100 self-start"
+    <div
+      className="flex flex-col flex-1 rounded-lg shadow-md overflow-hidden border"
+      style={{
+        backgroundColor: bgColor,
+        border: `1px solid ${textColor}33`,
+        boxShadow: `0 0 15px ${textColor}11`,
+      }}
+    >
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto space-y-3 p-3 scrollbar-thin">
+        {messageList.length === 0 ? (
+          <div
+            className="text-center text-sm mt-10"
+            style={{ color: `${textColor}99` }}
+          >
+            No messages yet...
+          </div>
+        ) : (
+          messageList.map((msg) => {
+            const isCurrentUser = msg.sender === user?._id;
+
+            return (
+              <div
+                key={msg._id}
+                className={`p-2 rounded-lg break-words w-fit max-w-[85%] sm:max-w-[75%] ${
+                  isCurrentUser ? "self-end ml-auto" : "self-start"
                 }`}
-            >
-              <div>{msg.message}</div>
-              <div className="text-xs text-gray-300 mt-1 text-right flex items-center justify-end gap-1">
-                {formatTime(msg.sentAt)}
-
-                {/* Only show ticks for messages sent by current user */}
-                {msg.readBy.length > 1 ? (
-                  <>
-                    <Check className="w-3 h-3 text-blue-500" />
-                    <Check className="w-3 h-3 text-blue-500 -ml-1" />
-                  </>
-                ) : (
-                  <Check className="w-3 h-3 text-gray-200" />
-                )}
+                style={{
+                  backgroundColor: isCurrentUser
+                    ? `${textColor}22`
+                    : `${textColor}0A`,
+                  color: isCurrentUser ? textColor : `${textColor}CC`,
+                  border: `1px solid ${textColor}44`,
+                  boxShadow: isCurrentUser
+                    ? `0 0 10px ${textColor}33`
+                    : `0 0 6px ${textColor}11`,
+                }}
+              >
+                <div>{msg.message}</div>
+                <div
+                  className="text-xs mt-1 text-right flex items-center justify-end gap-1"
+                  style={{ color: `${textColor}88` }}
+                >
+                  {formatTime(msg.sentAt)}
+                  {msg.sender === user?._id &&
+                    (msg.readBy?.length > 1 ? (
+                      <>
+                        <Check
+                          className="w-3 h-3"
+                          style={{ color: textColor }}
+                        />
+                        <Check
+                          className="w-3 h-3 -ml-1"
+                          style={{ color: textColor }}
+                        />
+                      </>
+                    ) : (
+                      <Check
+                        className="w-3 h-3"
+                        style={{ color: `${textColor}88` }}
+                      />
+                    ))}
+                </div>
               </div>
-            </div>
-
-          );
-        })}
-        {/* Dummy div to scroll into view */}
+            );
+          })
+        )}
         <div ref={messagesEndRef}></div>
       </div>
 
       {/* Input */}
-      <div className="flex gap-2 items-center p-3 border-t border-gray-800 bg-gray-900">
+      <div
+        className="flex gap-2 items-center p-3 border-t"
+        style={{
+          borderTop: `1px solid ${textColor}44`,
+          backgroundColor: `${bgColor}`,
+        }}
+      >
         <input
           type="text"
           ref={inputRef}
@@ -113,12 +141,24 @@ export default function ChatArea({ roomId }) {
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyDown={handleKeyPress}
           placeholder="Type your message..."
-          className="flex-1 p-2 rounded-md bg-gray-800 text-gray-200 border border-gray-700 
-                     focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base"
+          className="flex-1 p-2 rounded-md text-sm sm:text-base focus:outline-none"
+          style={{
+            backgroundColor: `${bgColor}`,
+            color: textColor,
+            border: `1px solid ${textColor}33`,
+            boxShadow: `0 0 8px ${textColor}11 inset`,
+            caretColor: textColor,
+          }}
         />
         <button
           onClick={handleSend}
-          className="p-2 sm:p-3 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white transition-all"
+          className="p-2 sm:p-3 rounded-md transition-all"
+          style={{
+            backgroundColor: `${textColor}22`,
+            border: `1px solid ${textColor}66`,
+            color: textColor,
+            boxShadow: `0 0 10px ${textColor}33`,
+          }}
         >
           <Send className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>

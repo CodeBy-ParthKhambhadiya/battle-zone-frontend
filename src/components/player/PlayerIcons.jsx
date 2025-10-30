@@ -35,11 +35,13 @@ export default function PlayerIcons() {
 
   return (
     <footer
-      className="w-full shadow-t py-3 md:py-4"
-      style={{
-        backgroundColor: bgColor,
-        boxShadow: `0 -2px 10px rgba(0, 229, 255, 0.15)`,
-      }}
+        className="w-full shadow-t py-3 md:py-4"
+          style={{
+          backgroundColor: bgColor,
+          boxShadow: `0 0 15px rgba(0, 229, 255, 0.2)`,
+          borderTop: `1px solid ${textColor}55`,
+          borderBottom: `1px solid ${textColor}`, // 💎 Added glowing bottom border
+        }}
     >
       <div className="flex justify-center space-x-6 pb-1">
         {tabs.map((tab) => {
