@@ -110,11 +110,13 @@ export default function JoinedPage() {
     return (
         <div className="p-4 sm:p-6 ">
             {/* Header */}
-            <div className="flex items-center gap-2 mb-4 sm:mb-6">
-                <Trophy className="text-yellow-500" size={24} />
-                <h1 className="text-xl sm:text-2xl font-bold">Joined Tournaments</h1>
-            </div>
 
+            <div className="flex items-center gap-2 mb-4 sm:mb-6">
+                <Trophy className="text-[#00E5FF]" size={24} />
+                <h1 className="text-xl sm:text-2xl font-bold text-[#00E5FF]">
+                    Joined Tournaments
+                </h1>
+            </div>
             {loading && confirmedTournaments.length === 0 ? (
                 <div className="flex justify-center items-center min-h-[60vh]">
                     <LoaderIcon size={15} colorClass="text-blue-600" />
