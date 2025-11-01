@@ -196,38 +196,55 @@ export default function JoinedPage() {
                                     borderColor: textColor,
                                     boxShadow: `0 0 5px ${textColor}`,
                                 }}>
-                                <div className="p-4 rounded-lg shadow-md w-full">
-                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2 sm:gap-0">
-                                        <h2 className="font-bold text-lg sm:text-xl">{t.name}</h2>
-
-                                        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
-                                            {/* Joined Players */}
-                                            <div className="flex flex-col items-end sm:items-center gap-0.5">
-                                                {statusLabel === "UPCOMING" && (
-                                                    <span
-                                                        className="text-[10px] sm:text-xs font-medium"
-                                                        style={{
-                                                            color: "#00E5FF",
-                                                        }}
-                                                    >
-                                                        Starts in {getTimeLeft(t.start_datetime) || "00:00:00"}
-                                                    </span>
-                                                )}
-                                            </div>
-
-                                            <p
-                                                className="text-xs sm:text-sm font-medium"
+                                <div className=" rounded-lg shadow-md w-full">
+                                    <div
+                                        className="flex flex-row justify-between items-center mb-3 gap-2 flex-wrap sm:flex-nowrap"
+                                        style={{
+                                            borderBottom: "1px solid #00E5FF22",
+                                            paddingBottom: "4px",
+                                        }}
+                                    >
+                                        {/* Prize Pool */}
+                                        <div className="flex items-center gap-2">
+                                            <Trophy
+                                                className="w-5 h-5"
+                                                style={{
+                                                    color: "#FFD700",
+                                                    filter: "drop-shadow(0 0 6px #FFD70055)",
+                                                }}
+                                            />
+                                            <h2
+                                                className="font-bold text-base sm:text-lg tracking-wide"
                                                 style={{
                                                     color: "#00E5FF",
+                                                    textShadow: "0 0 6px #00E5FF55",
                                                 }}
                                             >
-                                                {t.joinedPlayers}/{t.max_players} joined
-                                            </p>
+                                                {t.prize_pool ? `₹${t.prize_pool}` : "Prize TBA"}
+                                            </h2>
+                                        </div>
+
+                                        {/* Right Side Info */}
+                                        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+                                            {/* Starts In (for upcoming tournaments) */}
+                                            {statusLabel === "UPCOMING" && (
+                                                <span
+                                                    className="text-[10px] sm:text-xs font-medium"
+                                                    style={{ color: "#00E5FF" }}
+                                                >
+                                                    Starts in {getTimeLeft(t.start_datetime) || "00:00:00"}
+                                                </span>
+                                            )}
+
 
 
                                             {/* Status */}
                                             <span
                                                 className={`px-2 py-1 rounded-full text-xs sm:text-sm font-semibold ${statusColor}`}
+                                                style={{
+                                                    border: "1px solid #00E5FF33",
+                                                    boxShadow: "0 0 8px #00E5FF22",
+                                                }}
                                             >
                                                 {statusLabel}
                                             </span>
@@ -235,31 +252,48 @@ export default function JoinedPage() {
                                     </div>
 
                                     {/* Progress bar */}
-                                    <div className="w-full bg-[#0D1117] rounded-full h-2.5 mb-3 overflow-hidden border border-[#00E5FF]">
-                                        <div
-                                            className="h-2.5 rounded-full transition-all duration-500"
-                                            style={{
-                                                width: `${(t.joinedPlayers / t.max_players) * 100}%`,
-                                                backgroundColor: "#00E5FF",
-                                                //   boxShadow: "0 0 10px #00E5FF, 0 0 20px #00E5FF",
-                                            }}
-                                        ></div>
+                                    <div
+                                        className="w-full rounded-lg p-3 mt-2 bg-black/20 flex flex-col gap-1"
+                                        style={{ color: textColor }}
+                                    >
+                                        <div className="flex justify-between text-xs font-semibold">
+                                            <span>
+                                                Joined: {t.joinedPlayers ?? 0} / {t.max_players ?? 0}
+                                            </span>
+                                            <span>
+                                                Left:{" "}
+                                                {Math.max((t.max_players ?? 0) - (t.joinedPlayers ?? 0), 0)}
+                                            </span>
+                                        </div>
+                                        <div className="w-full bg-black/40 h-2.5 rounded-full overflow-hidden">
+                                            <div
+                                                className="h-2.5 rounded-full transition-all duration-500"
+                                                style={{
+                                                    backgroundColor: textColor,
+                                                    width: `${Math.min(
+                                                        ((t.joinedPlayers ?? 0) / (t.max_players ?? 1)) * 100,
+                                                        100
+                                                    )}%`,
+                                                }}
+                                            ></div>
+                                        </div>
                                     </div>
+
 
 
                                     {/* Entry Fee, Prize Pool, Room Info */}
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                        <div className="flex flex-wrap gap-4 sm:gap-6 items-center">
+                                        {/* <div className="flex flex-wrap gap-4 p-1 sm:gap-6 items-center">
                                             <p className="text-xs sm:text-sm">
                                                 <span className="font-semibold">Entry Fee:</span> ₹{t.entry_fee}
                                             </p>
-                                        </div>
+                                        </div> */}
 
 
                                     </div>
 
                                     <div
-                                        className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-3 p-3 rounded-lg"
+                                        className="flex flex-col sm:flex-row justify-between items-center gap-3 mt-3 rounded-lg"
                                     >
                                         {/* 🎮 Room Info Section */}
                                         {(t.roomID || t.password) && (
@@ -556,26 +590,48 @@ export default function JoinedPage() {
 
 
 
-                                            {/* Game Info */}
                                             {activeSection === "game" && (
                                                 <div>
                                                     <h3 className="font-semibold text-lg mb-2 border-b border-gray-500 pb-1 flex items-center gap-2">
-                                                        <Gamepad className="w-5 h-5" /> Game Info
+                                                        <Gamepad className="w-5 h-5" /> Game Details
                                                     </h3>
 
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                                                        <div>
+                                                        <div className="space-y-2">
+                                                            <p><span className="font-semibold">Name:</span> {t.name}</p>
+                                                            <p><span className="font-semibold">Description:</span> {t.description}</p>
+                                                            <p>
+                                                                <span className="font-semibold">Organizer:</span>{" "}
+                                                                {t.organizer_id && typeof t.organizer_id === "object"
+                                                                    ? `${t.organizer_id.firstName} ${t.organizer_id.lastName} (${t.organizer_id.email})`
+                                                                    : t.organizer_id}
+                                                            </p>
                                                             <p><span className="font-semibold">Game Type:</span> {t.game_type}</p>
                                                             <p><span className="font-semibold">Max Players:</span> {t.max_players}</p>
-                                                            <p><span className="font-semibold">Prize Pool (Entry × Joined × 0.9):</span> ₹{prizePoolMoney}</p>
+                                                            <p><span className="font-semibold">Entry Fee:</span> ₹{t.entry_fee}</p>
+                                                            <p>
+                                                                <span className="font-semibold">Prize Pool (Entry × Joined × 0.9):</span>{" "}
+                                                                ₹{prizePoolMoney}
+                                                            </p>
                                                         </div>
-                                                        <div>
-                                                            <p><span className="font-semibold">Start:</span> {new Date(t.start_datetime).toLocaleString()}</p>
-                                                            <p><span className="font-semibold">End:</span> {new Date(t.end_datetime).toLocaleString()}</p>
+
+                                                        <div className="space-y-2">
+                                                            <p><span className="font-semibold">Start Time:</span> {new Date(t.start_datetime).toLocaleString()}</p>
+                                                            <p><span className="font-semibold">End Time:</span> {new Date(t.end_datetime).toLocaleString()}</p>
+                                                            <p><span className="font-semibold">Status:</span> {t.status}</p>
+                                                            <p><span className="font-semibold">Pre-Joined Players:</span> {t.preJoined}</p>
+                                                            <p><span className="font-semibold">Joined Players:</span> {t.joinedPlayers}</p>
+                                                            {t.roomID && (
+                                                                <p><span className="font-semibold">Room ID:</span> {t.roomID}</p>
+                                                            )}
+                                                            {t.password && (
+                                                                <p><span className="font-semibold">Password:</span> {t.password}</p>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>
                                             )}
+
 
                                             {/* Rules */}
                                             {activeSection === "rules" && t.rules?.length > 0 && (
