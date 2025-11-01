@@ -20,8 +20,16 @@ const Header = ({ colors }) => {
       {/* Logo */}
       <div className="text-2xl font-bold transition-colors duration-300">
         <Link href="/" style={{ color: colors.textColor }}>
-          BattleZone
-        </Link>
+  <div className="flex-1 min-w-[180px] text-left">
+        <h1 className="text-3xl font-extrabold uppercase"
+          style={{
+            color: "#AFFFFF",
+            textShadow: "0 0 15px #00FFFF, 0 0 25px #00E5FF, 0 0 40px #0055FF",
+          }}>
+          Battle Zone
+        </h1>
+
+      </div>        </Link>
       </div>
 
       {/* Desktop Buttons */}
