@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import LoaderIcon from "@/components/LoadingButton";
+import useAuth from "@/hooks/useAuth";
 
-export default function OrganizerDashboard() {
+export default function home() {
   const [loaded, setLoaded] = useState(false);
 
   // 🎨 Neon Theme Colors
@@ -12,6 +13,7 @@ export default function OrganizerDashboard() {
     bgColor: "#0D1117",   // dark background
     textColor: "#00E5FF", // glowing cyan text
   };
+  const { user } = useAuth();
 
   useEffect(() => {
     const timer = setTimeout(() => setLoaded(true), 200);
@@ -28,27 +30,30 @@ export default function OrganizerDashboard() {
 
   const cards = [
     {
-      href: "/organizer/manage-tournament",
-      title: "Manage Tournaments",
-      desc: "Create, edit, or delete tournaments you’ve organized.",
+      href: "/player/tournaments",
+      title: "My Tournaments",
+      desc: "Browse, join, or view details of tournaments you’re participating in.",
     },
     {
-      href: "/organizer/manage-players",
-      title: "Manage Players",
-      desc: "View and organize registered players for your tournaments.",
+      href: "/player/joined",
+      title: "My Matches",
+      desc: "Check your upcoming matches, scores, and results in real time.",
     },
     {
-      href: "/organizer/chat",
+      href: "/player/chat",
       title: "Chat",
-      desc: "Connect with players or co-organizers in real-time conversations.",
+      desc: "Talk with teammates, opponents, or organizers directly in chat.",
     },
     {
-      href: "/organizer/profile",
+      href: "/player/profile",
       title: "Profile",
-      desc: "View and update your organizer information and settings.",
+      desc: "Manage your player information, preferences, and achievements.",
     },
   ];
 
+  const firstName = user?.firstName || "";
+  const lastName = user?.lastName || "";
+  const fullName = `${firstName} ${lastName}`.trim();
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-start p-6 md:p-10"
@@ -70,7 +75,7 @@ export default function OrganizerDashboard() {
         }}
         className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold mb-8 text-center leading-tight tracking-wide transition-all duration-300"
       >
-        Welcome to BattleZone Organizer!
+        {fullName ? `Welcome back, ${fullName}!` : "Welcome to BattleZone Player!"}
       </h2>
 
       {/* 💠 Dashboard Cards */}

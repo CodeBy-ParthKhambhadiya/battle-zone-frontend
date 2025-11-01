@@ -52,7 +52,7 @@ const [colors, setColors] = useState({
             return (
               <button
                 key={id}
-                onClick={() => router.push(`/player/profile/${id}`)}
+                onClick={() => router.push(`/organizer/profile/${id}`)}
                 className="flex-1 md:flex-none flex items-center justify-center md:justify-start gap-2 px-4 py-2 md:mb-2 rounded-md font-medium transition-all duration-300 hover:scale-105 cursor-pointer"
                 style={{
                   backgroundColor: isActive ? colors.bgColor : "transparent", // 🌈 Use theme bg color on active

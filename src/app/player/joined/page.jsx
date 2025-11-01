@@ -258,27 +258,29 @@ export default function JoinedPage() {
                                     >
                                         {/* 🎮 Room Info Section */}
                                         {(t.roomID || t.password) && (
-                                            <div className="flex flex-col sm:flex-row gap-3 items-center justify-center w-full sm:w-auto">
+                                            <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-center justify-center w-full sm:w-auto">
                                                 {/* 🏠 Room ID Card */}
                                                 {t.roomID && (
                                                     <div
-                                                        className="flex items-center justify-between gap-2 w-full sm:w-auto px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg shadow-md transition-all duration-300 border cursor-pointer text-[11px] sm:text-sm"
+                                                        className="flex items-center justify-between gap-2 w-full sm:w-auto max-w-full sm:max-w-md px-3 py-2 rounded-lg shadow-md transition-all duration-300 border cursor-pointer text-[11px] sm:text-sm overflow-hidden"
                                                         style={{
                                                             backgroundColor: "#0D1117",
                                                             color: "#00E5FF",
                                                             borderColor: "#00E5FF",
                                                             boxShadow: "0 0 8px #00E5FF",
                                                             textShadow: "0 0 6px #00E5FF",
+                                                            wordBreak: "break-all",
                                                         }}
                                                     >
-                                                        <p className="font-medium flex items-center gap-2">
+                                                        <p className="font-medium flex items-center gap-2 flex-wrap break-all text-center sm:text-left overflow-hidden text-ellipsis">
                                                             <Home size={12} className="text-[#00E5FF]" />
-                                                            <span className="font-semibold">Room ID:</span> {t.roomID}
+                                                            <span className="font-semibold">Room ID:</span>
+                                                            <span className="break-all">{t.roomID}</span>
                                                         </p>
 
                                                         <button
                                                             onClick={() => handleCopyRoomIdAndPassword(t.roomID, "roomID", t._id)}
-                                                            className="flex items-center gap-1 px-2 py-[2px] rounded-md border transition-all text-[10px] sm:text-xs"
+                                                            className="flex items-center gap-1 px-2 py-[2px] rounded-md border transition-all text-[10px] sm:text-xs shrink-0"
                                                             style={{
                                                                 color: "#00E5FF",
                                                                 borderColor: "#00E5FF",
@@ -298,23 +300,25 @@ export default function JoinedPage() {
                                                 {/* 🔐 Password Card */}
                                                 {t.password && (
                                                     <div
-                                                        className="flex items-center justify-between gap-2 w-full sm:w-auto px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg shadow-md transition-all duration-300 border cursor-pointer text-[11px] sm:text-sm"
+                                                        className="flex items-center justify-between gap-2 w-full sm:w-auto max-w-full sm:max-w-md px-3 py-2 rounded-lg shadow-md transition-all duration-300 border cursor-pointer text-[11px] sm:text-sm overflow-hidden"
                                                         style={{
                                                             backgroundColor: "#0D1117",
                                                             color: "#00E5FF",
                                                             borderColor: "#00E5FF",
                                                             boxShadow: "0 0 8px #00E5FF",
                                                             textShadow: "0 0 6px #00E5FF",
+                                                            wordBreak: "break-all",
                                                         }}
                                                     >
-                                                        <p className="font-medium flex items-center gap-2">
+                                                        <p className="font-medium flex items-center gap-2 flex-wrap break-all text-center sm:text-left overflow-hidden text-ellipsis">
                                                             <Lock size={12} className="text-[#00E5FF]" />
-                                                            <span className="font-semibold">Password:</span> {t.password}
+                                                            <span className="font-semibold">Password:</span>
+                                                            <span className="break-all">{t.password}</span>
                                                         </p>
 
                                                         <button
                                                             onClick={() => handleCopyRoomIdAndPassword(t.password, "password", t._id)}
-                                                            className="flex items-center gap-1 px-2 py-[2px] rounded-md border transition-all text-[10px] sm:text-xs"
+                                                            className="flex items-center gap-1 px-2 py-[2px] rounded-md border transition-all text-[10px] sm:text-xs shrink-0"
                                                             style={{
                                                                 color: "#00E5FF",
                                                                 borderColor: "#00E5FF",
@@ -332,6 +336,7 @@ export default function JoinedPage() {
                                                 )}
                                             </div>
                                         )}
+
 
                                         {/* 🎯 Action Buttons Section */}
                                         <div className="flex items-center justify-center gap-2 w-full sm:w-auto">

@@ -25,8 +25,6 @@ export const createPrivateChatAction = createAsyncThunk(
     try {
       // Wrap receiverId in an object so it becomes valid JSON
       const response = await apiRequest.post("/private-chat/create", { receiverId });
-
-      Toast.success("Chat created successfully!");
       return response.data; // Assuming API returns the created chat object
     } catch (error) {
       const message =
@@ -45,8 +43,6 @@ export const sendMessageAction = createAsyncThunk(
         chatId,
         message,
       });
-
-      Toast.success("Message sent!");
       return response.data; // assuming API returns the created message object
     } catch (error) {
       const message =
