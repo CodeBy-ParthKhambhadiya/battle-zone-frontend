@@ -63,7 +63,7 @@ export default function home() {
       }}
     >
       {/* ✨ Header */}
-      <h2
+      {/* <h2
         style={{
           background: `linear-gradient(90deg, ${colors.textColor}33, transparent, ${colors.textColor}33)`,
           color: colors.textColor,
@@ -76,7 +76,7 @@ export default function home() {
         className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold mb-8 text-center leading-tight tracking-wide transition-all duration-300"
       >
         {fullName ? `Welcome back, ${fullName}!` : "Welcome to BattleZone Player!"}
-      </h2>
+      </h2> */}
 
       {/* 💠 Dashboard Cards */}
       <div className="flex flex-col md:flex-row md:flex-wrap justify-center gap-8 max-w-6xl">
