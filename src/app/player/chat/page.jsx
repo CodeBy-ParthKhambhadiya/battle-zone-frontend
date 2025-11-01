@@ -55,14 +55,14 @@ export default function ChatIndexPage() {
 
   return (
     <div className="flex flex-col items-center justify-start p-6 text-gray-200 w-full max-w-md mx-auto">
-      <h2
+      {/* <h2
         className="text-2xl font-semibold mb-6 text-center"
         style={{
           color: "#00E5FF",
         }}
       >
         Start a Chat
-      </h2>
+      </h2> */}
       <div className="mb-6 w-full">
         <div
           className="flex items-center rounded-full overflow-hidden transition-all"
@@ -75,7 +75,7 @@ export default function ChatIndexPage() {
           {/* Input field */}
           <input
             type="text"
-            placeholder="Search users..."
+            placeholder="Search user to chat..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="flex-1 bg-transparent text-[#00E5FF] placeholder-[#00E5FF99] p-3 rounded-l-full focus:outline-none"

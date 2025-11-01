@@ -54,15 +54,16 @@ export default function ChatIndexPage() {
   const textColor = "#00E5FF"; // glowing cyan text
 
   return (
-    <div className="flex flex-col items-center justify-start p-6 text-gray-200 w-full max-w-md mx-auto">
-      <h2
-        className="text-2xl font-semibold mb-6 text-center"
-        style={{
-          color: "#00E5FF",
-        }}
-      >
-        Start a Chat
-      </h2>
+    <div className="flex flex-col justify-start p-6 text-gray-200 w-full max-w-md mx-auto">
+      {/* <div className="flex items-center justify-start gap-3 mb-8">
+  <div className="w-1.5 h-8 sm:w-1 sm:h-6 bg-[#00E5FF] rounded-full shadow-[0_0_12px_#00E5FF]" />
+  <h2
+    className="text-3xl sm:text-xl md:text-4xl font-extrabold text-[#00E5FF] tracking-wide drop-shadow-[0_0_10px_#00E5FF]"
+  >
+    Start a Chat
+  </h2>
+</div> */}
+
       <div className="mb-6 w-full">
         <div
           className="flex items-center rounded-full overflow-hidden transition-all"
@@ -75,7 +76,7 @@ export default function ChatIndexPage() {
           {/* Input field */}
           <input
             type="text"
-            placeholder="Search users..."
+            placeholder="Search user to chat..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="flex-1 bg-transparent text-[#00E5FF] placeholder-[#00E5FF99] p-3 rounded-l-full focus:outline-none"
@@ -98,10 +99,10 @@ export default function ChatIndexPage() {
 
 
       {loading ? (
-       <div className="flex justify-center items-center min-h-[50vh]">
-                           <LoaderIcon size={85} colorClass="text-[#00E5FF]" />
-                       </div>
-       
+        <div className="flex justify-center items-center min-h-[50vh]">
+          <LoaderIcon size={85} colorClass="text-[#00E5FF]" />
+        </div>
+
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : displayedUsers.length > 0 ? (

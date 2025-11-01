@@ -137,40 +137,45 @@ export default function ManageTournamentPage() {
     return (
         <div className="p-6">
             {/* Header */}
-            <div
-                className="
-    flex flex-wrap items-center justify-between 
-    gap-3 mb-6
+        <div
+  className="
+    flex items-center justify-between 
+    gap-3 mb-6 flex-nowrap
   "
-            >
-                <h1 className="text-2xl sm:text-3xl font-bold text-[#00E5FF]">
-                    Tournaments
-                </h1>
+>
+  {/* Title Section */}
+  <div className="flex items-center gap-2 sm:gap-3">
+    <div className="w-1.5 h-8 sm:w-1 sm:h-6 bg-[#00E5FF] rounded-full shadow-[0_0_12px_#00E5FF]" />
+  <h1 className="text-2xl sm:text-xl md:text-3xl font-extrabold text-[#00E5FF] tracking-wide drop-shadow-[0_0_10px_#00E5FF]">
+    Tournaments
+  </h1>
+</div>
 
-                <button
-                    onClick={() => {
-                        setOpen(true);
-                        setEditMode(false);
-                        setSelectedTournament(null);
-                    }}
-                    style={{
-                        color: "#00E5FF",
-                        backgroundColor: "#0D1117",
-                        border: "1px solid #00E5FF",
-                        boxShadow: "0 0 6px #00E5FF",
-                        textShadow: "0 0 5px #00E5FF",
-                    }}
-                    className="
-      hover:scale-105 
-      px-3 py-1.5 sm:px-5 sm:py-2 
+  {/* Action Button */}
+  <button
+    onClick={() => {
+      setOpen(true);
+      setEditMode(false);
+      setSelectedTournament(null);
+    }}
+    style={{
+      color: "#00E5FF",
+      backgroundColor: "rgba(13, 17, 23, 0.9)",
+      border: "1.5px solid #00E5FF",
+      boxShadow: "0 0 10px #00E5FF80, inset 0 0 5px #00E5FF40",
+      textShadow: "0 0 6px #00E5FF",
+    }}
+    className="
+      hover:scale-105 hover:shadow-[0_0_20px_#00E5FFAA]
+      active:scale-95 transition-all duration-200
+      px-2.5 py-1.5 sm:px-6 sm:py-2.5
       rounded-lg font-semibold 
-      text-sm sm:text-base
-      transition-all shadow-md
+      text-xs sm:text-base whitespace-nowrap
     "
-                >
-                    Add Tournament
-                </button>
-            </div>
+  >
+    + Add Tournament
+  </button>
+</div>
 
 
             {/* Loading / Error / Empty States */}

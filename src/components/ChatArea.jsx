@@ -33,23 +33,36 @@ export default function ChatArea({ roomId }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messageList]);
 
-  const handleSend = async () => {
-    if (!newMessage.trim() || !chat?._id) return;
+const handleSend = async () => {
+  if (!newMessage.trim() || !chat?._id) return;
 
-    try {
-      await sendMessage({ chatId: chat._id, message: newMessage });
-      await fetchMessages(roomId);
-      setNewMessage("");
-      inputRef.current?.focus();
-    } catch (error) {
-      console.error("Failed to send message:", error);
-    }
-  };
+  const messageToSend = newMessage;
+  setNewMessage(""); // Clear immediately before async call (keeps keyboard open)
 
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") handleSend();
-  };
+  // Keep focus with a short delay — lets React finish re-render
+  setTimeout(() => {
+    inputRef.current?.focus();
+  }, 100);
 
+  try {
+    await sendMessage({ chatId: chat._id, message: messageToSend });
+
+    // Delay fetching slightly to avoid immediate DOM update that steals focus
+    setTimeout(() => {
+      fetchMessages(roomId);
+    }, 200);
+  } catch (error) {
+    console.error("Failed to send message:", error);
+  }
+};
+
+
+const handleKeyPress = (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault(); // stop blur
+    handleSend();
+  }
+};
   const formatTime = (isoString) => {
     const date = new Date(isoString);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });

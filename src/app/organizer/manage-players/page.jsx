@@ -99,11 +99,13 @@ export default function ManageTournamentPage() {
             {/* Header */}
 
 
-            <div className="flex items-center gap-2 mb-4 sm:mb-6">
-                <h1 className="text-xl sm:text-2xl font-bold text-[#00E5FF]">
-                    Pending Player Management
+            <div className="flex items-center gap-3 mb-6">
+                <div className="w-1.5 h-8 bg-[#00E5FF] rounded-full shadow-[0_0_10px_#00E5FF]" />
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#00E5FF] tracking-wide drop-shadow-[0_0_8px_#00E5FF]">
+                    Pending Players
                 </h1>
             </div>
+
             {/* Loading / Error / Empty States */}
             {loading ? (
                 <div className="flex justify-center items-center min-h-[50vh]">
