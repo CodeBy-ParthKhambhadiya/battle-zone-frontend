@@ -129,7 +129,6 @@ export const loginAction = createAsyncThunk(
       if (response) {
         localStorage.setItem("user", JSON.stringify(response.data));
       }
-      Toast.success(response.message);
 
       return response.data;
     } catch (error) {
