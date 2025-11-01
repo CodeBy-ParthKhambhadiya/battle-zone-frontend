@@ -34,12 +34,16 @@ const PlayerHeader = () => {
     >
       {/* Left Side: Welcome Message */}
       <div className="flex-1 min-w-[180px] text-left">
-        <span className="text-lg sm:text-base md:text-lg lg:text-xl font-semibold leading-tight">
-          {/* Bigger on mobile, smaller on larger screens */}
-          <p>Welcome</p>
-          {/* {fullName ? `Welcome ${fullName}!` : "Welcome to BattleZone Player!"} */}
-        </span>
+        <h1 className="text-3xl font-extrabold uppercase"
+          style={{
+            color: "#AFFFFF",
+            textShadow: "0 0 15px #00FFFF, 0 0 25px #00E5FF, 0 0 40px #0055FF",
+          }}>
+          Battle Zone
+        </h1>
+
       </div>
+
 
       {/* Right Side: Navigation + Notification */}
       <nav

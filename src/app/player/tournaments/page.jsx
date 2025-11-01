@@ -114,8 +114,8 @@ export default function TournamentsPage() {
         <div className="p-4 sm:p-6">
             {/* Header */}
             <div className="flex items-center gap-2 mb-4 sm:mb-6">
-                <Trophy className="text-[#00E5FF]" size={24} />
-                <h1 className="text-xl sm:text-2xl font-bold text-[#00E5FF]">
+                <div className="w-1.5 h-8 bg-[#00E5FF] rounded-full shadow-[0_0_10px_#00E5FF]" />
+                <h1 className="text-2xl sm:text-xl md:text-3xl font-extrabold text-[#00E5FF] tracking-wide drop-shadow-[0_0_10px_#00E5FF]">
                     All Tournaments
                 </h1>
             </div>
@@ -272,7 +272,7 @@ export default function TournamentsPage() {
                                                             color: "#00E5FF",
                                                         }}
                                                     >
-                                                        ⏳ Starts in {getTimeLeft(t.start_datetime) || "00:00:00"}
+                                                         Starts in {getTimeLeft(t.start_datetime) || "00:00:00"}
                                                     </span>
                                                 )}
                                             </div>
