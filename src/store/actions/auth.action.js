@@ -121,7 +121,6 @@ export const loginAction = createAsyncThunk(
         url: "/auth/login",
         data: loginData,
       });
-      Toast.success(response.message);
 
       // Save token to cookie or localStorage
       if (response) {
@@ -130,6 +129,7 @@ export const loginAction = createAsyncThunk(
       if (response) {
         localStorage.setItem("user", JSON.stringify(response.data));
       }
+      Toast.success(response.message);
 
       return response.data;
     } catch (error) {
