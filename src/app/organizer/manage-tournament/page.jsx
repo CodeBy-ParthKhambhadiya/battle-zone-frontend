@@ -174,7 +174,7 @@ export default function ManageTournamentPage() {
 
 
             {/* Loading / Error / Empty States */}
-            {true ? (
+            {loading ? (
                 <div className="flex justify-center items-center min-h-[50vh]">
                     <LoaderIcon size={85} colorClass="text-[#00E5FF]" />
                 </div>
