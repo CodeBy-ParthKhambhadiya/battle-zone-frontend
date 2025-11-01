@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import useTournament from "@/hooks/useTournament";
-import { ChevronDown, ChevronUp, Home, Lock } from "lucide-react";
+import { ChevronDown, ChevronUp, CreditCard, Home, Lock } from "lucide-react";
 import { getRandomColor } from "@/components/getColor";
 import LoaderIcon from "@/components/LoadingButton";
 import useAuth from "@/hooks/useAuth";
@@ -118,9 +118,10 @@ export default function JoinedPage() {
                 </h1>
             </div>
             {loading && confirmedTournaments.length === 0 ? (
-                <div className="flex justify-center items-center min-h-[60vh]">
-                    <LoaderIcon size={15} colorClass="text-blue-600" />
+                <div className="flex justify-center items-center min-h-[50vh]">
+                    <LoaderIcon size={85} colorClass="text-[#00E5FF]" />
                 </div>
+
             ) : (
                 <div className="flex flex-col gap-3 sm:gap-4">
                     {confirmedTournaments.map((t) => {
@@ -189,8 +190,12 @@ export default function JoinedPage() {
                             <div
                                 key={t._id}
                                 className="rounded-lg p-3 sm:p-4 shadow hover:shadow-lg transition relative"
-                                style={{ backgroundColor: bgColor, color: textColor }}
-                            >
+                                style={{
+                                    backgroundColor: bgColor,
+                                    color: textColor,
+                                    borderColor: textColor,
+                                    boxShadow: `0 0 5px ${textColor}`,
+                                }}>
                                 <div className="p-4 rounded-lg shadow-md w-full">
                                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-2 sm:gap-0">
                                         <h2 className="font-bold text-lg sm:text-xl">{t.name}</h2>
@@ -445,7 +450,7 @@ export default function JoinedPage() {
                                             {/* Leaderboard / Prize Distribution */}
                                             {activeSection === "leaderboard" && t.joinedPlayers > 3 && (
                                                 <div
-                                                    className="mt-4 w-full p-4 rounded-lg overflow-x-auto"
+                                                    className="mt-4 w-full  rounded-lg overflow-x-auto"
                                                     style={{
                                                         backgroundColor: bgColor,
                                                         color: textColor,
@@ -525,7 +530,7 @@ export default function JoinedPage() {
                                             {/* Organizer Info */}
                                             {activeSection === "organizer" && t.organizer_id && (
                                                 <div>
-                                                    <h3 className="font-semibold text-lg mb-2 border-b border-gray-500 pb-1 flex items-center gap-2">
+                                                    <h3 className="font-semibold text-lg sm:text-xl mb-2 border-b border-gray-500 pb-1 flex items-center gap-2">
                                                         <User className="w-5 h-5" /> Organizer Info
                                                     </h3>
 
@@ -538,40 +543,80 @@ export default function JoinedPage() {
                                                         <div>
                                                             <p className="text-base font-semibold">{t.organizer_id?.firstName} {t.organizer_id?.lastName}</p>
                                                             <p className="text-sm">Role: {t.organizer_id?.role} {t.organizer_id?.isVerified && "✅"}</p>
-                                                            <p className="text-sm">Organizer ID: {t.organizer_id?._id}</p>
                                                         </div>
                                                     </div>
 
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                                                        <div className="space-y-1">
-                                                            <p><span className="font-semibold">Email:</span> {t.organizer_id?.email}</p>
-                                                            <p><span className="font-semibold">Mobile:</span> {t.organizer_id?.mobile}</p>
-                                                            <p><span className="font-semibold">Gender:</span> {t.organizer_id?.gender}</p>
-                                                        </div>
-                                                        <div className="space-y-1">
-                                                            <p><span className="font-semibold">Account Holder Name:</span> {t.organizer_id?.accountHolderName}</p>
-                                                            <div className="flex items-center gap-2">
-                                                                <p><span className="font-semibold">UPI ID:</span> {t.organizer_id?.upiId || "N/A"}</p>
-                                                                {t.organizer_id?.upiId && (
+
+                                                        <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-center justify-center w-full sm:w-auto">
+                                                            {/* 👤 Account Holder Name Card */}
+                                                            {t.organizer_id?.accountHolderName && (
+                                                                <div
+                                                                    className="flex items-center justify-between gap-2 w-full sm:w-auto max-w-full sm:max-w-md px-3 py-2 rounded-lg shadow-md transition-all duration-300 border cursor-pointer text-[11px] sm:text-sm overflow-hidden"
+                                                                    style={{
+                                                                        backgroundColor: "#0D1117",
+                                                                        color: "#00E5FF",
+                                                                        borderColor: "#00E5FF",
+                                                                        boxShadow: "0 0 8px #00E5FF",
+                                                                        textShadow: "0 0 6px #00E5FF",
+                                                                        wordBreak: "break-all",
+                                                                    }}
+                                                                >
+                                                                    <p className="font-medium flex items-center gap-2 flex-wrap break-all text-center sm:text-left overflow-hidden text-ellipsis">
+                                                                        <User size={12} className="text-[#00E5FF]" />
+                                                                        <span className="font-semibold">Account Holder:</span>
+                                                                        <span className="break-all">{t.organizer_id.accountHolderName}</span>
+                                                                    </p>
+                                                                </div>
+                                                            )}
+
+                                                            {/* 💰 UPI ID Card */}
+                                                            {t.organizer_id?.upiId && (
+                                                                <div
+                                                                    className="flex items-center justify-between gap-2 w-full sm:w-auto max-w-full sm:max-w-md px-3 py-2 rounded-lg shadow-md transition-all duration-300 border cursor-pointer text-[11px] sm:text-sm overflow-hidden"
+                                                                    style={{
+                                                                        backgroundColor: "#0D1117",
+                                                                        color: "#00E5FF",
+                                                                        borderColor: "#00E5FF",
+                                                                        boxShadow: "0 0 8px #00E5FF",
+                                                                        textShadow: "0 0 6px #00E5FF",
+                                                                        wordBreak: "break-all",
+                                                                    }}
+                                                                >
+                                                                    <p className="font-medium flex items-center gap-2 flex-wrap break-all text-center sm:text-left overflow-hidden text-ellipsis">
+                                                                        <CreditCard size={12} className="text-[#00E5FF]" />
+                                                                        <span className="font-semibold">UPI ID:</span>
+                                                                        <span className="break-all">{t.organizer_id.upiId}</span>
+                                                                    </p>
+
                                                                     <button
                                                                         onClick={() => handleCopy(t.organizer_id.upiId)}
-                                                                        className="flex items-center gap-1 text-blue-500 hover:text-blue-400 text-sm font-medium cursor-pointer"
+                                                                        className="flex items-center gap-1 px-2 py-[2px] rounded-md border transition-all text-[10px] sm:text-xs shrink-0"
+                                                                        style={{
+                                                                            color: "#00E5FF",
+                                                                            borderColor: "#00E5FF",
+                                                                            backgroundColor: "transparent",
+                                                                            boxShadow: "0 0 4px #00E5FF",
+                                                                        }}
                                                                         title={copied ? "Copied!" : "Copy UPI ID"}
                                                                     >
-                                                                        <Copy size={16} />
-                                                                        {copied ? "Copied" : "Copy"}
+                                                                        <Copy size={12} />
+                                                                        {copied ? "Copied!" : "Copy"}
                                                                     </button>
-                                                                )}
-                                                            </div>
+                                                                </div>
+                                                            )}
                                                         </div>
+
                                                     </div>
                                                 </div>
                                             )}
 
+
+
                                             {/* Players */}
                                             {activeSection === "players" && players?.length > 0 && (
                                                 <div
-                                                    className="p-4 rounded-lg"
+                                                    className="rounded-lg"
                                                     style={{
                                                         boxShadow: "0 10px 25px rgba(0,0,0,0.5)"
                                                     }}

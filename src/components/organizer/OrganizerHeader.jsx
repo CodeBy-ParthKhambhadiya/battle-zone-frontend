@@ -3,45 +3,49 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { HiDocumentText, HiOutlineFlag, HiShieldCheck } from "react-icons/hi";
+import { HiDocumentText, HiOutlineFlag, HiShieldCheck, HiBell } from "react-icons/hi";
+import useAuth from "@/hooks/useAuth";
 
 const PlayerHeader = () => {
   const pathname = usePathname();
+  const { user } = useAuth();
 
-  // Global color theme
-  const [colors, setColors] = useState({
-    bgColor: "#0D1117",   // dark background
-    textColor: "#00E5FF", // glowing cyan text
+  const [colors] = useState({
+    bgColor: "#0D1117",
+    textColor: "#00E5FF",
   });
 
   const links = [
-    { href: "/player/terms-and-conditions", label: "Terms", icon: HiDocumentText },
-    { href: "/player/tournament-rules", label: "Rules", icon: HiOutlineFlag },
+    // { href: "/player/terms-and-conditions", label: "Terms", icon: HiDocumentText },
+    // { href: "/player/tournament-rules", label: "Rules", icon: HiOutlineFlag },
     { href: "/player/trust-safety", label: "Trust", icon: HiShieldCheck },
   ];
 
+  const fullName = `${user?.firstName || ""} ${user?.lastName || ""}`.trim();
+
   return (
     <header
-      className="p-4 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0"
+      className="p-4 flex flex-row flex-wrap justify-between items-center gap-3"
       style={{
         backgroundColor: colors.bgColor,
         color: colors.textColor,
-        boxShadow: `0 0 15px rgba(0, 229, 255, 0.2)`,
+        boxShadow: "0 0 15px rgba(0, 229, 255, 0.2)",
       }}
     >
-      {/* Header Title */}
-      <h1
-        className="text-2xl font-bold text-center md:text-left"
-        style={{
-          color: colors.textColor,
-          textShadow: `0 0 8px ${colors.textColor}`,
-        }}
-      >
-        BattleZone Organizer
-      </h1>
+      {/* Left Side: Welcome Message */}
+      <div className="flex-1 min-w-[180px] text-left">
+        <span className="text-lg sm:text-base md:text-lg lg:text-xl font-semibold leading-tight">
+          {/* Bigger on mobile, smaller on larger screens */}
+          <p>Welcome</p>
+          {/* {fullName ? `Welcome ${fullName}!` : "Welcome to BattleZone Player!"} */}
+        </span>
+      </div>
 
-      {/* Navigation */}
-      <nav className="flex flex-wrap justify-center gap-4 md:gap-6">
+      {/* Right Side: Navigation + Notification */}
+      <nav
+        className="flex items-center justify-end gap-3 sm:gap-4 md:gap-5 overflow-x-auto no-scrollbar flex-wrap"
+        style={{ scrollBehavior: "smooth" }}
+      >
         {links.map((link) => {
           const isActive = pathname === link.href;
           const Icon = link.icon;
@@ -50,24 +54,23 @@ const PlayerHeader = () => {
             <Link
               key={link.href}
               href={link.href}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm md:text-base transition-all duration-300`}
+              className="flex items-center gap-2 px-3 py-2 rounded-full text-sm sm:text-xs md:text-sm lg:text-base transition-all duration-300 flex-shrink-0"
               style={{
                 color: colors.textColor,
-                border: isActive ? `1.5px solid ${colors.textColor}` : "1.5px solid transparent",
-                boxShadow: isActive ? `0 0 10px ${colors.textColor}` : "none",
-                backgroundColor: isActive
-                  ? "rgba(0, 229, 255, 0.1)"
-                  : "transparent",
+                border: isActive ? `1px solid ${colors.textColor}` : "1px solid transparent",
+                boxShadow: isActive ? `0 0 8px ${colors.textColor}` : "none",
+                backgroundColor: isActive ? "rgba(0,229,255,0.1)" : "transparent",
               }}
             >
               <Icon
-                className="w-5 h-5"
+                className="w-6 h-6 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7"
                 style={{
                   color: colors.textColor,
-                  filter: isActive ? `drop-shadow(0 0 5px ${colors.textColor})` : "none",
+                  filter: isActive ? `drop-shadow(0 0 4px ${colors.textColor})` : "none",
                 }}
               />
               <span
+                className="hidden sm:inline"
                 style={{
                   textShadow: isActive ? `0 0 6px ${colors.textColor}` : "none",
                 }}
@@ -77,6 +80,25 @@ const PlayerHeader = () => {
             </Link>
           );
         })}
+
+        {/* Notification Bell */}
+        <button
+          className="ml-2 flex items-center justify-center w-9 h-9 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-full transition-all duration-300 flex-shrink-0"
+          style={{
+            color: colors.textColor,
+            border: `1px solid ${colors.textColor}55`,
+            backgroundColor: "rgba(0, 229, 255, 0.05)",
+            boxShadow: `0 0 6px ${colors.textColor}33`,
+          }}
+          onClick={() => alert("Notifications clicked!")}
+        >
+          <HiBell
+            className="w-6 h-6 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7"
+            style={{
+              filter: `drop-shadow(0 0 4px ${colors.textColor})`,
+            }}
+          />
+        </button>
       </nav>
     </header>
   );

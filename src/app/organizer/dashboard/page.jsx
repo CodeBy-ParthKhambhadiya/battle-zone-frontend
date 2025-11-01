@@ -21,9 +21,10 @@ export default function OrganizerDashboard() {
 
   if (!loaded) {
     return (
-      <div className="min-h-screen flex justify-center items-center text-lg font-semibold">
-        <LoaderIcon size={15} colorClass="text-blue-600" />
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <LoaderIcon size={85} colorClass="text-[#00E5FF]" />
       </div>
+
     );
   }
 

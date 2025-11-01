@@ -98,9 +98,10 @@ export default function ChatIndexPage() {
 
 
       {loading ? (
-        <div className="flex items-center justify-center w-full mt-20">
-          <LoaderIcon size={15} colorClass="text-blue-600" />
-        </div>
+       <div className="flex justify-center items-center min-h-[50vh]">
+                           <LoaderIcon size={85} colorClass="text-[#00E5FF]" />
+                       </div>
+       
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : displayedUsers.length > 0 ? (

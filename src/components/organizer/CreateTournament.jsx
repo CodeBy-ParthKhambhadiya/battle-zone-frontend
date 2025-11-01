@@ -5,6 +5,7 @@ import useTournament from "@/hooks/useTournament";
 import { getRandomColor } from "@/components/getColor";
 import LoaderIcon from "../LoadingButton";
 import { PlusCircle, Trash2 } from "lucide-react";
+import { getLocalDateTime } from "@/utils/getLocalTime";
 
 export default function CreateTournament({ onClose }) {
     const { createTournament, loading } = useTournament();
@@ -136,11 +137,15 @@ export default function CreateTournament({ onClose }) {
                             <input
                                 type="datetime-local"
                                 name="start_datetime"
-                                value={formData.start_datetime?.slice(0, 16) || ""}
+                                value={
+                                    formData.start_datetime
+                                        ? getLocalDateTime(formData.start_datetime)
+                                        : getLocalDateTime(new Date())
+                                }
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
-                                        start_datetime: new Date(e.target.value).toISOString(),
+                                        start_datetime: new Date(e.target.value).toISOString(), // store in UTC
                                     })
                                 }
                                 className="w-full px-3 py-2 rounded-lg bg-transparent border border-gray-500 focus:outline-none focus:ring-2 transition"
@@ -150,16 +155,21 @@ export default function CreateTournament({ onClose }) {
                                 }}
                             />
                         </div>
+
                         <div>
                             <label className="block mb-1 font-semibold">End Time</label>
                             <input
                                 type="datetime-local"
                                 name="end_datetime"
-                                value={formData.end_datetime?.slice(0, 16) || ""}
+                                value={
+                                    formData.end_datetime
+                                        ? getLocalDateTime(formData.end_datetime)
+                                        : getLocalDateTime(new Date())
+                                }
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
-                                        end_datetime: new Date(e.target.value).toISOString(),
+                                        end_datetime: new Date(e.target.value).toISOString(), // store in UTC
                                     })
                                 }
                                 className="w-full px-3 py-2 rounded-lg bg-transparent border border-gray-500 focus:outline-none focus:ring-2 transition"

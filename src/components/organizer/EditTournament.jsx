@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import useTournament from "@/hooks/useTournament";
 import { getRandomColor } from "@/components/getColor";
 import LoaderIcon from "../LoadingButton";
+import { getLocalDateTime } from "@/utils/getLocalTime";
 
 export default function EditTournament({ onClose, tournament }) {
     const { updateTournament, loading } = useTournament();
@@ -62,7 +63,6 @@ export default function EditTournament({ onClose, tournament }) {
                     scrollbarColor: `${color.textColor} ${color.bgColor}`, // For Firefox
                 }}
             >
-                <h2 className="text-2xl font-bold mb-4 text-center">Edit Tournament</h2>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* 🏷 Tournament Name & Description */}
@@ -120,6 +120,7 @@ export default function EditTournament({ onClose, tournament }) {
 
                     {/* ⏰ Start & End Time */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        {/* Start Time */}
                         <div>
                             <label className="block mb-1 font-semibold">Start Time</label>
                             <input
@@ -127,19 +128,21 @@ export default function EditTournament({ onClose, tournament }) {
                                 name="start_datetime"
                                 value={
                                     formData.start_datetime
-                                        ? formData.start_datetime.slice(0, 16)
-                                        : ""
+                                        ? getLocalDateTime(formData.start_datetime)
+                                        : getLocalDateTime(new Date())
                                 }
                                 onChange={(e) =>
                                     setFormData((prev) => ({
                                         ...prev,
-                                        start_datetime: new Date(e.target.value).toISOString(),
+                                        start_datetime: new Date(e.target.value).toISOString(), // store UTC
                                     }))
                                 }
                                 className="w-full px-3 py-2 rounded-lg bg-transparent border border-gray-500 focus:outline-none transition"
                                 style={{ color: color.textColor, borderColor: color.textColor }}
                             />
                         </div>
+
+                        {/* End Time */}
                         <div>
                             <label className="block mb-1 font-semibold">End Time</label>
                             <input
@@ -147,13 +150,13 @@ export default function EditTournament({ onClose, tournament }) {
                                 name="end_datetime"
                                 value={
                                     formData.end_datetime
-                                        ? formData.end_datetime.slice(0, 16)
-                                        : ""
+                                        ? getLocalDateTime(formData.end_datetime)
+                                        : getLocalDateTime(new Date())
                                 }
                                 onChange={(e) =>
                                     setFormData((prev) => ({
                                         ...prev,
-                                        end_datetime: new Date(e.target.value).toISOString(),
+                                        end_datetime: new Date(e.target.value).toISOString(), // store UTC
                                     }))
                                 }
                                 className="w-full px-3 py-2 rounded-lg bg-transparent border border-gray-500 focus:outline-none transition"
@@ -161,6 +164,7 @@ export default function EditTournament({ onClose, tournament }) {
                             />
                         </div>
                     </div>
+
 
                     {/* 💰 Prize Pool & Rules */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -179,11 +183,10 @@ export default function EditTournament({ onClose, tournament }) {
                         <div>
                             <label className="block mb-1 font-semibold">Rules</label>
                             <div
-                                className={`max-h-[190px] overflow-y-auto pr-1 ${
-                                    formData.rules.length > 3
-                                        ? "border border-gray-600 rounded-lg p-2"
-                                        : ""
-                                }`}
+                                className={`max-h-[190px] overflow-y-auto pr-1 ${formData.rules.length > 3
+                                    ? "border border-gray-600 rounded-lg p-2"
+                                    : ""
+                                    }`}
                             >
                                 {formData.rules.map((rule, index) => (
                                     <div key={index} className="flex items-center gap-2 mb-2">
@@ -270,18 +273,18 @@ export default function EditTournament({ onClose, tournament }) {
                         disabled={loading}
                         className="w-full py-3 rounded-lg font-semibold mt-6 flex justify-center items-center gap-2 transition transform hover:scale-[1.02]"
                         style={{
-                                                                color: "#00E5FF",
-                                                                borderColor: "#00E5FF",
-                                                                backgroundColor: "#0D1117",
-                                                                boxShadow: "0 0 6px #00E5FF",
-                                                                textShadow: "0 0 8px #00E5FF",
-                                                            }}
-                                                            onMouseEnter={(e) => {
-                                                                e.currentTarget.style.boxShadow = "0 0 12px #00E5FF";
-                                                            }}
-                                                            onMouseLeave={(e) => {
-                                                                e.currentTarget.style.boxShadow = "0 0 6px #00E5FF";
-                                                            }}
+                            color: "#00E5FF",
+                            borderColor: "#00E5FF",
+                            backgroundColor: "#0D1117",
+                            boxShadow: "0 0 6px #00E5FF",
+                            textShadow: "0 0 8px #00E5FF",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.boxShadow = "0 0 12px #00E5FF";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.boxShadow = "0 0 6px #00E5FF";
+                        }}
                     >
                         {loading ? (
                             <LoaderIcon size={5} colorClass="text-white" />

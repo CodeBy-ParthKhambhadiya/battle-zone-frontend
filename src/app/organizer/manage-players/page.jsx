@@ -107,8 +107,9 @@ export default function ManageTournamentPage() {
             {/* Loading / Error / Empty States */}
             {loading ? (
                 <div className="flex justify-center items-center min-h-[50vh]">
-                    <LoaderIcon size={15} colorClass="text-blue-600" />
+                    <LoaderIcon size={85} colorClass="text-[#00E5FF]" />
                 </div>
+
             ) : error ? (
                 <p className="text-red-500 text-center">{error}</p>
             ) : Array.isArray(ManagePendingPlayers) && ManagePendingPlayers.length > 0 ? (
@@ -116,8 +117,8 @@ export default function ManageTournamentPage() {
                     {ManagePendingPlayers.map((tournament) => {
                         const isExpanded = expanded === tournament._id;
                         const { bgColor, textColor } = tournamentColors?.[tournament._id] || {
-                            bgColor: "#3b82f6",
-                            textColor: "#fff",
+                            bgColor: "#0D1117",
+                            textColor: "#00E5FF",
                         };
 
                         const now = new Date();
@@ -159,8 +160,12 @@ export default function ManageTournamentPage() {
                             <div
                                 key={tournament._id}
                                 className="rounded-lg shadow-md transition-all duration-300 hover:shadow-xl overflow-hidden"
-                                style={{ backgroundColor: bgColor, color: textColor }}
-                            >
+                                style={{
+                                    backgroundColor: bgColor,
+                                    color: textColor,
+                                    borderColor: textColor,
+                                    boxShadow: `0 0 5px ${textColor}`,
+                                }}>
                                 {/* Tournament Header */}
                                 <div className="p-4 rounded-lg shadow-md w-full">
                                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
@@ -360,7 +365,7 @@ export default function ManageTournamentPage() {
                                         {/* Pending Players Tab */}
                                         {activeTab === "players" && (
                                             <div
-                                                className="p-4 rounded-lg"
+                                                className="rounded-lg"
                                                 style={{ boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}
                                             >
                                                 <h3 className="text-lg font-semibold border-b pb-1 mb-2 flex items-center gap-2">
@@ -448,7 +453,7 @@ export default function ManageTournamentPage() {
                                         {/* Confirmed Players Tab */}
                                         {activeTab === "joined" && (
                                             <div
-                                                className="p-4 rounded-lg"
+                                                className="rounded-lg"
                                                 style={{ boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}
                                             >
                                                 <h3 className="text-lg font-semibold border-b pb-1 mb-2 flex items-center gap-2">

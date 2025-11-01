@@ -137,47 +137,48 @@ export default function ManageTournamentPage() {
     return (
         <div className="p-6">
             {/* Header */}
-        <div
-  className="
+            <div
+                className="
     flex flex-wrap items-center justify-between 
     gap-3 mb-6
   "
->
-  <h1 className="text-2xl sm:text-3xl font-bold text-[#00E5FF]">
-    Tournaments 
-  </h1>
+            >
+                <h1 className="text-2xl sm:text-3xl font-bold text-[#00E5FF]">
+                    Tournaments
+                </h1>
 
-  <button
-    onClick={() => {
-      setOpen(true);
-      setEditMode(false);
-      setSelectedTournament(null);
-    }}
-    style={{
-      color: "#00E5FF",
-      backgroundColor: "#0D1117",
-      border: "1px solid #00E5FF",
-      boxShadow: "0 0 6px #00E5FF",
-      textShadow: "0 0 5px #00E5FF",
-    }}
-    className="
+                <button
+                    onClick={() => {
+                        setOpen(true);
+                        setEditMode(false);
+                        setSelectedTournament(null);
+                    }}
+                    style={{
+                        color: "#00E5FF",
+                        backgroundColor: "#0D1117",
+                        border: "1px solid #00E5FF",
+                        boxShadow: "0 0 6px #00E5FF",
+                        textShadow: "0 0 5px #00E5FF",
+                    }}
+                    className="
       hover:scale-105 
       px-3 py-1.5 sm:px-5 sm:py-2 
       rounded-lg font-semibold 
       text-sm sm:text-base
       transition-all shadow-md
     "
-  >
-    Add Tournament
-  </button>
-</div>
+                >
+                    Add Tournament
+                </button>
+            </div>
 
 
             {/* Loading / Error / Empty States */}
-            {loading ? (
+            {true ? (
                 <div className="flex justify-center items-center min-h-[50vh]">
-                    <LoaderIcon size={15} colorClass="text-blue-600" />
+                    <LoaderIcon size={85} colorClass="text-[#00E5FF]" />
                 </div>
+
             ) : error ? (
                 <p className="text-red-500 text-center">{error}</p>
             ) : (
@@ -224,8 +225,12 @@ export default function ManageTournamentPage() {
                                         <div
                                             key={t._id}
                                             className="rounded-lg shadow-md transition-all duration-300 hover:shadow-xl overflow-hidden"
-                                            style={{ backgroundColor: bgColor, color: textColor }}
-                                        >
+                                            style={{
+                                                backgroundColor: bgColor,
+                                                color: textColor,
+                                                borderColor: textColor,
+                                                boxShadow: `0 0 5px ${textColor}`,
+                                            }}>
                                             <div className="p-4 rounded-lg shadow-md w-full">
                                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                                                     <div>
@@ -501,22 +506,43 @@ export default function ManageTournamentPage() {
                                 onClick={goToPrevPage}
                                 disabled={currentPage === 1}
                                 className={`
-      flex items-center justify-center gap-1 
-      px-4 py-2 rounded-md border border-gray-400 
-      font-medium text-sm shadow-sm
-      transition-all duration-200 transform 
-      bg-white/10 backdrop-blur-md
-      hover:scale-[1.05] hover:shadow-lg hover:border-gray-300
-      hover:bg-white/20 active:scale-[0.95]
-      disabled:opacity-40 disabled:cursor-not-allowed
-    `}
+        flex items-center justify-center gap-1
+        px-4 py-2 rounded-md font-medium text-sm
+        transition-all duration-200 transform
+        disabled:opacity-40 disabled:cursor-not-allowed
+      `}
+                                style={{
+                                    color: "#00E5FF",
+                                    border: "1px solid #00E5FF",
+                                    backgroundColor: "rgba(13, 17, 23, 0.8)",
+                                    boxShadow:
+                                        currentPage === 1
+                                            ? "none"
+                                            : "0 0 8px rgba(0, 229, 255, 0.6)",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = "#00E5FF";
+                                    e.currentTarget.style.color = "#0D1117";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = "rgba(13, 17, 23, 0.8)";
+                                    e.currentTarget.style.color = "#00E5FF";
+                                }}
                             >
                                 <ChevronLeft size={18} />
                                 Prev
                             </button>
 
                             {/* Page Info */}
-                            <span className="font-semibold text-sm px-4 py-2 bg-white/10 rounded-md border border-gray-300 shadow-sm">
+                            <span
+                                className="font-semibold text-sm px-4 py-2 rounded-md shadow-sm"
+                                style={{
+                                    backgroundColor: "rgba(13, 17, 23, 0.8)",
+                                    color: "#00E5FF",
+                                    border: "1px solid #00E5FF",
+                                    boxShadow: "0 0 6px rgba(0, 229, 255, 0.4)",
+                                }}
+                            >
                                 Page {currentPage} of {totalPages}
                             </span>
 
@@ -525,22 +551,35 @@ export default function ManageTournamentPage() {
                                 onClick={goToNextPage}
                                 disabled={currentPage === totalPages}
                                 className={`
-      flex items-center justify-center gap-1 
-      px-4 py-2 rounded-md border border-gray-400 
-      font-medium text-sm shadow-sm
-      transition-all duration-200 transform 
-      bg-white/10 backdrop-blur-md
-      hover:scale-[1.05] hover:shadow-lg hover:border-gray-300
-      hover:bg-white/20 active:scale-[0.95]
-      disabled:opacity-40 disabled:cursor-not-allowed
-    `}
+        flex items-center justify-center gap-1
+        px-4 py-2 rounded-md font-medium text-sm
+        transition-all duration-200 transform
+        disabled:opacity-40 disabled:cursor-not-allowed
+      `}
+                                style={{
+                                    color: "#00E5FF",
+                                    border: "1px solid #00E5FF",
+                                    backgroundColor: "rgba(13, 17, 23, 0.8)",
+                                    boxShadow:
+                                        currentPage === totalPages
+                                            ? "none"
+                                            : "0 0 8px rgba(0, 229, 255, 0.6)",
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.backgroundColor = "#00E5FF";
+                                    e.currentTarget.style.color = "#0D1117";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.backgroundColor = "rgba(13, 17, 23, 0.8)";
+                                    e.currentTarget.style.color = "#00E5FF";
+                                }}
                             >
                                 Next
                                 <ChevronRight size={18} />
                             </button>
                         </div>
-
                     )}
+
                 </>
             )}
             {confirmOpen && (
@@ -555,16 +594,29 @@ export default function ManageTournamentPage() {
             )}
 
             {/* Modal */}
-            <Modal open={open} onClose={() => setOpen(false)}>
+            <Modal
+                open={open}
+                onClose={() => setOpen(false)}
+                title={editMode ? "Edit Tournament" : "Create Tournament"} // dynamic title
+            >
                 <CreateTournament
                     onClose={() => setOpen(false)}
                     editMode={editMode}
                     tournament={selectedTournament}
                 />
             </Modal>
-            <Modal open={editOpen} onClose={() => setEditOpen(false)}>
-                <EditTournament onClose={() => setEditOpen(false)} tournament={selectedTournament} />
+
+            <Modal
+                open={editOpen}
+                onClose={() => setEditOpen(false)}
+                title="Edit Tournament Details" // static title for edit modal
+            >
+                <EditTournament
+                    onClose={() => setEditOpen(false)}
+                    tournament={selectedTournament}
+                />
             </Modal>
+
         </div>
     );
 }
