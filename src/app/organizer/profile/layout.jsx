@@ -4,20 +4,14 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { User, Swords, Wallet } from "lucide-react";
 import { ThemeContext } from "@/context/ThemeContext";
-import { getRandomColor } from "@/components/getColor";
 
 export default function ProfileLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
-const [colors, setColors] = useState({
-  bgColor: "#0D1117",   // dark card background
-  textColor: "#00E5FF", // glowing cyan text
-});
-  // useEffect(() => {
-  //   // Generate and set colors when component mounts
-  //   const generatedColors = getRandomColor();
-  //   setColors(generatedColors);
-  // }, []);
+  const [colors, setColors] = useState({
+    bgColor: "#0D1117",   // dark card background
+    textColor: "#00E5FF", // glowing cyan text
+  });
 
   const tabs = [
     { id: "update-user", label: "Profile", icon: User },
@@ -29,7 +23,7 @@ const [colors, setColors] = useState({
 
   // 🌀 Wait for colors to load before rendering UI
   if (!colors) {
-      return null; // don't render until client-side ready
+    return null; // don't render until client-side ready
 
   }
 
@@ -50,20 +44,34 @@ const [colors, setColors] = useState({
           {tabs.map(({ id, label, icon: Icon }) => {
             const isActive = currentTab === id;
             return (
-              <button
-                key={id}
-                onClick={() => router.push(`/organizer/profile/${id}`)}
-                className="flex-1 md:flex-none flex items-center justify-center md:justify-start gap-2 px-4 py-2 md:mb-2 rounded-md font-medium transition-all duration-300 hover:scale-105 cursor-pointer"
-                style={{
-                  backgroundColor: isActive ? colors.bgColor : "transparent", // 🌈 Use theme bg color on active
-                  color: isActive ? colors.textColor : colors.textColor, // keep text color consistent or change if needed
-                  border: isActive ? `2px solid ${colors.textColor}` : "2px solid transparent",
-                  boxShadow: isActive ? "0 2px 8px rgba(0,0,0,0.3)" : "none",
-                }}
-              >
-                <Icon className="w-5 h-5" />
-                <span className="hidden md:inline">{label}</span>
-              </button>
+            <button
+  key={id}
+  onClick={() => router.push(`/organizer/profile/${id}`)}
+  className="flex-1 md:flex-none flex items-center justify-center md:justify-start gap-2 px-4 py-2 md:mb-2 rounded-md font-medium transition-all duration-300 hover:scale-105 cursor-pointer"
+  style={{
+    backgroundColor: isActive ? colors.bgColor : "transparent",
+    color: colors.textColor,
+    border: isActive
+      ? `2px solid ${colors.textColor}`
+      : "2px solid transparent",
+    // 💫 Neon-glow box shadow for active state
+    boxShadow: isActive
+      ? `0 0 12px ${colors.textColor}, 0 0 24px ${colors.textColor}55`
+      : "0 0 6px rgba(0, 229, 255, 0.15)",
+    transition: "all 0.3s ease-in-out",
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.boxShadow = `0 0 18px ${colors.textColor}, 0 0 30px ${colors.textColor}55`;
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.boxShadow = isActive
+      ? `0 0 12px ${colors.textColor}, 0 0 24px ${colors.textColor}55`
+      : "0 0 6px rgba(0, 229, 255, 0.15)";
+  }}
+>
+  <Icon className="w-5 h-5" />
+  <span className="hidden md:inline">{label}</span>
+</button>
 
             );
           })}

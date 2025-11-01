@@ -101,11 +101,15 @@ export default function GamePage() {
               cursor: loading ? "not-allowed" : "pointer",
             }}
           >
-            {loading ? (
-              <LoaderIcon className="animate-spin w-5 h-5" />
-            ) : (
-              "Update Changes"
-            )}
+             {loading ? (
+                         <LoaderIcon
+                           size={24} // or 20 / 32 depending on your button size
+                           colorClass="text-[]" // glowing cyan
+                           className="animate-spin mx-auto" // center if needed
+                         />
+                       ) : (
+                         "Update Changes"
+                       )}
           </button>
         </div>
       </form>

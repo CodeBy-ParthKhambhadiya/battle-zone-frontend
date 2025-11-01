@@ -27,7 +27,6 @@ const defaultOptions = {
     background: bgColor,
     border: `1px solid ${textColor}`,
     boxShadow: `0 0 10px ${textColor}`,
-    textShadow: `0 0 6px ${textColor}`,
     maxWidth: "90vw", // prevents overflow on small screens
     wordBreak: "break-word",
   },

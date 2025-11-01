@@ -7,13 +7,13 @@ import useAuth from "@/hooks/useAuth";
 
 export default function home() {
   const [loaded, setLoaded] = useState(false);
+  const { user } = useAuth();
 
   // 🎨 Neon Theme Colors
   const colors = {
-    bgColor: "#0D1117",   // dark background
-    textColor: "#00E5FF", // glowing cyan text
+    bgColor: "#0D1117",
+    textColor: "#00E5FF",
   };
-  const { user } = useAuth();
 
   useEffect(() => {
     const timer = setTimeout(() => setLoaded(true), 200);
@@ -22,10 +22,9 @@ export default function home() {
 
   if (!loaded) {
     return (
-     <div className="flex justify-center items-center min-h-[50vh]">
-                         <LoaderIcon size={85} colorClass="text-[#00E5FF]" />
-                     </div>
-     
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <LoaderIcon size={85} colorClass="text-[#00E5FF]" />
+      </div>
     );
   }
 
@@ -55,6 +54,7 @@ export default function home() {
   const firstName = user?.firstName || "";
   const lastName = user?.lastName || "";
   const fullName = `${firstName} ${lastName}`.trim();
+
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-start p-6 md:p-10"
@@ -63,22 +63,6 @@ export default function home() {
         color: colors.textColor,
       }}
     >
-      {/* ✨ Header */}
-      {/* <h2
-        style={{
-          background: `linear-gradient(90deg, ${colors.textColor}33, transparent, ${colors.textColor}33)`,
-          color: colors.textColor,
-          textShadow: `0 0 10px ${colors.textColor}, 0 0 20px ${colors.textColor}66`,
-          border: `1px solid ${colors.textColor}55`,
-          padding: "0.75rem 1.5rem",
-          borderRadius: "1rem",
-          boxShadow: `0 0 15px ${colors.textColor}33`,
-        }}
-        className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold mb-8 text-center leading-tight tracking-wide transition-all duration-300"
-      >
-        {fullName ? `Welcome back, ${fullName}!` : "Welcome to BattleZone Player!"}
-      </h2> */}
-
       {/* 💠 Dashboard Cards */}
       <div className="flex flex-col md:flex-row md:flex-wrap justify-center gap-8 max-w-6xl">
         {cards.map((card) => (
@@ -100,22 +84,8 @@ export default function home() {
                 e.currentTarget.style.transform = "scale(1)";
               }}
             >
-              <h3
-                className="text-2xl font-semibold mb-3"
-                style={{
-                  textShadow: `0 0 10px ${colors.textColor}`,
-                }}
-              >
-                {card.title}
-              </h3>
-              <p
-                className="opacity-90"
-                style={{
-                  textShadow: `0 0 6px ${colors.textColor}`,
-                }}
-              >
-                {card.desc}
-              </p>
+              <h3 className="text-2xl font-semibold mb-3">{card.title}</h3>
+              <p className="opacity-90">{card.desc}</p>
             </div>
           </Link>
         ))}

@@ -217,7 +217,7 @@ export default function ProfilePage() {
                 className="w-full p-2 rounded-md focus:outline-none focus:ring-2 transition-all"
                 style={{
                   ...inputStyle,
-                 
+
                 }}
               />
             </div>
@@ -268,7 +268,11 @@ export default function ProfilePage() {
             }}
           >
             {loading ? (
-              <LoaderIcon className="animate-spin w-5 h-5" />
+              <LoaderIcon
+                size={24} // or 20 / 32 depending on your button size
+                colorClass="text-[]" // glowing cyan
+                className="animate-spin mx-auto" // center if needed
+              />
             ) : (
               "Update Changes"
             )}
