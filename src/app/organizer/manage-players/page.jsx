@@ -29,6 +29,7 @@ export default function ManageTournamentPage() {
     const [showModal, setShowModal] = useState(false);
     const [actionType, setActionType] = useState(null);
     const [selectedPlayerId, setSelectedPlayerId] = useState(null);
+    const [currentTime, setCurrentTime] = useState(new Date());
 
     const handleApprove = async (joinId) => {
         await confirmTournamentJoin({ joinId });
@@ -93,6 +94,12 @@ export default function ManageTournamentPage() {
         setExpanded(expanded === id ? null : id);
     };
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <div className="p-6">
@@ -170,28 +177,33 @@ export default function ManageTournamentPage() {
                                 }}>
                                 {/* Tournament Header */}
                                 <div className="p-4 rounded-lg shadow-md w-full">
-                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                                        <div>
-                                            <h2 className="text-xl font-bold">{tournament.name}</h2>
-                                            <p className="text-sm opacity-90">{tournament.game_type}</p>
+                                    <div className="flex sm:flex-row justify-between items-start sm:items-center gap-3">
+                                            <div className="flex items-center gap-2">
+                                            <Trophy
+                                                className="w-5 h-5"
+                                                style={{
+                                                    color: "#00E5FF",
+                                                    textShadow: "0 0 6px #00E5FF55",
+                                                }}
+                                            />
+                                            <h2
+                                                className="font-bold text-base sm:text-lg tracking-wide"
+                                                style={{
+                                                    color: "#00E5FF",
+                                                    textShadow: "0 0 6px #00E5FF55",
+                                                }}
+                                            >
+                                                {tournament.prize_pool ? `₹${tournament.prize_pool}` : "Prize TBA"}
+                                            </h2>
                                         </div>
 
                                         <div className="flex items-center gap-2">
-                                            {statusLabel === "UPCOMING" && (
-                                                <span
-                                                    className="text-[10px] sm:text-xs font-medium"
-                                                    style={{
-                                                        color: "#00E5FF",
-                                                    }}
-                                                >
-                                                    Starts in {getTimeLeft(tournament.start_datetime) || "00:00:00"}
-                                                </span>
-                                            )}
-                                            <span
+                                        
+                                            {/* <span
                                                 className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColor}`}
                                             >
                                                 {statusLabel}
-                                            </span>
+                                            </span> */}
                                             <Link href={`/organizer/manage-players/${tournament._id}`}>
                                                 <button
                                                     className="w-full sm:w-auto px-2 sm:px-3 py-1 sm:py-1.5 rounded text-[11px] sm:text-sm transition-all duration-300"
@@ -233,43 +245,50 @@ export default function ManageTournamentPage() {
                                     <div className="mt-3 p-3 rounded-md bg-black/20 text-sm sm:text-base space-y-3">
                                         {/* Player & Progress Info */}
                                         <div className="flex flex-wrap justify-between items-center gap-2">
-                                            <div>
-                                                <p className="font-semibold text-sm flex items-center gap-1">
-                                                    <Users className="w-4 h-4" />
-                                                    {joinedPlayers}/{maxPlayers} Players Joined
-                                                </p>
-                                                <p className="text-xs opacity-80">
-                                                    {pendingPlayers} Pending | {confirmedPlayers} Confirmed
-                                                </p>
-                                            </div>
+                                            <p className="font-semibold text-sm flex items-center gap-1">
+                                                <Users className="w-4 h-4" />
+                                                {joinedPlayers}/{maxPlayers} Players Joined
+                                            </p>
 
                                             {/* Status + Timer */}
-                                            <div className="flex flex-col sm:items-end gap-1">
+                                            <div className="flex items-center gap-2 text-xs sm:text-sm font-medium">
+                                                <span
+                                                    className="uppercase tracking-wide"
+                                                    style={{ color: "#00E5FF" }}
+                                                >
+                                                    {statusLabel}
+                                                </span>
+
                                                 {statusLabel === "UPCOMING" && (
                                                     <span
                                                         className="text-[10px] sm:text-xs font-medium"
-                                                        style={{
-                                                            color: "#00E5FF",
-                                                        }}
+                                                        style={{ color: "#00E5FF" }}
                                                     >
-                                                        Starts in {getTimeLeft(tournament.start_datetime) || "00:00:00"}
+                                                         Starts in {getTimeLeft(tournament.start_datetime) || "00:00:00"}
                                                     </span>
                                                 )}
-
                                             </div>
+                                        </div>
+
+                                        {/* Pending / Confirmed Info */}
+                                        <div className="flex flex-wrap justify-between items-center gap-2">
+                                            <p className="text-xs opacity-80">
+                                                {pendingPlayers} Pending | {confirmedPlayers} Confirmed
+                                            </p>
                                         </div>
 
                                         {/* Progress Bar */}
                                         <div className="w-full bg-gray-300/40 rounded-full h-2.5 overflow-hidden">
                                             <div
-                                                className=" h-2.5 rounded-full transition-all duration-500"
-                                                style={{ width: `${progressPercent}%`, backgroundColor: "#00E5FF", }}
-
+                                                className="h-2.5 rounded-full transition-all duration-500"
+                                                style={{
+                                                    width: `${progressPercent}%`,
+                                                    backgroundColor: "#00E5FF",
+                                                }}
                                             ></div>
                                         </div>
-
-
                                     </div>
+
                                 </div>
 
                                 {/* Expanded Content */}
