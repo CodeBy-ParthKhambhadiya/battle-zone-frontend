@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import apiRequest from "@/lib/axios"; // your axios wrapper
-import Toast from "react-hot-toast";
+import Toast from "@/utils/toast";
 
 // Fetch all users (except current user)
 export const fetchAllUsersAction = createAsyncThunk(

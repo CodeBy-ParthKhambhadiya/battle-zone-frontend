@@ -14,9 +14,12 @@ const getResponsiveStyle = () => {
   };
 };
 
+// Delay helper for async toast handling
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const defaultOptions = {
   position: "top-right",
-  duration: 4000,
+  duration: 3000, // ⏱️ show for 3 seconds
   style: {
     ...getResponsiveStyle(),
     fontWeight: 500,
@@ -31,7 +34,7 @@ const defaultOptions = {
 };
 
 const Toast = {
-  success: (message, options = {}) => {
+  success: async (message, options = {}) => {
     toast.success(message, {
       ...defaultOptions,
       iconTheme: {
@@ -40,9 +43,10 @@ const Toast = {
       },
       ...options,
     });
+    await delay(defaultOptions.duration);
   },
 
-  error: (message, options = {}) => {
+  error: async (message, options = {}) => {
     toast.error(message, {
       ...defaultOptions,
       style: {
@@ -59,9 +63,10 @@ const Toast = {
       },
       ...options,
     });
+    await delay(defaultOptions.duration);
   },
 
-  info: (message, options = {}) => {
+  info: async (message, options = {}) => {
     toast(message, {
       ...defaultOptions,
       iconTheme: {
@@ -70,6 +75,7 @@ const Toast = {
       },
       ...options,
     });
+    await delay(defaultOptions.duration);
   },
 };
 
