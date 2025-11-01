@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import useTournament from "@/hooks/useTournament";
-import { ChevronDown, ChevronUp, CreditCard, Home, Lock } from "lucide-react";
+import { ChevronDown, ChevronUp, CreditCard, Crown, Gift, Home, Lock, Medal } from "lucide-react";
 import { getRandomColor } from "@/components/getColor";
 import LoaderIcon from "@/components/LoadingButton";
 import useAuth from "@/hooks/useAuth";
@@ -450,47 +450,111 @@ export default function JoinedPage() {
                                             {/* Leaderboard / Prize Distribution */}
                                             {activeSection === "leaderboard" && t.joinedPlayers > 3 && (
                                                 <div
-                                                    className="mt-4 w-full  rounded-lg overflow-x-auto"
+                                                    className="mt-6 w-full rounded-xl overflow-hidden shadow-xl border"
                                                     style={{
                                                         backgroundColor: bgColor,
                                                         color: textColor,
+                                                        borderColor: textColor,
                                                         boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
                                                     }}
                                                 >
-                                                    <h3 className="font-semibold text-lg sm:text-xl mb-3 border-b border-gray-500 pb-1 flex items-center gap-2">
-                                                        <Trophy className="w-5 h-5" /> Leaderboard / Prize Distribution
-                                                    </h3>
+                                                    {/* Header */}
+                                                    <div
+                                                        className="p-4 border-b flex items-center gap-2"
+                                                        style={{ borderColor: textColor }}
+                                                    >
+                                                        <Trophy className="w-6 h-6 text-yellow-400" />
+                                                        <h3 className="font-bold text-xl">Leaderboard / Prize Distribution</h3>
+                                                    </div>
 
-                                                    <table className="min-w-full border rounded-lg overflow-hidden w-full">
-                                                        <thead>
-                                                            <tr>
-                                                                <th className="px-4 py-2 text-left">Position</th>
-                                                                <th className="px-4 py-2 text-left">Prize</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td className="px-4 py-2">1st Place</td>
-                                                                <td className="px-4 py-2">₹{firstPrize}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td className="px-4 py-2">2nd Place</td>
-                                                                <td className="px-4 py-2">₹{secondPrize}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td className="px-4 py-2">3rd Place</td>
-                                                                <td className="px-4 py-2">₹{thirdPrize}</td>
-                                                            </tr>
-                                                            {winnerBottomPlayers > 0 && (
+                                                    {/* Table */}
+                                                    <div className="overflow-x-auto">
+                                                        <table
+                                                            className="min-w-full text-sm sm:text-base"
+                                                            style={{
+                                                                borderCollapse: "collapse",
+                                                                width: "100%",
+                                                            }}
+                                                        >
+                                                            <thead
+                                                                style={{
+                                                                    backgroundColor: "rgba(255,255,255,0.05)",
+                                                                    borderBottom: `1px solid ${textColor}`,
+                                                                }}
+                                                            >
                                                                 <tr>
-                                                                    <td className="px-4 py-2">4th – {winnerPlayers}th Place</td>
-                                                                    <td className="px-4 py-2">₹{returnedPerPlayer}</td>
+                                                                    <th
+                                                                        className="px-6 py-3 text-left font-semibold uppercase tracking-wide"
+                                                                        style={{ borderBottom: `1px solid ${textColor}` }}
+                                                                    >
+                                                                        Position
+                                                                    </th>
+                                                                    <th
+                                                                        className="px-6 py-3 text-left font-semibold uppercase tracking-wide"
+                                                                        style={{ borderBottom: `1px solid ${textColor}` }}
+                                                                    >
+                                                                        Prize
+                                                                    </th>
                                                                 </tr>
-                                                            )}
-                                                        </tbody>
-                                                    </table>
+                                                            </thead>
+
+                                                            <tbody>
+                                                                {/* 1st */}
+                                                                <tr
+                                                                    className="hover:bg-gray-800/30 transition"
+                                                                    style={{ borderBottom: `1px solid ${textColor}` }}
+                                                                >
+                                                                    <td className="px-6 py-3 font-medium flex items-center gap-2">
+                                                                        <Crown className="w-5 h-5 text-yellow-400" />
+                                                                        1st Place
+                                                                    </td>
+                                                                    <td className="px-6 py-3">₹{firstPrize}</td>
+                                                                </tr>
+
+                                                                {/* 2nd */}
+                                                                <tr
+                                                                    className="hover:bg-gray-800/30 transition"
+                                                                    style={{ borderBottom: `1px solid ${textColor}` }}
+                                                                >
+                                                                    <td className="px-6 py-3 font-medium flex items-center gap-2">
+                                                                        <Trophy className="w-5 h-5 text-gray-300" />
+                                                                        2nd Place
+                                                                    </td>
+                                                                    <td className="px-6 py-3">₹{secondPrize}</td>
+                                                                </tr>
+
+                                                                {/* 3rd */}
+                                                                <tr
+                                                                    className="hover:bg-gray-800/30 transition"
+                                                                    style={{ borderBottom: `1px solid ${textColor}` }}
+                                                                >
+                                                                    <td className="px-6 py-3 font-medium flex items-center gap-2">
+                                                                        <Medal className="w-5 h-5 text-amber-500" />
+                                                                        3rd Place
+                                                                    </td>
+                                                                    <td className="px-6 py-3">₹{thirdPrize}</td>
+                                                                </tr>
+
+                                                                {/* 4th – Nth refund range */}
+                                                                {winnerBottomPlayers > 0 && (
+                                                                    <tr
+                                                                        className="hover:bg-gray-800/30 transition"
+                                                                        style={{ borderBottom: `1px solid ${textColor}` }}
+                                                                    >
+                                                                        <td className="px-6 py-3 font-medium flex items-center gap-2">
+                                                                            <Gift className="w-5 h-5 text-cyan-400" />
+                                                                            4th – {winnerPlayers}th Place
+                                                                        </td>
+                                                                        <td className="px-6 py-3 text-cyan-300">₹{returnedPerPlayer}</td>
+                                                                    </tr>
+                                                                )}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             )}
+
+
 
                                             {/* Game Info */}
                                             {activeSection === "game" && (
@@ -621,7 +685,7 @@ export default function JoinedPage() {
                                                         boxShadow: "0 10px 25px rgba(0,0,0,0.5)"
                                                     }}
                                                 >
-                                                    <h3 className="text-lg font-semibold border-b pb-1 mb-2 flex items-center gap-2">
+                                                    <h3 className="text-lg font-semibold pb-1 mb-2 flex items-center gap-2">
                                                         <Users className="w-5 h-5" /> Joined Players ({players.length})
                                                     </h3>
 

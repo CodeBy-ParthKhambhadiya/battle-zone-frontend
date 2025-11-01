@@ -477,45 +477,56 @@ export default function TournamentsPage() {
                                             {/* Leaderboard / Prize Distribution */}
                                             {activeSection === "leaderboard" && t.joinedPlayers > 3 && (
                                                 <div
-                                                    className="mt-4 w-full p-4 rounded-lg overflow-x-auto"
+                                                    className="mt-6 w-full rounded-xl overflow-hidden shadow-xl border border-gray-700"
                                                     style={{
                                                         backgroundColor: bgColor,
                                                         color: textColor,
                                                         boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
                                                     }}
                                                 >
-                                                    <h3 className="font-semibold text-lg sm:text-xl mb-3 border-b border-gray-500 pb-1 flex items-center gap-2">
-                                                        <Trophy className="w-5 h-5" /> Leaderboard / Prize Distribution
-                                                    </h3>
+                                                    <div className="p-4 border-b border-gray-600 flex items-center gap-2">
+                                                        <Trophy className="w-6 h-6 text-yellow-400" />
+                                                        <h3 className="font-bold text-xl">Leaderboard / Prize Distribution</h3>
+                                                    </div>
 
-                                                    <table className="min-w-full border rounded-lg overflow-hidden w-full">
-                                                        <thead>
-                                                            <tr>
-                                                                <th className="px-4 py-2 text-left">Position</th>
-                                                                <th className="px-4 py-2 text-left">Prize</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr>
-                                                                <td className="px-4 py-2">1st Place</td>
-                                                                <td className="px-4 py-2">₹{firstPrize}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td className="px-4 py-2">2nd Place</td>
-                                                                <td className="px-4 py-2">₹{secondPrize}</td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td className="px-4 py-2">3rd Place</td>
-                                                                <td className="px-4 py-2">₹{thirdPrize}</td>
-                                                            </tr>
-                                                            {winnerBottomPlayers > 0 && (
+                                                    <div className="overflow-x-auto">
+                                                        <table className="min-w-full divide-y divide-gray-700 text-sm sm:text-base">
+                                                            <thead className="bg-gray-800/40">
                                                                 <tr>
-                                                                    <td className="px-4 py-2">4th – {winnerPlayers}th Place</td>
-                                                                    <td className="px-4 py-2">₹{returnedPerPlayer}</td>
+                                                                    <th className="px-6 py-3 text-left font-semibold uppercase tracking-wide">
+                                                                        Position
+                                                                    </th>
+                                                                    <th className="px-6 py-3 text-left font-semibold uppercase tracking-wide">
+                                                                        Prize
+                                                                    </th>
                                                                 </tr>
-                                                            )}
-                                                        </tbody>
-                                                    </table>
+                                                            </thead>
+
+                                                            <tbody className="divide-y divide-gray-700">
+                                                                <tr className="hover:bg-gray-800/30 transition">
+                                                                    <td className="px-6 py-3 font-medium">🥇 1st Place</td>
+                                                                    <td className="px-6 py-3">₹{firstPrize}</td>
+                                                                </tr>
+                                                                <tr className="hover:bg-gray-800/30 transition">
+                                                                    <td className="px-6 py-3 font-medium">🥈 2nd Place</td>
+                                                                    <td className="px-6 py-3">₹{secondPrize}</td>
+                                                                </tr>
+                                                                <tr className="hover:bg-gray-800/30 transition">
+                                                                    <td className="px-6 py-3 font-medium">🥉 3rd Place</td>
+                                                                    <td className="px-6 py-3">₹{thirdPrize}</td>
+                                                                </tr>
+
+                                                                {winnerBottomPlayers > 0 && (
+                                                                    <tr className="hover:bg-gray-800/30 transition">
+                                                                        <td className="px-6 py-3 font-medium">
+                                                                            4th – {winnerPlayers}th Place
+                                                                        </td>
+                                                                        <td className="px-6 py-3">₹{returnedPerPlayer}</td>
+                                                                    </tr>
+                                                                )}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             )}
 
@@ -645,7 +656,7 @@ export default function TournamentsPage() {
                                                     className="overflow-x-auto rounded-lg"
                                                     style={{ boxShadow: "0 10px 25px rgba(0,0,0,0.5)" }}
                                                 >
-                                                    <h3 className="text-lg sm:text-xl font-semibold border-b pb-1 mb-2 flex items-center gap-2">
+                                                    <h3 className="text-lg sm:text-xl font-semibold mb-2 flex items-center gap-2">
                                                         <Users className="w-5 h-5" /> Players ({players.length})
                                                     </h3>
                                                     <table
