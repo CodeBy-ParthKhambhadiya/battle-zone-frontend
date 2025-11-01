@@ -14,7 +14,6 @@ export default function OrganizerDashboard() {
   };
 
   useEffect(() => {
-    // Simulate loading delay (if needed)
     const timer = setTimeout(() => setLoaded(true), 200);
     return () => clearTimeout(timer);
   }, []);
@@ -24,7 +23,6 @@ export default function OrganizerDashboard() {
       <div className="flex justify-center items-center min-h-[50vh]">
         <LoaderIcon size={85} colorClass="text-[#00E5FF]" />
       </div>
-
     );
   }
 
@@ -66,7 +64,6 @@ export default function OrganizerDashboard() {
           backgroundColor: colors.bgColor,
           color: colors.textColor,
           boxShadow: `0 0 25px ${colors.textColor}80`,
-          textShadow: `0 0 10px ${colors.textColor}`,
         }}
       >
         Welcome to BattleZone!
@@ -86,12 +83,7 @@ export default function OrganizerDashboard() {
                 boxShadow: `0 0 20px ${colors.textColor}80`,
               }}
             >
-              <h3
-                className="text-2xl font-semibold mb-2"
-                style={{ textShadow: `0 0 6px ${colors.textColor}` }}
-              >
-                {card.title}
-              </h3>
+              <h3 className="text-2xl font-semibold mb-2">{card.title}</h3>
               <p className="text-center opacity-90">{card.desc}</p>
             </div>
           </Link>

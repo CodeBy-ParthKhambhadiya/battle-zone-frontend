@@ -1,3 +1,4 @@
+
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
@@ -9,9 +10,8 @@ export default function OrganizerIcons() {
   const pathname = usePathname();
   const [avatar, setAvatar] = useState(null);
 
-  // Custom color theme
-  const bgColor = "#0D1117";   // dark background
-  const textColor = "#00E5FF"; // glowing cyan
+  const bgColor = "#0D1117";   // dark card background
+  const textColor = "#00E5FF"; // glowing cyan text
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -32,69 +32,79 @@ export default function OrganizerIcons() {
     { name: "Chat", icon: MessageSquareText, path: "/organizer/chat" },
     { name: "Profile", icon: User, path: "/organizer/profile" },
   ];
-
   return (
     <footer
-      className="w-full shadow-t py-3 md:py-4  left-0"
+      className="w-full shadow-t py-3 md:py-4"
       style={{
         backgroundColor: bgColor,
-        boxShadow: `0 -2px 15px rgba(0, 229, 255, 0.15)`, // top cyan glow
-        zIndex: 50,
+        boxShadow: `0 0 15px rgba(0, 229, 255, 0.2)`,
+        borderTop: `1px solid ${textColor}55`,
+        borderBottom: `1px solid ${textColor}`,
       }}
     >
-      <div className="flex justify-center items-center space-x-6 md:space-x-10">
+      <div className="flex justify-center space-x-6 pb-1">
         {tabs.map((tab) => {
-          const isActive = pathname === tab.path;
+          // ✅ This logic ensures Profile stays active for all its subpages
+          const isActive =
+            tab.name === "Profile"
+              ? pathname.startsWith("/organizer/profile")
+              : pathname === tab.path;
+
           const Icon = tab.icon;
 
           if (tab.name === "Profile") {
-            // Profile Avatar Button
             return (
               <button
                 key={tab.name}
                 onClick={() => router.push(tab.path)}
-                className="p-1 rounded-full transition-all duration-200 cursor-pointer flex items-center justify-center"
+                className="p-1 rounded-full transition-all duration-300 cursor-pointer flex items-center justify-center relative"
                 style={{
                   backgroundColor: bgColor,
-                  boxShadow: isActive ? `0 0 10px ${textColor}` : "none",
+                  border: isActive ? `1px solid ${textColor}` : "1px solid transparent",
+                  boxShadow: isActive ? `0 0 12px ${textColor}` : "none",
                 }}
               >
-                {avatar ? (
-                  <img
-                    src={avatar}
-                    alt="Organizer Avatar"
-                    className="w-10 h-10 rounded-full object-cover"
-                    style={{
-                      border: isActive ? `2px solid ${textColor}` : "2px solid transparent",
-                      boxShadow: isActive ? `0 0 8px ${textColor}` : "none",
-                    }}
-                  />
-                ) : (
-                  <User
-                    className="w-10 h-10 transition-colors duration-200"
-                    style={{
-                      color: textColor,
-                      filter: isActive ? `drop-shadow(0 0 5px ${textColor})` : "none",
-                    }}
-                  />
-                )}
+                <div
+                  className="rounded-full overflow-hidden transition-all duration-300"
+                  style={{
+                    boxShadow: isActive
+                      ? `0 0 20px ${textColor}, 0 0 8px ${textColor} inset`
+                      : "none",
+                  }}
+                >
+                  {avatar ? (
+                    <img
+                      src={avatar}
+                      alt="User Avatar"
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <User
+                      className="w-10 h-10 transition-all duration-200"
+                      style={{
+                        color: textColor,
+                        filter: `drop-shadow(0 0 5px ${textColor})`,
+                      }}
+                    />
+                  )}
+                </div>
               </button>
             );
           }
 
-          // Other icons
           return (
             <button
               key={tab.name}
               onClick={() => router.push(tab.path)}
-              className="p-2 rounded-full transition-all duration-200 cursor-pointer"
+              className="p-2 rounded-full transition-all duration-300 cursor-pointer"
               style={{
                 backgroundColor: bgColor,
+                border: isActive ? `1px solid ${textColor}` : "1px solid transparent",
                 boxShadow: isActive ? `0 0 10px ${textColor}` : "none",
               }}
             >
               <Icon
-                className="w-8 h-8 transition-colors duration-200"
+                className="w-8 h-8 transition-all duration-200"
                 style={{
                   color: textColor,
                   filter: isActive ? `drop-shadow(0 0 5px ${textColor})` : "none",
@@ -107,3 +117,4 @@ export default function OrganizerIcons() {
     </footer>
   );
 }
+

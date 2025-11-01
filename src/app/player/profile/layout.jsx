@@ -41,7 +41,7 @@ export default function ProfileLayout({ children }) {
       >
         {/* Sidebar */}
         <div
-          className="flex md:flex-col md:w-64 mb-4 md:mb-0 bg-surface rounded-xl p-2 md:p-4 shadow-md"
+          className="flex flex-wrap md:flex-col md:w-64 mb-4 md:mb-0 bg-surface rounded-xl p-2 md:p-4 shadow-md gap-5 md:gap-0"
           style={{
             backgroundColor: colors.bgColor,
             color: colors.textColor,
@@ -53,14 +53,13 @@ export default function ProfileLayout({ children }) {
               <button
                 key={id}
                 onClick={() => router.push(`/player/profile/${id}`)}
-                className="flex-1 md:flex-none flex items-center justify-center md:justify-start gap-2 px-4 py-2 md:mb-2 rounded-md font-medium transition-all duration-300 hover:scale-105 cursor-pointer"
+                className="flex-1 md:flex-none flex items-center justify-center md:justify-start gap-2 px-4 py-2 rounded-md font-medium transition-all duration-300 hover:scale-105 cursor-pointer md:mb-2"
                 style={{
                   backgroundColor: isActive ? colors.bgColor : "transparent",
                   color: colors.textColor,
                   border: isActive
                     ? `2px solid ${colors.textColor}`
                     : "2px solid transparent",
-                  // 💫 Neon-glow box shadow for active state
                   boxShadow: isActive
                     ? `0 0 12px ${colors.textColor}, 0 0 24px ${colors.textColor}55`
                     : "0 0 6px rgba(0, 229, 255, 0.15)",
@@ -78,10 +77,10 @@ export default function ProfileLayout({ children }) {
                 <Icon className="w-5 h-5" />
                 <span className="hidden md:inline">{label}</span>
               </button>
-
             );
           })}
         </div>
+
 
         {/* Page content */}
         <main
