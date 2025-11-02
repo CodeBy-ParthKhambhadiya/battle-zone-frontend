@@ -31,11 +31,11 @@ const cards = [
     title: "Verification",
     desc: "Review and approve player or organizer verification requests.",
   },
-  // {
-  //   href: "/admin/users",
-  //   title: "Manage Users",
-  //   desc: "View, edit, or remove users from the system.",
-  // },
+  {
+    href: "/admin/add-balance",
+    title: "Add balance",
+    desc: "View, edit, or remove users from the system.",
+  },
   {
     href: "/admin/transaction-requests",
     title: "Transaction Requests",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowUpDown, Search, CheckCircle, XCircle, ChevronDown } from "lucide-react";
+import { ArrowUpDown, Search, CheckCircle, XCircle, ChevronDown, Check, X } from "lucide-react";
 import useWallet from "@/hooks/useWallet";
 import ConfirmModal from "@/components/admin/ConfirmModal";
 import LoaderIcon from "@/components/LoadingButton";
@@ -282,40 +282,34 @@ export default function TransactionRequestsPage() {
                                     <td className="py-3 px-4 text-sm">
                                         {new Date(tx.createdAt).toLocaleString()}
                                     </td>
-                                    <td className="py-3 px-4 text-center flex gap-4 justify-center">
-                                        <button
-                                            onClick={() => {
-                                                setSelectedTransaction(tx);
-                                                setConfirmType("approve");
-                                                setShowConfirm(true);
-                                            }}
-                                            className="hover:opacity-80 transition"
-                                        >
-                                            <CheckCircle
-                                                size={22}
-                                                style={{
-                                                    color: "#4ADE80",
-                                                    filter: "drop-shadow(0 0 6px #4ADE80)",
+                                    <td className="py-3 px-4 text-center">
+                                        <div className="flex justify-center items-center gap-3">
+                                            {/* Approve Button */}
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedTransaction(tx);
+                                                    setConfirmType("approve");
+                                                    setShowConfirm(true);
                                                 }}
-                                            />
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setSelectedTransaction(tx);
-                                                setConfirmType("reject");
-                                                setShowConfirm(true);
-                                            }}
-                                            className="hover:opacity-80 transition"
-                                        >
-                                            <XCircle
-                                                size={22}
-                                                style={{
-                                                    color: "#FF4D4D",
-                                                    filter: "drop-shadow(0 0 6px #FF4D4D)",
+                                                className="w-9 h-9 flex items-center justify-center rounded-full bg-green-500/20 hover:bg-green-500/30 transition"
+                                            >
+                                                <Check size={18} className="text-green-400 drop-shadow-[0_0_6px_#4ADE80]" />
+                                            </button>
+
+                                            {/* Reject Button */}
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedTransaction(tx);
+                                                    setConfirmType("reject");
+                                                    setShowConfirm(true);
                                                 }}
-                                            />
-                                        </button>
+                                                className="w-9 h-9 flex items-center justify-center rounded-full bg-red-500/20 hover:bg-red-500/30 transition"
+                                            >
+                                                <X size={18} className="text-red-400 drop-shadow-[0_0_6px_#FF4D4D]" />
+                                            </button>
+                                        </div>
                                     </td>
+
                                 </tr>
                             ))}
                         </tbody>
