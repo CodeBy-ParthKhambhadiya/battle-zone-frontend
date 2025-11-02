@@ -99,22 +99,20 @@ export default function VerificationPage() {
 
     return (
         <div
-            className="p-6 min-h-screen"
+            className="p-2 min-h-screen"
             style={{
                 backgroundColor: bgColor,
                 color: textColor,
             }}
         >
-            <h1
-                className="text-3xl font-extrabold mb-8 uppercase tracking-wide text-center"
-                style={{
-                    color: textColor,
-                    textShadow: `0 0 10px ${textColor}, 0 0 20px ${textColor}80`,
-                }}
-            >
-                User Verification Panel
-            </h1>
+            <div className="flex items-center gap-3 mb-8">
+                {/* Glowing Accent Bar */}
+                <div className="w-1.5 h-8 bg-[#00E5FF] rounded-full shadow-[0_0_10px_#00E5FF]" />
 
+                {/* Title */}
+                <h1 className="text-2xl sm:text-xl md:text-3xl font-extrabold text-[#00E5FF] tracking-wide drop-shadow-[0_0_10px_#00E5FF]">
+                    User Verification Panel                </h1>
+            </div>
             {/* Search Bar */}
             <div className="flex justify-center mb-6">
                 <div

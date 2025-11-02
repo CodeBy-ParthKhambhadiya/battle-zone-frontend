@@ -152,6 +152,9 @@ export const fetchUserAction = createAsyncThunk(
       if (!response || response.error) {
         return thunkAPI.rejectWithValue(response?.message || "Failed to fetch user");
       }
+      if (response) {
+        localStorage.setItem("user", JSON.stringify(response.data));
+      }
 
       return response.data; // return user object
     } catch (error) {
@@ -224,9 +227,9 @@ export const verifyUserAction = createAsyncThunk(
         data: { isVerified },
       });
       console.log(response);
-      
+
       Toast.success(
-      response.message
+        response.message
       );
       return response;
     } catch (error) {
