@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import useAuth from "@/hooks/useAuth";
 import useWallet from "@/hooks/useWallet";
 import LoaderIcon from "@/components/LoadingButton";
+import ConfirmModal from "@/components/admin/ConfirmModal";
 import { useTheme } from "@/context/ThemeContext";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
@@ -19,10 +20,19 @@ export default function AccountPage() {
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [balance, setBalance] = useState(0);
   const [expandedId, setExpandedId] = useState(null);
+  const [depositErrors, setDepositErrors] = useState({});
+  const [withdrawErrors, setWithdrawErrors] = useState({});
 
-  const toggleExpand = (id) => {
-    setExpandedId(expandedId === id ? null : id);
-  };
+  const [confirmModal, setConfirmModal] = useState({
+    open: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+  });
+
+  const [formLoading, setFormLoading] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false); // loader inside modal confirm button
+
   const [depositData, setDepositData] = useState({
     amount: "",
     utrNumber: "",
@@ -33,13 +43,18 @@ export default function AccountPage() {
     userMessage: "",
   });
 
-  const [formLoading, setFormLoading] = useState(false);
   const [filterType, setFilterType] = useState("ALL");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
   const filteredTransactions =
     filterType === "ALL"
       ? transactions
       : transactions.filter((t) => t.type === filterType);
+
+  const toggleExpand = (id) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user")) || {};
@@ -69,35 +84,79 @@ export default function AccountPage() {
     }
   };
 
-  const handleDeposit = async (e) => {
+  // 🧩 Show confirmation before deposit
+  const confirmDeposit = (e) => {
     e.preventDefault();
-    const { amount, utrNumber, userMessage } = depositData;
+    if (!validateDeposit()) return;
 
-    setFormLoading(true);
+    const { amount, utrNumber } = depositData;
+
+    if (!amount || !utrNumber) return;
+
+    setConfirmModal({
+      open: true,
+      title: "Confirm Deposit",
+      message: (
+        <div className="space-y-2 text-sm sm:text-base leading-relaxed">
+          <p>
+            You’re about to deposit{" "}
+            <span className="font-semibold text-[#00E5FF]">₹{amount}</span> to your wallet.
+          </p>
+          <p>
+            Please double-check your payment details before confirming.
+          </p>
+          <p>
+            <span className="font-medium">UTR Number / Transaction ID:</span>{" "}
+            <span className="font-semibold text-[#00E5FF]">{utrNumber}</span>
+          </p>
+        </div>
+
+      ),
+      onConfirm: handleDeposit,
+    });
+  };
+
+
+  const confirmWithdraw = (e) => {
+    e.preventDefault();
+    if (!validateWithdraw()) return;
+
+    if (!withdrawData.amount) return;
+    setConfirmModal({
+      open: true,
+      title: "Confirm Withdrawal",
+      message: `Are you sure you want to withdraw ₹${withdrawData.amount}?`,
+      onConfirm: handleWithdraw,
+    });
+  };
+
+  const handleDeposit = async () => {
+    const { amount, utrNumber, userMessage } = depositData;
+    setModalLoading(true);
     try {
       await createTransaction({ type: "DEPOSIT", amount, utrNumber, userMessage });
       await loadTransactions();
       setDepositData({ amount: "", utrNumber: "", userMessage: "" });
+      setConfirmModal({ open: false });
     } catch (err) {
       console.error(err);
     } finally {
-      setFormLoading(false);
+      setModalLoading(false);
     }
   };
 
-  const handleWithdraw = async (e) => {
-    e.preventDefault();
+  const handleWithdraw = async () => {
     const { amount, userMessage } = withdrawData;
-
-    setFormLoading(true);
+    setModalLoading(true);
     try {
       await createTransaction({ type: "WITHDRAWAL", amount, userMessage });
       await loadTransactions();
       setWithdrawData({ amount: "", userMessage: "" });
+      setConfirmModal({ open: false });
     } catch (err) {
       console.error(err);
     } finally {
-      setFormLoading(false);
+      setModalLoading(false);
     }
   };
 
@@ -109,6 +168,27 @@ export default function AccountPage() {
   const buttonStyle = {
     backgroundColor: textColor || "#444",
     color: "#000000ff",
+  };
+  const validateDeposit = () => {
+    const newErrors = {};
+    if (!depositData.amount || depositData.amount <= 0)
+      newErrors.amount = "Please enter a valid amount.";
+    if (!depositData.utrNumber.trim())
+      newErrors.utrNumber = "UTR number is required.";
+    if (!depositData.userMessage.trim())
+      newErrors.userMessage = "Message is required.";
+    setDepositErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const validateWithdraw = () => {
+    const newErrors = {};
+    if (!withdrawData.amount || withdrawData.amount <= 0)
+      newErrors.amount = "Please enter a valid amount.";
+    if (!withdrawData.userMessage.trim())
+      newErrors.userMessage = "Message is required.";
+    setWithdrawErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   return (
@@ -149,73 +229,104 @@ export default function AccountPage() {
 
         {/* Deposit Form */}
         {showDeposit && (
-          <form onSubmit={handleDeposit} className="mt-4 space-y-3">
+          <form onSubmit={confirmDeposit} className="mt-4 space-y-3">
             <input
               type="number"
               placeholder="Amount"
               value={depositData.amount}
-              onChange={(e) => setDepositData({ ...depositData, amount: e.target.value })}
+              onChange={(e) =>
+                setDepositData({ ...depositData, amount: e.target.value })
+              }
               className="w-full p-2 rounded-md"
               style={inputStyle}
             />
+            {depositErrors.amount && (
+              <p className="text-red-500 text-sm">{depositErrors.amount}</p>
+            )}
+
             <input
               type="text"
-              placeholder="UTR Number"
+              placeholder="UTR Number / Transaction ID"
               value={depositData.utrNumber}
-              onChange={(e) => setDepositData({ ...depositData, utrNumber: e.target.value })}
+              onChange={(e) =>
+                setDepositData({ ...depositData, utrNumber: e.target.value })
+              }
               className="w-full p-2 rounded-md"
               style={inputStyle}
             />
+            {depositErrors.utrNumber && (
+              <p className="text-red-500 text-sm">{depositErrors.utrNumber}</p>
+            )}
+
             <input
               type="text"
               placeholder="Message (e.g., Paid via Paytm)"
               value={depositData.userMessage}
-              onChange={(e) => setDepositData({ ...depositData, userMessage: e.target.value })}
+              onChange={(e) =>
+                setDepositData({ ...depositData, userMessage: e.target.value })
+              }
               className="w-full p-2 rounded-md"
               style={inputStyle}
             />
+            {depositErrors.userMessage && (
+              <p className="text-red-500 text-sm">{depositErrors.userMessage}</p>
+            )}
+
             <button
               type="submit"
-              disabled={formLoading}
               className="w-full py-2 rounded-md shadow-md transition-all"
-              style={{ ...buttonStyle, opacity: formLoading ? 0.7 : 1 }}
+              style={buttonStyle}
             >
-              {formLoading ? "Processing..." : "Submit Deposit"}
+              Submit Deposit
             </button>
           </form>
         )}
 
         {/* Withdraw Form */}
         {showWithdraw && (
-          <form onSubmit={handleWithdraw} className="mt-4 space-y-3">
+          <form onSubmit={confirmWithdraw} className="mt-4 space-y-3">
             <input
               type="number"
               placeholder="Amount"
               value={withdrawData.amount}
-              onChange={(e) => setWithdrawData({ ...withdrawData, amount: e.target.value })}
+              onChange={(e) =>
+                setWithdrawData({ ...withdrawData, amount: e.target.value })
+              }
               className="w-full p-2 rounded-md"
               style={inputStyle}
             />
+            {withdrawErrors.amount && (
+              <p className="text-red-500 text-sm">{withdrawErrors.amount}</p>
+            )}
+
             <input
               type="text"
               placeholder="Message (e.g., Send to UPI test@upi)"
               value={withdrawData.userMessage}
-              onChange={(e) => setWithdrawData({ ...withdrawData, userMessage: e.target.value })}
+              onChange={(e) =>
+                setWithdrawData({ ...withdrawData, userMessage: e.target.value })
+              }
               className="w-full p-2 rounded-md"
               style={inputStyle}
             />
+            {withdrawErrors.userMessage && (
+              <p className="text-red-500 text-sm">{withdrawErrors.userMessage}</p>
+            )}
+
             <button
               type="submit"
-              disabled={formLoading}
               className="w-full py-2 rounded-md shadow-md transition-all"
-              style={{ ...buttonStyle, opacity: formLoading ? 0.7 : 1 }}
+              style={buttonStyle}
             >
-              {formLoading ? "Processing..." : "Submit Withdrawal"}
+              Submit Withdrawal
             </button>
           </form>
         )}
+
       </div>
 
+      {/* Transaction History (unchanged) */}
+      {/* ... your existing transaction section remains the same ... */}
       <div className="mt-6">
 
         <div
@@ -359,7 +470,7 @@ export default function AccountPage() {
                           <span className="font-medium opacity-80">System Message:</span>{" "}
                           {t.systemMessage || "—"}
                         </p>
-                      
+
                         <p>
                           <span className="font-medium opacity-80">Updated At:</span>{" "}
                           {new Date(t.updatedAt).toLocaleString()}
@@ -373,8 +484,17 @@ export default function AccountPage() {
           </div>
         )}
       </div>
-
-
+      {/* Confirmation Modal */}
+      {confirmModal.open && (
+        <ConfirmModal
+          title={confirmModal.title}
+          message={confirmModal.message}
+          confirmText={modalLoading ? <LoaderIcon className="animate-spin w-5 h-5 text-black" /> : "Confirm"}
+          cancelText="Cancel"
+          onCancel={() => setConfirmModal({ open: false })}
+          onConfirm={confirmModal.onConfirm}
+        />
+      )}
     </div>
   );
 }

@@ -287,7 +287,7 @@ export default function EditTournament({ onClose, tournament }) {
                         }}
                     >
                         {loading ? (
-                            <LoaderIcon size={5} colorClass="text-white" />
+                            <LoaderIcon className="animate-spin mx-auto w-5 h-5 text-[#00E5FF]" />
                         ) : (
                             "Update Tournament"
                         )}

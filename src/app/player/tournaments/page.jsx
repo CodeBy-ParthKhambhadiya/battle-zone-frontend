@@ -9,10 +9,12 @@ import useAuth from "@/hooks/useAuth";
 import ConfirmModal from "@/components/player/ConfirmModal";
 import { Trophy, Gamepad, FileText, User, Users, Copy } from 'lucide-react';
 import getTimeLeft from "@/utils/getTimeLeft.js";
+import Toast from "@/utils/toast";
+import { useRouter } from "next/navigation";
 
 export default function TournamentsPage() {
     const { tournaments, joinDetails, fetchJoinDetails, fetchTournaments, joinTournament, cancelJoinTournament, loading } = useTournament();
-    const { user } = useAuth();
+    const { user, fetchUser } = useAuth();
     const [expanded, setExpanded] = useState(null);
     const [tournamentColors, setTournamentColors] = useState({});
     const [joiningTournamentId, setJoiningTournamentId] = useState(null); // ✅ Track only the tournament being joined
@@ -24,7 +26,7 @@ export default function TournamentsPage() {
     const [activeSection, setActiveSection] = useState("leaderboard");
     const [copied, setCopied] = useState(false);
     const [currentTime, setCurrentTime] = useState(new Date());
-
+    const router = useRouter();
 
     useEffect(() => {
         fetchTournaments();
@@ -73,18 +75,61 @@ export default function TournamentsPage() {
         }
     }, [tournaments]);
 
-
     const handleJoin = async (tournamentId, playerId) => {
-        setJoiningTournamentId(tournamentId); // ✅ mark this tournament as joining
+        const requiredFields = [
+            "firstName",
+            "lastName",
+            "username",
+            "email",
+            "mobile",
+            "address",
+            "gameId",
+            "gameUserName",
+            "accountHolderName",
+            "upiId",
+        ];
+
+        // ✅ Check if user details are complete
+        const isIncomplete = requiredFields.some((field) => {
+            const value = user?.[field];
+
+            if (value === undefined || value === null) return true;
+            if (typeof value === "string" && value.trim() === "") return true;
+
+            return false;
+        });
+
+        // 🎯 If game fields specifically are incomplete, redirect to /player/profile/game
+        const isGameIncomplete =
+            !user?.gameId || (typeof user.gameId === "string" && user.gameId.trim() === "") ||
+            !user?.gameUserName || (typeof user.gameUserName === "string" && user.gameUserName.trim() === "");
+
+        if (isGameIncomplete) {
+            Toast.error("Please add your Game ID and Game Username before joining a tournament.");
+            router.push("/player/profile/game");
+            return;
+        }
+
+        if (isIncomplete) {
+            Toast.error("Please complete your profile before joining a tournament.");
+            router.push("/player/profile/update-user");
+            return;
+        }
+
+        // 🌀 Proceed if user info is complete
+        setJoiningTournamentId(tournamentId);
         try {
             await joinTournament({ tournamentId, playerId });
             await fetchJoinDetails();
+            await fetchUser();
         } catch (err) {
             console.error(err);
         } finally {
-            setJoiningTournamentId(null); // ✅ reset after join completes
+            setJoiningTournamentId(null);
         }
     };
+
+
     const handleCancel = async (joinId) => {
         setCancellingJoinId(joinId);
         try {

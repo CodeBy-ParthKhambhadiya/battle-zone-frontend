@@ -10,7 +10,7 @@ export default function LoaderIcon({
 }) {
   return (
     <Loader
-      className={`animate-spin mr-2 ${colorClass} ${className}`}
+      className={`animate-spin ${colorClass} ${className}`}
       style={{
         height: `${size}px`,
         width: `${size}px`,
