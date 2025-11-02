@@ -29,7 +29,7 @@ export default function OrganizerIcons() {
   const tabs = [
     { name: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
     { name: "Verification", icon: ShieldCheck, path: "/admin/verification" },
-    // { name: "Users", icon: Users, path: "/admin/users" },
+    { name: "Users", icon: Users, path: "/admin/add-balance" },
     { name: "Wallet Requests", icon: Wallet, path: "/admin/transaction-requests" },
     { name: "Profile", icon: User, path: "/admin/profile" },
   ];
