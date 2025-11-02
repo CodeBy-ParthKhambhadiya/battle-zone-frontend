@@ -280,7 +280,8 @@ export default function TournamentsPage() {
                             buttonDisabled = true;
                         } else if (showJoinButton) {
                             // Only show join button in UPCOMING tournaments
-                            buttonText = "Pre-Join";
+                            // buttonText = "Pre-Join";
+                            buttonText = "Join Now";
                             buttonDisabled = false;
                         }
 
@@ -441,7 +442,8 @@ export default function TournamentsPage() {
                                                                 ? "Joined"
                                                                 : isJoining
                                                                     ? <LoaderIcon className="w-4 h-4 inline-block animate-spin" />
-                                                                    : "Pre-Join"}
+                                                                    : "Join Now"}
+                                                                    {/* : "Pre-Join"} */}
                                                     </button>
 
 
