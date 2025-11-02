@@ -6,12 +6,15 @@ import {
   forgotPasswordAction,
   loginAction,
   fetchUserAction,
-  updateUserAction, // add login action
+  updateUserAction,
+  deleteUserAction,
+  verifyUserAction,
+  getUnverifiedUsersAction, // add login action
 } from "@/store/actions/auth.action";
 
 const useAuth = () => {
   const dispatch = useDispatch();
-  const { user, loading } = useSelector((state) => state.user);
+  const { user,userList, loading } = useSelector((state) => state.user);
 
   // Sign up
   const createUser = async (body) => {
@@ -46,9 +49,26 @@ const useAuth = () => {
     return await dispatch(updateUserAction({ userId, data }));
   };
 
+    // 🟦 Fetch Unverified Users
+  const getUnverifiedUsers = async () => {
+    return await dispatch(getUnverifiedUsersAction());
+  };
+
+  // 🟩 Verify or Disable User
+  const verifyUser = async (id, isVerified) => {
+    return await dispatch(verifyUserAction({ id, isVerified }));
+  };
+
+// 🧠 Your component or hook
+const deleteUser = async (id) => {
+  console.log("🗑️ Deleting user:", id);
+  return await dispatch(deleteUserAction({ id }));
+};
+
 
   return {
     user,
+    userList,
     loading,
     createUser,
     verifyOtp,
@@ -57,6 +77,9 @@ const useAuth = () => {
     login, // export login
     fetchUser,
     updateUser,
+     getUnverifiedUsers,
+    verifyUser,
+    deleteUser,
   };
 };
 

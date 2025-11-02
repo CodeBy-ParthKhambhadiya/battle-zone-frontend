@@ -1,9 +1,10 @@
 // reducers/auth.reducer.js
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchUserAction, forgotPasswordAction, loginAction, resendOtpAction, signUpAction, updateUserAction, verifyOtpAction } from "@/store/actions/auth.action";
+import { deleteUserAction, fetchUserAction, forgotPasswordAction, getUnverifiedUsersAction, loginAction, resendOtpAction, signUpAction, updateUserAction, verifyOtpAction, verifyUserAction } from "@/store/actions/auth.action";
 
 const initialState = {
   user: null,
+  userList: [],
   loading: false,
   error: null,
   success: false,
@@ -123,7 +124,7 @@ const authReducer = createSlice({
         state.error = action.payload;
       })
 
-      builder
+    builder
       .addCase(updateUserAction.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -138,6 +139,78 @@ const authReducer = createSlice({
         state.loading = false;
         state.error = action.payload;
         state.success = false;
+      });
+    // 🟦 1️⃣ Get Unverified Users
+    builder
+      .addCase(getUnverifiedUsersAction.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.requestStatus = "fetching";
+      })
+      .addCase(getUnverifiedUsersAction.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.requestStatus = "fetch-success";
+        // Assuming backend returns { users: [...] } or array directly
+        state.userList = action.payload.users || action.payload || [];
+      })
+      .addCase(getUnverifiedUsersAction.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.success = false;
+        state.requestStatus = "fetch-failed";
+      });
+
+    // 🟩 2️⃣ Verify / Disable User
+    builder
+      .addCase(verifyUserAction.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.requestStatus = "verifying";
+      })
+      .addCase(verifyUserAction.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.requestStatus = "verify-success";
+
+        const updatedUser = action.payload.user;
+
+        // ✅ Update userList item directly
+        state.userList = state.userList.map((u) =>
+          u._id === updatedUser._id ? updatedUser : u
+        );
+      })
+      .addCase(verifyUserAction.rejected, (state, action) => {
+
+        state.loading = false;
+        state.error = action.payload;
+        state.success = false;
+        state.requestStatus = "verify-failed";
+      });
+
+    // 🟥 3️⃣ Delete User
+    builder
+      .addCase(deleteUserAction.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.requestStatus = "deleting";
+      })
+      .addCase(deleteUserAction.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        console.log(action);
+        
+        const deletedUser = action.payload;
+        // ✅ Filter userList
+        state.userList = state.userList.filter(
+          (u) => u._id !== deletedUser._id
+        );
+      })
+      .addCase(deleteUserAction.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.success = false;
+        state.requestStatus = "delete-failed";
       });
   },
 });

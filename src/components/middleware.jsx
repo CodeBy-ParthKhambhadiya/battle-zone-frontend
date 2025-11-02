@@ -9,17 +9,16 @@ export default function AuthGuard({ children }) {
   const pathname = usePathname();
   const { user, fetchUser } = useAuth();
 
+  // 🧩 Fetch user if token exists but user not yet loaded
   useEffect(() => {
     const token = localStorage.getItem("token");
-
-    // If token exists but user not fetched yet → fetch it
     if (token && (!user || Object.keys(user).length === 0)) {
       fetchUser();
     }
   }, [user]);
 
   useEffect(() => {
-    // Allow access to auth pages
+    // Allow public & auth pages without restriction
     if (pathname.startsWith("/auth")) return;
 
     const token = localStorage.getItem("token");
@@ -33,13 +32,13 @@ export default function AuthGuard({ children }) {
       localStorage.removeItem("user");
     }
 
-    // 🚫 No token → login
+    // 🚫 No token → redirect to home
     if (!token) {
-      router.replace("/auth/login");
+      router.replace("/");
       return;
     }
 
-    // ✅ Fetch user if not loaded yet (after login)
+    // ✅ Fetch user if token exists but user not yet loaded
     if (!parsedUser && token) {
       fetchUser();
       return;
@@ -47,7 +46,19 @@ export default function AuthGuard({ children }) {
 
     const role = parsedUser?.role;
 
-    // Role-based redirects
+    // 🚫 Invalid or missing role
+    if (!role) {
+      localStorage.clear();
+      router.replace("/");
+      return;
+    }
+
+    // 🛡️ Role-based route guards
+    if (role === "ADMIN" && !pathname.startsWith("/admin")) {
+      router.replace("/admin/dashboard");
+      return;
+    }
+
     if (role === "ORGANIZER" && !pathname.startsWith("/organizer")) {
       router.replace("/organizer/dashboard");
       return;
@@ -57,14 +68,6 @@ export default function AuthGuard({ children }) {
       router.replace("/player/home");
       return;
     }
-
-    // 🚫 Invalid or missing role
-    if (!role) {
-      localStorage.clear();
-      router.replace("/auth/login");
-      return;
-    }
-
   }, [pathname]);
 
   return children || null;

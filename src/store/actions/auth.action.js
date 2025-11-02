@@ -197,3 +197,67 @@ export const updateUserAction = createAsyncThunk(
     }
   }
 );
+
+export const getUnverifiedUsersAction = createAsyncThunk(
+  "user/getUnverifiedUsers",
+  async (_, thunkAPI) => {
+    try {
+      const response = await apiRequest({
+        method: "GET",
+        url: "/user/unverified",
+      });
+      return response; // data from backend
+    } catch (error) {
+      Toast.error(error.message || "Failed to fetch unverified users");
+      return thunkAPI.rejectWithValue(error.message || "Something went wrong");
+    }
+  }
+);
+
+export const verifyUserAction = createAsyncThunk(
+  "user/verifyUser",
+  async ({ id, isVerified }, thunkAPI) => {
+    try {
+      const response = await apiRequest({
+        method: "PUT",
+        url: `/user/${id}/verify`,
+        data: { isVerified },
+      });
+      console.log(response);
+      
+      Toast.success(
+      response.message
+      );
+      return response;
+    } catch (error) {
+      Toast.error(error.message || "Failed to update user verification");
+      return thunkAPI.rejectWithValue(error.message || "Something went wrong");
+    }
+  }
+);
+
+export const deleteUserAction = createAsyncThunk(
+  "user/delete",
+  async ({ id }, thunkAPI) => {
+    try {
+      console.log("➡️ deleteUserAction ~ id:", id);
+
+      const response = await apiRequest({
+        method: "DELETE",
+        url: `/user/${id}`,
+        data: undefined, // ✅ important!
+      });
+      return response.deletedUser;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to delete user";
+
+      Toast.error(message);
+      return thunkAPI.rejectWithValue({ message });
+    }
+  }
+);
+
+

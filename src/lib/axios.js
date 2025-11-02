@@ -1,5 +1,5 @@
 import axios from "axios";
-import Toast from "@/utils/toast"; // optional, for automatic global toasts
+import Toast from "@/utils/toast";
 
 // Create Axios instance
 const api = axios.create({
@@ -12,7 +12,8 @@ const api = axios.create({
 // 🧩 Request interceptor: attach token if available
 api.interceptors.request.use(
   (config) => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -25,7 +26,6 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Extract useful information
     const status = error.response?.status;
     const errorData = error.response?.data || {};
     const message =
@@ -34,34 +34,43 @@ api.interceptors.response.use(
       error.message ||
       "Something went wrong with the request";
 
-    
+    // You can show toasts globally if you like:
+    // Toast.error(message);
 
-    // Always reject with a consistent error object
     return Promise.reject({
       status,
       message,
       data: errorData,
-      original: error, // keep the original Axios error if needed
+      original: error,
     });
   }
 );
 
 /**
- * 🔁 Generic API request function
- * Cleanly wraps axios and returns `response.data`.
- * If an error occurs, throws a simplified error object.
+ * 🔁 Generic API request wrapper
+ * - Removes empty `data` for DELETE/GET
+ * - Returns only `response.data`
  */
-export const apiRequest = async ({ method, url, data = null, params = null }) => {
+export const apiRequest = async ({ method, url, data, params }) => {
   try {
-    const response = await api({
+    const config = {
       method,
       url,
-      data,
       params,
-    });
+    };
+
+    // ✅ Only attach body if it’s not undefined
+    // Prevents sending "null" for DELETE/GET
+    if (data !== undefined && data !== null && method !== "get" && method !== "delete") {
+      config.data = data;
+    }
+
+    const response = await api(config);
     return response.data;
   } catch (error) {
-    // Rethrow simplified error so your thunk can catch it
+    // Optional global toast
+    // Toast.error(error?.message || "Unexpected API error");
+
     throw {
       message: error?.message || "Unexpected API error",
       status: error?.status || error?.response?.status,

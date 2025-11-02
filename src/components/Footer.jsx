@@ -1,38 +1,51 @@
 "use client";
 
-import React from "react";
+import Link from "next/link";
 
-const Footer = () => {
+export default function Footer() {
+  const year = new Date().getFullYear();
+
   return (
-    <footer className="bg-[#1E3A8A] text-white p-6">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
-        {/* Left side */}
-        <p className="text-sm">&copy; {new Date().getFullYear()} BattleZone. All rights reserved.</p>
+    <footer className="w-full bg-[#0D1117] border-t border-cyan-500/30 text-[#00E5FF] py-8">
+      <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+        
+        {/* Left side: Brand + Rights */}
+        <div className="text-center md:text-left text-sm text-gray-400">
+          © {year} <span className="text-cyan-400 font-semibold">BattleZone</span>. All rights reserved.
+        </div>
 
-        {/* Right side: Links */}
-        <div className="flex space-x-4 mt-2 md:mt-0">
+        {/* Center: Quick Links */}
+        <div className="flex flex-wrap justify-center gap-6 text-sm">
           <a
             href="#"
-            className="text-white hover:text-[#047857] transition-colors duration-200"
+            className="hover:text-cyan-400 transition-colors duration-200"
           >
             Privacy Policy
           </a>
           <a
             href="#"
-            className="text-white hover:text-[#047857] transition-colors duration-200"
+            className="hover:text-cyan-400 transition-colors duration-200"
           >
             Terms of Service
           </a>
           <a
-            href="#"
-            className="text-white hover:text-[#DC2626] transition-colors duration-200"
+            href="mailto:battlezoneofficial@gmail.com"
+            className="hover:text-cyan-400 transition-colors duration-200"
           >
-            Contact
+            Contact: battlezoneofficial@gmail.com
           </a>
+        </div>
+
+        {/* Right side: Admin Access */}
+        <div className="text-center md:text-right">
+          <Link
+            href="/auth/admin-login"
+            className="text-gray-400 hover:text-cyan-400 transition-colors duration-200 text-sm font-medium"
+          >
+            Admin Login
+          </Link>
         </div>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

@@ -1,14 +1,14 @@
 "use client";
 
 import Header from "@/components/Header";
+import Footer from "@/components/Footer"; // ✅ import the new footer
 import Link from "next/link";
 
 export default function HomePage() {
   const bgColor = "#0D1117";   // Dark background
   const textColor = "#00E5FF"; // Glowing cyan text
-  <Header />
+
   return (
-    
     <div
       className="flex flex-col min-h-screen"
       style={{
@@ -17,13 +17,13 @@ export default function HomePage() {
       }}
     >
       {/* Header */}
-    
+      <Header />
 
       {/* Hero Section */}
       <div className="flex flex-col items-center justify-center flex-1 text-center px-4 min-h-[70vh]">
         <h1 className="text-4xl md:text-6xl font-extrabold mb-4">
           Welcome to{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600 animate-gradient bg-[length:200%_200%]">
             BattleZone
           </span>
         </h1>
@@ -34,14 +34,14 @@ export default function HomePage() {
         </p>
 
         {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <Link href="auth/login">
+        <div className="flex flex-row flex-wrap justify-center gap-4">
+          <Link href="/auth/login">
             <button className="px-6 py-3 rounded-full font-semibold bg-cyan-500 hover:bg-cyan-400 text-black transition-all duration-300 shadow-lg shadow-cyan-500/30">
               Log In
             </button>
           </Link>
 
-          <Link href="auth/signup">
+          <Link href="/auth/signup">
             <button className="px-6 py-3 rounded-full font-semibold border border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-black transition-all duration-300 shadow-lg shadow-cyan-500/20">
               Sign Up
             </button>
@@ -49,10 +49,8 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Optional footer or accent */}
-      <div className="text-center text-gray-500 text-sm pb-6">
-        © {new Date().getFullYear()} BattleZone — All rights reserved.
-      </div>
+      {/* ✅ Beautiful new footer */}
+      <Footer />
     </div>
   );
 }
