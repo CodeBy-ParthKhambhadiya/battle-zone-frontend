@@ -10,7 +10,7 @@ export const fetchNotificationsAction = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
         
-      const response = await apiRequest.get("/notifications/me");
+      const response = await apiRequest.get("/notifications/notifi");
       return response.data?.data || []; // assuming backend returns { data: [...] }
     } catch (error) {
       const message =
@@ -68,7 +68,7 @@ export const deleteNotificationAction = createAsyncThunk(
   "notification/deleteOne",
   async (notificationId, thunkAPI) => {
     try {
-      const response = await apiRequest.delete(`/notifications/me/${notificationId}`);
+      const response = await apiRequest.delete(`/notifications/${notificationId}`);
       Toast.success("Notification deleted!");
       return notificationId; // just return ID so reducer can filter it out
     } catch (error) {
@@ -87,7 +87,7 @@ export const clearAllNotificationsAction = createAsyncThunk(
   "notification/clearAll",
   async (_, thunkAPI) => {
     try {
-      await apiRequest.delete("/notifications/me");
+      await apiRequest.delete("/notifications/");
       Toast.success("All notifications cleared!");
       return [];
     } catch (error) {

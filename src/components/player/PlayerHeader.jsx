@@ -8,14 +8,14 @@ import NotificationBell from "@/components/NotificationBell";
 
 const PlayerHeader = () => {
   const { user } = useAuth();
-  const { unreadCount } = useNotifications(user?._id);
+  const { unreadCount, markAllAsRead } = useNotifications(user?._id);
   const [colors] = useState({
     bgColor: "#0D1117",
     textColor: "#00E5FF",
   });
 
   const handleBellClick = async () => {
-       
+       await markAllAsRead();
   };
 
   const walletBalance =

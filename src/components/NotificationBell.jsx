@@ -50,7 +50,6 @@ export default function NotificationBell() {
         try {
           await markAllAsRead();
         } catch (error) {
-          console.error("Error marking all notifications as read:", error);
         }
       };
       markAll();
