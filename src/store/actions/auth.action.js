@@ -263,4 +263,23 @@ export const deleteUserAction = createAsyncThunk(
   }
 );
 
+export const getAdminDetailsAction = createAsyncThunk(
+  "admin/getDetails",
+  async (_, thunkAPI) => {
+    try {
+      const response = await apiRequest({
+        method: "GET",
+        url: "/user/admin/details",
+      });
 
+
+      // Toast.success("Admin details loaded"); // optional toast
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message || error.message || "Failed to fetch admin details";
+      Toast.error(message);
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);

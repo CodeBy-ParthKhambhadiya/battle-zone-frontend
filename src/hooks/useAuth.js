@@ -9,12 +9,13 @@ import {
   updateUserAction,
   deleteUserAction,
   verifyUserAction,
-  getUnverifiedUsersAction, // add login action
+  getUnverifiedUsersAction,
+  getAdminDetailsAction, // add login action
 } from "@/store/actions/auth.action";
 
 const useAuth = () => {
   const dispatch = useDispatch();
-  const { user,userList, loading } = useSelector((state) => state.user);
+  const { user, admin, userList, loading } = useSelector((state) => state.user);
 
   // Sign up
   const createUser = async (body) => {
@@ -49,7 +50,7 @@ const useAuth = () => {
     return await dispatch(updateUserAction({ userId, data }));
   };
 
-    // 🟦 Fetch Unverified Users
+  // 🟦 Fetch Unverified Users
   const getUnverifiedUsers = async () => {
     return await dispatch(getUnverifiedUsersAction());
   };
@@ -59,15 +60,18 @@ const useAuth = () => {
     return await dispatch(verifyUserAction({ id, isVerified }));
   };
 
-// 🧠 Your component or hook
-const deleteUser = async (id) => {
-  console.log("🗑️ Deleting user:", id);
-  return await dispatch(deleteUserAction({ id }));
-};
+  // 🧠 Your component or hook
+  const deleteUser = async (id) => {
+    console.log("🗑️ Deleting user:", id);
+    return await dispatch(deleteUserAction({ id }));
+  };
 
-
+  const fetchAdminDetails = async () => {
+    return await dispatch(getAdminDetailsAction());
+  };
   return {
     user,
+    admin,
     userList,
     loading,
     createUser,
@@ -77,9 +81,11 @@ const deleteUser = async (id) => {
     login, // export login
     fetchUser,
     updateUser,
-     getUnverifiedUsers,
+    getUnverifiedUsers,
     verifyUser,
     deleteUser,
+    fetchAdminDetails,
+
   };
 };
 

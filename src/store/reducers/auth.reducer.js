@@ -1,9 +1,10 @@
 // reducers/auth.reducer.js
 import { createSlice } from "@reduxjs/toolkit";
-import { deleteUserAction, fetchUserAction, forgotPasswordAction, getUnverifiedUsersAction, loginAction, resendOtpAction, signUpAction, updateUserAction, verifyOtpAction, verifyUserAction } from "@/store/actions/auth.action";
+import { deleteUserAction, fetchUserAction, forgotPasswordAction, getAdminDetailsAction, getUnverifiedUsersAction, loginAction, resendOtpAction, signUpAction, updateUserAction, verifyOtpAction, verifyUserAction } from "@/store/actions/auth.action";
 
 const initialState = {
   user: null,
+  admin: null,
   userList: [],
   loading: false,
   error: null,
@@ -199,7 +200,7 @@ const authReducer = createSlice({
         state.loading = false;
         state.success = true;
         console.log(action);
-        
+
         const deletedUser = action.payload;
         // ✅ Filter userList
         state.userList = state.userList.filter(
@@ -211,6 +212,20 @@ const authReducer = createSlice({
         state.error = action.payload;
         state.success = false;
         state.requestStatus = "delete-failed";
+      });
+       builder
+      .addCase(getAdminDetailsAction.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAdminDetailsAction.fulfilled, (state, action) => {
+        state.loading = false;
+        state.admin = action.payload; // 👈 store admin details
+      })
+      .addCase(getAdminDetailsAction.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        state.admin = null; // reset admin on error
       });
   },
 });

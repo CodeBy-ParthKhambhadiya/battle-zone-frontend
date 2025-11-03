@@ -6,10 +6,11 @@ import useWallet from "@/hooks/useWallet";
 import LoaderIcon from "@/components/LoadingButton";
 import ConfirmModal from "@/components/admin/ConfirmModal";
 import { useTheme } from "@/context/ThemeContext";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Copy, CreditCard, User } from "lucide-react";
 
 export default function AccountPage() {
-  const { updateUser, loading: userLoading } = useAuth();
+  const { updateUser, loading: userLoading, admin, fetchAdminDetails } = useAuth();
+  console.log(admin);
   const { bgColor, textColor } = useTheme() || {};
   const { createTransaction, fetchMyTransactions } = useWallet();
 
@@ -22,6 +23,7 @@ export default function AccountPage() {
   const [expandedId, setExpandedId] = useState(null);
   const [depositErrors, setDepositErrors] = useState({});
   const [withdrawErrors, setWithdrawErrors] = useState({});
+  const [copied, setCopied] = useState(false);
 
   const [confirmModal, setConfirmModal] = useState({
     open: false,
@@ -62,6 +64,7 @@ export default function AccountPage() {
     setUpiId(storedUser.upiId || "");
     setBalance(storedUser.walletBalance || 0);
     loadTransactions();
+    fetchAdminDetails();
   }, []);
 
   const loadTransactions = async () => {
@@ -102,19 +105,33 @@ export default function AccountPage() {
             You’re about to deposit{" "}
             <span className="font-semibold text-[#00E5FF]">₹{amount}</span> to your wallet.
           </p>
-          <p>
-            Please double-check your payment details before confirming.
-          </p>
-          <p>
+
+          <div className="p-3 rounded-md border mt-2" style={{ borderColor: "#00E5FF", backgroundColor: "#0D1117" }}>
+            <p className="font-medium text-[#00E5FF]">Deposit Account Details:</p>
+            <p className="text-gray-300">
+              <span className="font-semibold">Account Holder:</span>{" "}
+              {admin?.accountHolderName || "N/A"}
+            </p>
+            <p className="text-gray-300">
+              <span className="font-semibold">UPI ID:</span>{" "}
+              {admin?.upiId || "N/A"}
+            </p>
+          </div>
+
+          <p className="mt-2">
             <span className="font-medium">UTR Number / Transaction ID:</span>{" "}
             <span className="font-semibold text-[#00E5FF]">{utrNumber}</span>
           </p>
-        </div>
 
+          <p className="text-gray-400">
+            Please double-check your payment details before confirming.
+          </p>
+        </div>
       ),
       onConfirm: handleDeposit,
     });
   };
+
 
 
   const confirmWithdraw = (e) => {
@@ -191,6 +208,12 @@ export default function AccountPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleCopyUpi = () => {
+    if (admin?.upiId) {
+      navigator.clipboard.writeText(admin.upiId);
+      setCopied(true);
+    }
+  };
   return (
     <div
       className="rounded-xl p-3 shadow-md transition-all duration-500 space-y-6"
@@ -201,10 +224,83 @@ export default function AccountPage() {
     >
       {/* 💰 Wallet Section */}
       <div className="mt-6 p-4 rounded-md border" style={{ borderColor: textColor || "#444" }}>
-        <h2 className="text-lg font-semibold mb-2">Wallet Balance</h2>
-        <p className="text-2xl font-bold mb-4">₹{balance}</p>
+        <h2 className="text-lg font-semibold mb-3 text-center">Wallet Balance</h2>
+        <p className="text-3xl font-bold mb-5 text-[#00E5FF] text-center">₹{balance}</p>
+
+        {admin && (
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-center justify-center w-full sm:w-auto">
+
+            {/* 👤 Account Holder Name Card */}
+            {admin.accountHolderName && (
+              <div
+                className="flex items-center justify-between gap-2 w-full sm:w-auto max-w-full sm:max-w-md px-3 py-2 rounded-lg shadow-md transition-all duration-300 border text-[11px] sm:text-sm overflow-hidden"
+                style={{
+                  backgroundColor: "#0D1117",
+                  color: "#00E5FF",
+                  borderColor: "#00E5FF",
+                  boxShadow: "0 0 8px #00E5FF",
+                  textShadow: "0 0 6px #00E5FF",
+                  wordBreak: "break-all",
+                }}
+              >
+                <p className="font-medium flex items-center gap-2 flex-wrap break-all text-center sm:text-left overflow-hidden text-ellipsis">
+                  <User size={12} className="text-[#00E5FF]" />
+                  <span className="font-semibold">Account Holder:</span>
+                  <span className="break-all">{admin.accountHolderName}</span>
+                </p>
+              </div>
+            )}
+
+            {/* 💰 UPI ID Card */}
+            {admin.upiId && (
+              <div
+                className="flex items-center justify-between gap-2 w-full sm:w-auto max-w-full sm:max-w-md px-3 py-2 rounded-lg shadow-md transition-all duration-300 border text-[11px] sm:text-sm overflow-hidden"
+                style={{
+                  backgroundColor: "#0D1117",
+                  color: "#00E5FF",
+                  borderColor: "#00E5FF",
+                  boxShadow: "0 0 8px #00E5FF",
+                  textShadow: "0 0 6px #00E5FF",
+                  wordBreak: "break-all",
+                }}
+              >
+                <p className="font-medium flex items-center gap-2 flex-wrap break-all text-center sm:text-left overflow-hidden text-ellipsis">
+                  <CreditCard size={12} className="text-[#00E5FF]" />
+                  <span className="font-semibold">UPI ID:</span>
+                  <span className="break-all">{admin.upiId}</span>
+                </p>
+
+                <button
+                  onClick={handleCopyUpi}
+                  className="flex items-center gap-1 px-2 py-[2px] rounded-md border transition-all text-[10px] sm:text-xs shrink-0"
+                  style={{
+                    color: "#00E5FF",
+                    borderColor: "#00E5FF",
+                    backgroundColor: "transparent",
+                    boxShadow: "0 0 4px #00E5FF",
+                  }}
+                  title="Copy UPI ID"
+                >
+                  <Copy size={12} />
+                  {copied ? "Copied!" : "Copy"}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* 💡 Instruction Message */}
+        {admin && (
+          <div className="mt-4 text-sm text-gray-300 text-center leading-relaxed max-w-md mx-auto">
+            <span className="font-medium">To add money:</span> Send the desired amount to the above UPI ID and then create a{" "}
+            <span className="text-[#00E5FF] font-semibold">Deposit Request</span> in your wallet.
+          </div>
+        )}
 
         <div className="flex gap-4">
+          {/* 🧾 Admin Payment Info */}
+
+
           <button
             onClick={() => {
               setShowDeposit(!showDeposit);
@@ -277,7 +373,7 @@ export default function AccountPage() {
               className="w-full py-2 rounded-md shadow-md transition-all"
               style={buttonStyle}
             >
-              Submit Deposit
+              Add money
             </button>
           </form>
         )}
@@ -318,7 +414,7 @@ export default function AccountPage() {
               className="w-full py-2 rounded-md shadow-md transition-all"
               style={buttonStyle}
             >
-              Submit Withdrawal
+              Withdrawal
             </button>
           </form>
         )}
