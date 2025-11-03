@@ -34,7 +34,6 @@ export default function LoginPage() {
 
     // ✅ Debug: see what colors are coming in
     useEffect(() => {
-        console.log("🚀 ~ LoginPage ~ colors:", { bgColor, textColor });
     }, [bgColor, textColor]);
 
     const handleSubmit = async (e) => {

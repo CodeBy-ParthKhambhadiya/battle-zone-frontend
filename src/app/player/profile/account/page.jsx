@@ -10,7 +10,6 @@ import { ChevronDown, ChevronUp, Copy, CreditCard, User } from "lucide-react";
 
 export default function AccountPage() {
   const { updateUser, loading: userLoading, admin, fetchAdminDetails } = useAuth();
-  console.log(admin);
   const { bgColor, textColor } = useTheme() || {};
   const { createTransaction, fetchMyTransactions } = useWallet();
 

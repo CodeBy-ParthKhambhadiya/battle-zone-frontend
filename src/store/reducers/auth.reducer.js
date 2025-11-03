@@ -208,7 +208,6 @@ const authReducer = createSlice({
     .addCase(deleteUserAction.fulfilled, (state, action) => {
       state.loading = false;
       state.success = true;
-      console.log(action);
 
       const deletedUser = action.payload;
       // ✅ Filter userList

@@ -1,34 +1,23 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useState } from "react";
-import {
-  HiDocumentText,
-  HiOutlineFlag,
-  HiShieldCheck,
-  HiBell,
-  HiCurrencyRupee,
-} from "react-icons/hi";
+import { HiShieldCheck, HiCurrencyRupee } from "react-icons/hi";
 import useAuth from "@/hooks/useAuth";
+import useNotifications from "@/hooks/useNotifications";
+import NotificationBell from "@/components/NotificationBell";
 
 const PlayerHeader = () => {
-  const pathname = usePathname();
   const { user } = useAuth();
-
+  const { unreadCount } = useNotifications(user?._id);
   const [colors] = useState({
     bgColor: "#0D1117",
     textColor: "#00E5FF",
   });
 
-  const links = [
-    // Uncomment if needed later:
-    // { href: "/player/terms-and-conditions", label: "Terms", icon: HiDocumentText },
-    // { href: "/player/tournament-rules", label: "Rules", icon: HiOutlineFlag },
-    { href: "/player/trust-safety", label: "Trust", icon: HiShieldCheck },
-  ];
+  const handleBellClick = async () => {
+       
+  };
 
-  const fullName = `${user?.firstName || ""} ${user?.lastName || ""}`.trim();
   const walletBalance =
     typeof user?.walletBalance === "number" ? user.walletBalance : "0.00";
 
@@ -41,7 +30,6 @@ const PlayerHeader = () => {
         boxShadow: "0 0 15px rgba(0, 229, 255, 0.2)",
       }}
     >
-      {/* Left Side: Title */}
       <div className="flex-1 min-w-[160px] text-left">
         <h1
           className="text-xl sm:text-2xl font-extrabold uppercase tracking-wide"
@@ -55,11 +43,9 @@ const PlayerHeader = () => {
         </h1>
       </div>
 
-      {/* Right Side: Wallet + Bell */}
       <div className="flex items-center gap-3 flex-wrap justify-end">
-        {/* Wallet */}
         <div
-          className="flex items-center gap-2 px-4 py-2 rounded-full text-sm sm:text-base font-semibold transition-all duration-300"
+          className="flex items-center gap-2 px-4 py-2 rounded-full text-sm sm:text-base font-semibold"
           style={{
             border: `1px solid ${colors.textColor}`,
             color: colors.textColor,
@@ -77,28 +63,13 @@ const PlayerHeader = () => {
           <span className="font-bold">{walletBalance}</span>
         </div>
 
-        {/* Notification */}
-        <button
-          className="flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 hover:scale-105"
-          style={{
-            color: colors.textColor,
-            border: `1px solid ${colors.textColor}55`,
-            backgroundColor: "rgba(0, 229, 255, 0.05)",
-            boxShadow: `0 0 8px ${colors.textColor}33`,
-          }}
-          onClick={() => alert("Notifications clicked!")}
-        >
-          <HiBell
-            className="w-6 h-6"
-            style={{
-              filter: `drop-shadow(0 0 4px ${colors.textColor})`,
-            }}
-          />
-        </button>
+        {/* 🔔 Notification */}
+        <div className="relative" onClick={handleBellClick}>
+          <NotificationBell unreadCount={unreadCount} />
+        </div>
       </div>
     </header>
   );
-
 };
 
 export default PlayerHeader;

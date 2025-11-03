@@ -31,7 +31,6 @@ export default function UserListPage() {
 
   // Handle wallet update confirmation
   const handleWalletUpdate = async () => {
-    console.log("🚀 ~ handleWalletUpdate ~ selectedUser:", selectedUser);
 
     if (!selectedUser || !amount) return;
 

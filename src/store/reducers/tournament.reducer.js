@@ -72,7 +72,6 @@ const tournamentReducer = createSlice({
                 state.success = false;
             })
             .addCase(createTournamentAction.fulfilled, (state, action) => {
-                console.log("🚀 ~ createTournamentAction fulfilled:", action);
                 state.loading = false;
                 state.success = true;
 

@@ -31,10 +31,6 @@ export default function usePrivateChat() {
     return result;
   };
 
-  //   useEffect(() => {
-  //     fetchAllUsers();
-  //   }, []);
-
   return {
     allUsers,
     loading,

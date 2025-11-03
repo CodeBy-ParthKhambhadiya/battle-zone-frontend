@@ -166,7 +166,6 @@ export const fetchUserAction = createAsyncThunk(
 export const updateUserAction = createAsyncThunk(
   "user/updateUser",
   async ({ userId, data, avatarFile }, thunkAPI) => {
-    console.log("🚀 ~ data:", data)
     try {
       const formData = new FormData();
       for (const key in data) {
@@ -227,7 +226,6 @@ export const verifyUserAction = createAsyncThunk(
         url: `/user/${id}/verify`,
         data: { isVerified },
       });
-      console.log(response);
 
       Toast.success(
         response.message
@@ -244,7 +242,6 @@ export const deleteUserAction = createAsyncThunk(
   "user/delete",
   async ({ id }, thunkAPI) => {
     try {
-      console.log("➡️ deleteUserAction ~ id:", id);
 
       const response = await apiRequest({
         method: "DELETE",

@@ -41,7 +41,6 @@ export const joinTournamentAction = createAsyncThunk(
         tournamentId,
         playerId,
       });
-      console.log("🚀 ~ data:", data)
       if (data.success) {
         Toast.success(data.message);
       } else {
