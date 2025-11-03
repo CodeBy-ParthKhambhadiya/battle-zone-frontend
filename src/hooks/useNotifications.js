@@ -39,6 +39,7 @@ export default function useNotifications(userId) {
         socket.emit("joinRoom", userId);
 
         socket.on("notification", (notif) => {
+            console.log("🚀 ~ useNotifications ~ notif:", notif)
             setLiveNotifications((prev) => [notif, ...prev]);
             setUnreadCount((prev) => prev + 1);
 
