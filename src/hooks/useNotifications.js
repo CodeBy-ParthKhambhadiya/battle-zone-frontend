@@ -106,6 +106,7 @@ export default function useNotifications(userId) {
         unreadCount,
         loading,
         error,
+        setUnreadCount,
         fetchNotifications,
         createNotification,
         deleteNotification,
