@@ -166,6 +166,7 @@ export const fetchUserAction = createAsyncThunk(
 export const updateUserAction = createAsyncThunk(
   "user/updateUser",
   async ({ userId, data, avatarFile }, thunkAPI) => {
+    console.log("🚀 ~ data:", data)
     try {
       const formData = new FormData();
       for (const key in data) {
