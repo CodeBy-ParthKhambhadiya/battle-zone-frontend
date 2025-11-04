@@ -2,6 +2,7 @@ import { io } from "socket.io-client";
 
 // ✅ Read from .env file
 const SOCKET_URL = process.env.SOCKET_URL;
+// const SOCKET_URL = "http://localhost:5000";
 console.log(SOCKET_URL);
 
 export const socket = io(SOCKET_URL, {

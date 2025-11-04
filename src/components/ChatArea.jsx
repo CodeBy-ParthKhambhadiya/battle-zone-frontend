@@ -1,55 +1,122 @@
-import { useState, useEffect, useRef } from "react";
-import { Send, Check } from "lucide-react";
-import usePrivateChat from "@/hooks/usePrivateChat";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Send } from "lucide-react";
 import useAuth from "@/hooks/useAuth";
+import { socket } from "@/lib/socket";
+import {
+  fetchMessagesAction,
+  sendMessageAction,
+} from "@/store/actions/privateChat.action";
+import LoaderIcon from "./LoadingButton";
+
+import { useDispatch, useSelector } from "react-redux";
 
 export default function ChatArea({ roomId }) {
   const [newMessage, setNewMessage] = useState("");
-  const inputRef = useRef(null);
+  const [incomingMessage, setIncomingMessage] = useState(null);
   const messagesEndRef = useRef(null);
-
-  const { chat, sendMessage, fetchMessages } = usePrivateChat();
+  const dispatch = useDispatch();
   const { user } = useAuth();
+  const [displayedMessages, setDisplayedMessages] = useState([]); // <-- fixed: state for messages shown in UI
+
+  const { messages, chat, loading } = useSelector(
+    (state) => state.privateChat
+  );
 
   const bgColor = "#0D1117";
   const textColor = "#00E5FF";
 
-  const messageList = Array.isArray(chat?.messages) ? chat.messages : [];
+  // ✅ Socket message handler
+  const handleNewMessage = useCallback((data) => {
+    setIncomingMessage(data);
+  }, []);
 
-  // Fetch messages initially
+  // ✅ Setup socket connection + join room
   useEffect(() => {
-    if (roomId && messageList.length === 0) {
-      fetchMessages(roomId);
-    }
-  }, [roomId, messageList.length]);
+    if (!user?._id) return;
 
-  // Scroll to bottom when messages update
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    socket.emit("joinRoom", user._id);
+    socket.on("newMessage", handleNewMessage);
+
+    return () => {
+      socket.emit("leaveRoom", user._id);
+      socket.off("newMessage", handleNewMessage);
+      console.log("🚪 Left socket room:", user._id);
+    };
+  }, [user?._id, handleNewMessage]);
+
+  // ✅ Fetch chat messages
+  const fetchMessages = useCallback(
+    async (chatId) => {
+      if (!chatId) return;
+      try {
+        await dispatch(fetchMessagesAction(chatId)).unwrap();
+      } catch (err) {
+      }
+    },
+    [dispatch]
+  );
+
+  // Fetch messages whenever roomId changes
+  useEffect(() => {
+    if (roomId) fetchMessages(roomId);
+  }, [roomId, fetchMessages]);
+
+  // ✅ Auto scroll to bottom when messages update
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messageList]);
+  }, [messages, incomingMessage]);
 
+  // ✅ Send a message
   const handleSend = async () => {
-    if (!newMessage.trim() || !chat?._id) return;
+    if (!newMessage.trim() || !roomId) return;
 
-    const messageToSend = newMessage;
-    setNewMessage(""); // Clear message
+    const messageToSend = newMessage.trim();
+    setNewMessage("");
 
     try {
-      await sendMessage({ chatId: chat._id, message: messageToSend });
-      setTimeout(() => {
-        fetchMessages(roomId);
-      }, 200);
+      const result = await dispatch(
+        sendMessageAction({ chatId: roomId, message: messageToSend })
+      ).unwrap();
+
+      // Emit socket event
+      socket.emit("sendMessage", { chatId: roomId, message: result });
+
+      // Re-fetch updated messages so last one displays
+      await fetchMessages(roomId);
     } catch (error) {
       console.error("Failed to send message:", error);
     }
   };
 
+  // Press Enter to send
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       handleSend();
     }
   };
+
+  // ✅ Show new incoming message instantly
+  useEffect(() => {
+    if (Array.isArray(messages)) {
+      setDisplayedMessages(messages);
+    }
+  }, [messages]);
+
+  // when a new incoming message arrives
+  useEffect(() => {
+    if (incomingMessage?.chatId === roomId) {
+      setDisplayedMessages((prev) => {
+        const prevMessages = Array.isArray(prev) ? [...prev] : [];
+        const updated = [...prevMessages, incomingMessage.message];
+        return updated;
+      });
+    }
+  }, [incomingMessage, roomId]);
 
   const formatTime = (isoString) => {
     const date = new Date(isoString);
@@ -58,16 +125,15 @@ export default function ChatArea({ roomId }) {
 
   return (
     <div
-      className="flex flex-col flex-1 rounded-lg shadow-md overflow-hidden border"
+      className="flex flex-col flex-1 rounded-2xl shadow-md overflow-hidden border bg-white/5 backdrop-blur-md"
       style={{
         backgroundColor: bgColor,
-        border: `1px solid ${textColor}33`,
-        boxShadow: `0 0 15px ${textColor}11`,
+        border: `1px solid ${textColor}22`,
       }}
     >
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto space-y-3 p-3 scrollbar-thin">
-        {messageList.length === 0 ? (
+      {/* Message Area */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 scroll-smooth">
+        {displayedMessages.length === 0 ? (
           <div
             className="text-center text-sm mt-10"
             style={{ color: `${textColor}99` }}
@@ -75,51 +141,32 @@ export default function ChatArea({ roomId }) {
             No messages yet...
           </div>
         ) : (
-          messageList.map((msg) => {
-            const isCurrentUser = msg.sender === user?._id;
-
+          displayedMessages.map((msg) => {
+            const isUser = msg.sender === user?._id;
             return (
               <div
-                key={msg._id}
-                className={`p-2 rounded-lg break-words w-fit max-w-[85%] sm:max-w-[75%] ${
-                  isCurrentUser ? "self-end ml-auto" : "self-start"
-                }`}
-                style={{
-                  backgroundColor: isCurrentUser
-                    ? `${textColor}22`
-                    : `${textColor}0A`,
-                  color: isCurrentUser ? textColor : `${textColor}CC`,
-                  border: `1px solid ${textColor}44`,
-                  boxShadow: isCurrentUser
-                    ? `0 0 10px ${textColor}33`
-                    : `0 0 6px ${textColor}11`,
-                }}
+                key={msg._id || Math.random()}
+                className={`flex ${isUser ? "justify-end" : "justify-start"}`}
               >
-                <div>{msg.message}</div>
                 <div
-                  className="text-xs mt-1 text-right flex items-center justify-end gap-1"
-                  style={{ color: `${textColor}88` }}
+                  className={`px-3 py-2 rounded-2xl text-sm max-w-[80%] sm:max-w-[70%] md:max-w-[60%] shadow-sm transition-all duration-200 break-words whitespace-pre-wrap`}
+                  style={{
+                    backgroundColor: isUser ? `${textColor}22` : `${textColor}12`,
+                    color: textColor,
+                    borderTopRightRadius: isUser ? "0.5rem" : "1rem",
+                    borderTopLeftRadius: isUser ? "1rem" : "0.5rem",
+                    wordWrap: "break-word",
+                  }}
                 >
-                  {formatTime(msg.sentAt)}
-                  {msg.sender === user?._id &&
-                    (msg.readBy?.length > 1 ? (
-                      <>
-                        <Check
-                          className="w-3 h-3"
-                          style={{ color: textColor }}
-                        />
-                        <Check
-                          className="w-3 h-3 -ml-1"
-                          style={{ color: textColor }}
-                        />
-                      </>
-                    ) : (
-                      <Check
-                        className="w-3 h-3"
-                        style={{ color: `${textColor}88` }}
-                      />
-                    ))}
+                  <div>{msg.message}</div>
+                  <div
+                    className="text-[10px] text-right mt-1 opacity-60"
+                    style={{ color: `${textColor}88` }}
+                  >
+                    {formatTime(msg.sentAt)}
+                  </div>
                 </div>
+
               </div>
             );
           })
@@ -127,43 +174,42 @@ export default function ChatArea({ roomId }) {
         <div ref={messagesEndRef}></div>
       </div>
 
-      {/* Input */}
+      {/* Input Section */}
       <div
-        className="flex gap-2 items-center p-3 border-t"
-        style={{
-          borderTop: `1px solid ${textColor}44`,
-          backgroundColor: `${bgColor}`,
-        }}
+        className="flex items-center gap-2 p-3 border-t bg-white/10 backdrop-blur-md"
+        style={{ borderTop: `1px solid ${textColor}22` }}
       >
         <input
           type="text"
-          ref={inputRef}
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyDown={handleKeyPress}
-          placeholder="Type your message..."
-          className="flex-1 p-2 rounded-md text-sm sm:text-base focus:outline-none"
+          placeholder="Message..."
+          className="flex-1 p-2 rounded-full focus:outline-none text-sm placeholder:text-gray-400"
           style={{
-            backgroundColor: `${bgColor}`,
+            backgroundColor: `${textColor}08`,
             color: textColor,
-            border: `1px solid ${textColor}33`,
-            boxShadow: `0 0 8px ${textColor}11 inset`,
-            caretColor: textColor,
+            border: `1px solid ${textColor}22`,
           }}
         />
         <button
           onClick={handleSend}
-          className="p-2 sm:p-3 rounded-md transition-all"
+          disabled={loading || !newMessage.trim()}
+          className="p-2 rounded-full transition hover:scale-105 active:scale-95"
           style={{
             backgroundColor: `${textColor}22`,
-            border: `1px solid ${textColor}66`,
+            border: `1px solid ${textColor}44`,
             color: textColor,
-            boxShadow: `0 0 10px ${textColor}33`,
           }}
         >
-          <Send className="w-4 h-4 sm:w-5 sm:h-5" />
+          {loading ? (
+            <LoaderIcon className="animate-spin w-5 h-5" />
+          ) : (
+            <Send className="w-5 h-5" />
+          )}
         </button>
       </div>
     </div>
   );
+
 }
