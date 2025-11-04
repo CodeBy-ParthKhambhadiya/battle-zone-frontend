@@ -66,9 +66,9 @@ export default function ChatArea({ roomId }) {
   }, [roomId, fetchMessages]);
 
   // ✅ Auto scroll to bottom when messages update
-useEffect(() => {
-  messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-}, [displayedMessages]);
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [displayedMessages]);
   // ✅ Send a message
   const handleSend = async () => {
     if (!newMessage.trim() || !roomId) return;
@@ -131,7 +131,7 @@ useEffect(() => {
       }}
     >
       {/* Message Area */}
-    <div className="flex-1 overflow-y-auto p-4 space-y-3 scroll-smooth no-scrollbar">
+  <div className="flex-1 overflow-y-auto p-4 space-y-3 scroll-smooth no-scrollbar">
   {displayedMessages.length === 0 ? (
     <div
       className="text-center text-sm mt-10"
@@ -142,6 +142,10 @@ useEffect(() => {
   ) : (
     displayedMessages.map((msg) => {
       const isUser = msg.sender === user?._id;
+
+      // Skip rendering if neither message nor time is available
+      if (!msg.message && !msg.sentAt) return null;
+
       return (
         <div
           key={msg._id || Math.random()}
@@ -157,13 +161,18 @@ useEffect(() => {
               wordWrap: "break-word",
             }}
           >
-            <div>{msg.message}</div>
-            <div
-              className="text-[10px] text-right mt-1 opacity-60"
-              style={{ color: `${textColor}88` }}
-            >
-              {formatTime(msg.sentAt)}
-            </div>
+            {/* ✅ Render message only if it exists */}
+            {msg.message && <div>{msg.message}</div>}
+
+            {/* ✅ Render time only if it exists */}
+            {msg.sentAt && (
+              <div
+                className="text-[10px] text-right mt-1 opacity-60"
+                style={{ color: `${textColor}88` }}
+              >
+                {formatTime(msg.sentAt)}
+              </div>
+            )}
           </div>
         </div>
       );
