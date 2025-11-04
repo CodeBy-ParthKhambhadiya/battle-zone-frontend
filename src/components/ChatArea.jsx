@@ -66,10 +66,9 @@ export default function ChatArea({ roomId }) {
   }, [roomId, fetchMessages]);
 
   // ✅ Auto scroll to bottom when messages update
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, incomingMessage]);
-
+useEffect(() => {
+  messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+}, [displayedMessages]);
   // ✅ Send a message
   const handleSend = async () => {
     if (!newMessage.trim() || !roomId) return;
@@ -132,47 +131,47 @@ export default function ChatArea({ roomId }) {
       }}
     >
       {/* Message Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 scroll-smooth">
-        {displayedMessages.length === 0 ? (
+    <div className="flex-1 overflow-y-auto p-4 space-y-3 scroll-smooth no-scrollbar">
+  {displayedMessages.length === 0 ? (
+    <div
+      className="text-center text-sm mt-10"
+      style={{ color: `${textColor}99` }}
+    >
+      No messages yet...
+    </div>
+  ) : (
+    displayedMessages.map((msg) => {
+      const isUser = msg.sender === user?._id;
+      return (
+        <div
+          key={msg._id || Math.random()}
+          className={`flex ${isUser ? "justify-end" : "justify-start"}`}
+        >
           <div
-            className="text-center text-sm mt-10"
-            style={{ color: `${textColor}99` }}
+            className={`px-3 py-2 rounded-2xl text-sm max-w-[80%] sm:max-w-[70%] md:max-w-[60%] shadow-sm transition-all duration-200 break-words whitespace-pre-wrap`}
+            style={{
+              backgroundColor: isUser ? `${textColor}22` : `${textColor}12`,
+              color: textColor,
+              borderTopRightRadius: isUser ? "0.5rem" : "1rem",
+              borderTopLeftRadius: isUser ? "1rem" : "0.5rem",
+              wordWrap: "break-word",
+            }}
           >
-            No messages yet...
+            <div>{msg.message}</div>
+            <div
+              className="text-[10px] text-right mt-1 opacity-60"
+              style={{ color: `${textColor}88` }}
+            >
+              {formatTime(msg.sentAt)}
+            </div>
           </div>
-        ) : (
-          displayedMessages.map((msg) => {
-            const isUser = msg.sender === user?._id;
-            return (
-              <div
-                key={msg._id || Math.random()}
-                className={`flex ${isUser ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className={`px-3 py-2 rounded-2xl text-sm max-w-[80%] sm:max-w-[70%] md:max-w-[60%] shadow-sm transition-all duration-200 break-words whitespace-pre-wrap`}
-                  style={{
-                    backgroundColor: isUser ? `${textColor}22` : `${textColor}12`,
-                    color: textColor,
-                    borderTopRightRadius: isUser ? "0.5rem" : "1rem",
-                    borderTopLeftRadius: isUser ? "1rem" : "0.5rem",
-                    wordWrap: "break-word",
-                  }}
-                >
-                  <div>{msg.message}</div>
-                  <div
-                    className="text-[10px] text-right mt-1 opacity-60"
-                    style={{ color: `${textColor}88` }}
-                  >
-                    {formatTime(msg.sentAt)}
-                  </div>
-                </div>
+        </div>
+      );
+    })
+  )}
+  <div ref={messagesEndRef}></div>
+</div>
 
-              </div>
-            );
-          })
-        )}
-        <div ref={messagesEndRef}></div>
-      </div>
 
       {/* Input Section */}
       <div
