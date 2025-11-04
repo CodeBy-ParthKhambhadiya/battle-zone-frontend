@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
-import usePrivateChat from "@/hooks/usePrivateChat";
 import { useRouter } from "next/navigation";
+import usePrivateChat from "@/hooks/usePrivateChat";
+import  useAuth  from "@/hooks/useAuth"; // ✅ added import
 import LoaderIcon from "@/components/LoadingButton";
-import { getRandomColor } from "@/components/getColor";
 
 export default function ChatIndexPage() {
   const router = useRouter();
@@ -19,13 +19,18 @@ export default function ChatIndexPage() {
     error,
   } = usePrivateChat();
 
+  const { user } = useAuth(); // ✅ get logged-in user
+  const currentUserId = user?._id;
+
   const [searchQuery, setSearchQuery] = useState("");
 
+  // fetch data on mount
   useEffect(() => {
     fetchAllUsers();
     fetchUserPrivateChats();
   }, []);
 
+  // handle opening or creating chat
   const handleUserClick = async (userId) => {
     try {
       const chatRoom = await createPrivateChat(userId);
@@ -36,34 +41,43 @@ export default function ChatIndexPage() {
     }
   };
 
+  // search filter for all users (new chat)
   const filteredUsers = allUsers.filter((user) => {
     const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
     return fullName.includes(searchQuery.toLowerCase());
   });
 
+  // build chat list with unread count
   const newChatUserList = chatUserList
-    .map((chat) => chat.otherUser)
-    .filter((user) => user) // remove undefined/null
+    .map((chat) => {
+      const otherUser = chat.otherUser;
+      if (!otherUser) return null;
+
+      // count unread messages for current user
+      const unreadCount =
+        chat.messages?.filter(
+          (msg) =>
+            msg.sender !== currentUserId &&
+            !msg.readBy?.includes(currentUserId)
+        ).length || 0;
+
+      return { ...otherUser, unreadCount };
+    })
+    .filter(Boolean)
     .filter((user) => {
       const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
       return fullName.includes(searchQuery.toLowerCase());
     });
 
+  // display users: if searching → all users, else → chat list
   const displayedUsers = searchQuery ? filteredUsers : newChatUserList;
-  const bgColor = "#0D1117";   // dark card background
-  const textColor = "#00E5FF"; // glowing cyan text
+
+  const bgColor = "#0D1117";
+  const textColor = "#00E5FF";
 
   return (
     <div className="flex flex-col justify-start p-6 text-gray-200 w-full max-w-md mx-auto">
-      {/* <div className="flex items-center justify-start gap-3 mb-8">
-  <div className="w-1.5 h-8 sm:w-1 sm:h-6 bg-[#00E5FF] rounded-full shadow-[0_0_12px_#00E5FF]" />
-  <h2
-    className="text-3xl sm:text-xl md:text-4xl font-extrabold text-[#00E5FF] tracking-wide drop-shadow-[0_0_10px_#00E5FF]"
-  >
-    Start a Chat
-  </h2>
-</div> */}
-
+      {/* 🔍 Search Bar */}
       <div className="mb-6 w-full">
         <div
           className="flex items-center rounded-full overflow-hidden transition-all"
@@ -73,7 +87,6 @@ export default function ChatIndexPage() {
             boxShadow: "0 0 10px #00E5FF, 0 0 20px #00E5FF33",
           }}
         >
-          {/* Input field */}
           <input
             type="text"
             placeholder="Search user to chat..."
@@ -82,7 +95,6 @@ export default function ChatIndexPage() {
             className="flex-1 bg-transparent text-[#00E5FF] placeholder-[#00E5FF99] p-3 rounded-l-full focus:outline-none"
           />
 
-          {/* Search icon */}
           <div
             className="flex items-center justify-center w-12 h-12 cursor-pointer transition-all"
             style={{
@@ -96,60 +108,69 @@ export default function ChatIndexPage() {
         </div>
       </div>
 
-
-
+      {/* 💬 Chat List */}
       {loading ? (
         <div className="flex justify-center items-center min-h-[50vh]">
           <LoaderIcon size={85} colorClass="text-[#00E5FF]" />
         </div>
-
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : displayedUsers.length > 0 ? (
         <div className="flex flex-col w-full gap-2">
-          {displayedUsers.map((user) => {
-
-            return (
-              <div
-                key={user._id}
-                onClick={() => handleUserClick(user._id)}
-                style={{
-                  backgroundColor: bgColor,
-                  color: textColor,
-                  border: `1px solid ${textColor}`,
-                  boxShadow: `0 0 10px ${textColor}, 0 0 20px ${textColor}33`, // subtle glow
-                }}
-                className="p-4 rounded-md cursor-pointer flex items-center gap-4 transition-all hover:scale-[1.02]"
-              >
-                {user.avatar ? (
-                  <img
-                    src={user.avatar}
-                    alt={`${user.firstName} avatar`}
-                    className="w-12 h-12 rounded-full object-cover border border-cyan-400 shadow-[0_0_10px_#00E5FF]"
-                  />
-                ) : (
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center text-gray-400 font-semibold"
-                    style={{
-                      backgroundColor: "#1A1F25",
-                      border: `1px solid ${textColor}`,
-                      boxShadow: `0 0 8px ${textColor}55`,
-                      color: textColor,
-                    }}
-                  >
-                    {user.firstName.charAt(0)}
-                    {user.lastName.charAt(0)}
-                  </div>
-                )}
-
-                <div className="flex flex-col">
-                  <p className="font-semibold">{user.firstName} {user.lastName}</p>
-                  <p className="text-sm opacity-80">{user.username}</p>
+          {displayedUsers.map((user) => (
+            <div
+              key={user._id}
+              onClick={() => handleUserClick(user._id)}
+              style={{
+                backgroundColor: bgColor,
+                color: textColor,
+                border: `1px solid ${textColor}`,
+                boxShadow: `0 0 10px ${textColor}, 0 0 20px ${textColor}33`,
+              }}
+              className="p-4 rounded-md cursor-pointer flex items-center gap-4 transition-all hover:scale-[1.02]"
+            >
+              {/* Avatar */}
+              {user.avatar ? (
+                <img
+                  src={user.avatar}
+                  alt={`${user.firstName} avatar`}
+                  className="w-12 h-12 rounded-full object-cover border border-cyan-400 shadow-[0_0_10px_#00E5FF]"
+                />
+              ) : (
+                <div
+                  className="w-12 h-12 rounded-full flex items-center justify-center text-gray-400 font-semibold"
+                  style={{
+                    backgroundColor: "#1A1F25",
+                    border: `1px solid ${textColor}`,
+                    boxShadow: `0 0 8px ${textColor}55`,
+                    color: textColor,
+                  }}
+                >
+                  {user.firstName.charAt(0)}
+                  {user.lastName.charAt(0)}
                 </div>
-              </div>
-            );
-          })}
+              )}
 
+              {/* Name + Username + Unread Badge */}
+              <div className="flex flex-col flex-1">
+                <div className="flex justify-between items-center">
+                  <p className="font-semibold">
+                    {user.firstName} {user.lastName}
+                  </p>
+
+                  {/* 🔔 Unread Count Badge */}
+                  {user.unreadCount > 0 && (
+                    <span
+                      className="ml-2 text-xs bg-[#00E5FF] text-black font-bold rounded-full px-2 py-0.5 shadow-[0_0_8px_#00E5FF]"
+                    >
+                      {user.unreadCount}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm opacity-80">{user.username}</p>
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
         <p className="text-gray-400 mt-4">No users found.</p>
