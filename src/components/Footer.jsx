@@ -32,7 +32,7 @@ export default function Footer() {
             href="mailto:battlezone2026@gmail.com"
             className="hover:text-cyan-400 transition-colors duration-200"
           >
-            Contact:battlezone2026@gmail.com
+            Contact: battlezone2026@gmail.com
 
           </a>
         </div>
