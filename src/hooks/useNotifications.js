@@ -20,18 +20,15 @@ export default function useNotifications(userId) {
         (state) => state.notification
     );
 
-    // Local live updates (merged with Redux state)
     const [liveNotifications, setLiveNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
 
-    // 🔹 Fetch stored notifications once user is available
     useEffect(() => {
         if (userId) {
             fetchNotifications();
         }
     }, [userId]);
 
-    // 🔹 Socket.IO live notifications setup
     useEffect(() => {
         if (!userId) return;
 

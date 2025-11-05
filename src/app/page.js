@@ -49,7 +49,7 @@ export default function HomePage() {
         {/* ✅ Support Section */}
         <div className="mt-6 w-full max-w-md px-4 py-6 bg-[#111827] rounded-2xl shadow-lg border border-cyan-500/20 text-center flex flex-col gap-4">
           <p className="text-gray-400 mb-2 font-medium">
-            Need help? We're here to assist!
+            Need help? We are here to assist!
           </p>
 
           {/* Email */}
