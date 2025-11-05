@@ -620,6 +620,11 @@ export default function TournamentsPage() {
                                                         <div className="p-4 border-b border-gray-600 flex items-center gap-2">
                                                             <Trophy className="w-6 h-6 text-yellow-400" />
                                                             <h3 className="font-bold text-xl">Leaderboard / Prize Distribution</h3>
+                                                            <h1 className="ml-auto font-medium">
+                                                                {t?.joinedPlayers > 0
+                                                                    ? `Prize money will be distributed among ${t.joinedPlayers} players.`
+                                                                    : "Waiting for players to join..."}
+                                                            </h1>
                                                         </div>
 
                                                         <div className="overflow-x-auto">
