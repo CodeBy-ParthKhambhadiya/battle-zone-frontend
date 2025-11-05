@@ -120,9 +120,19 @@ const tournamentReducer = createSlice({
                 state.error = null;
                 state.success = false;
             })
-            .addCase(joinTournamentAction.fulfilled, (state) => {
-                state.loading = false;
-                state.success = true;
+            .addCase(joinTournamentAction.fulfilled, (state, action) => {
+                const updatedTournament = action.payload.data.tournament;
+                const index = state.tournaments.findIndex(
+                    (t) => t._id === updatedTournament._id
+                );
+
+                if (index !== -1) {
+                    // Update only the changed field(s)
+                    state.tournaments[index] = {
+                        ...state.tournaments[index],
+                        joinedPlayers: updatedTournament.joinedPlayers,
+                    };
+                }
             })
             .addCase(joinTournamentAction.rejected, (state, action) => {
                 state.loading = false;

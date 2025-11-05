@@ -12,6 +12,7 @@ export default function AccountPage() {
   const { updateUser, loading: userLoading, admin, fetchAdminDetails } = useAuth();
   const { bgColor, textColor } = useTheme() || {};
   const { createTransaction, fetchMyTransactions } = useWallet();
+  const { user, fetchUser } = useAuth();
 
   const [userData, setUserData] = useState({});
   const [upiId, setUpiId] = useState("");
@@ -23,6 +24,7 @@ export default function AccountPage() {
   const [depositErrors, setDepositErrors] = useState({});
   const [withdrawErrors, setWithdrawErrors] = useState({});
   const [copied, setCopied] = useState(false);
+const [visibleCount, setVisibleCount] = useState(4);
 
   const [confirmModal, setConfirmModal] = useState({
     open: false,
@@ -55,17 +57,21 @@ export default function AccountPage() {
   const toggleExpand = (id) => {
     setExpandedId(expandedId === id ? null : id);
   };
-
-
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user")) || {};
-    setUserData(storedUser);
-    setUpiId(storedUser.upiId || "");
-    setBalance(storedUser.walletBalance || 0);
-    loadTransactions();
-    fetchAdminDetails();
+    fetchUser(); // this will populate `user` in your auth context/state
   }, []);
 
+  // 2️⃣ Once user data is available, set up state and load data
+  useEffect(() => {
+    if (!user) return; // Wait until user is fetched
+
+    setUserData(user);
+    setUpiId(user.upiId || "");
+    setBalance(user.walletBalance || 0);
+
+    loadTransactions();
+    fetchAdminDetails();
+  }, [user]); // run whenever user changes
   const loadTransactions = async () => {
     try {
       const res = await fetchMyTransactions();
@@ -192,7 +198,7 @@ export default function AccountPage() {
     if (!depositData.utrNumber.trim())
       newErrors.utrNumber = "UTR number is required.";
     if (!depositData.userMessage.trim())
-      newErrors.userMessage = "Message is required.";
+      newErrors.userMessage = "Please enter the UPI ID you used to deposit the amount.";
     setDepositErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -202,7 +208,7 @@ export default function AccountPage() {
     if (!withdrawData.amount || withdrawData.amount <= 0)
       newErrors.amount = "Please enter a valid amount.";
     if (!withdrawData.userMessage.trim())
-      newErrors.userMessage = "Message is required.";
+      newErrors.userMessage = "UPI ID is required.";
     setWithdrawErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -355,7 +361,7 @@ export default function AccountPage() {
 
             <input
               type="text"
-              placeholder="Message (e.g., Paid via Paytm)"
+              placeholder="Enter your UPI ID (e.g., username@upi)"
               value={depositData.userMessage}
               onChange={(e) =>
                 setDepositData({ ...depositData, userMessage: e.target.value })
@@ -396,7 +402,7 @@ export default function AccountPage() {
 
             <input
               type="text"
-              placeholder="Message (e.g., Send to UPI test@upi)"
+              placeholder="Your UPI ID for withdrawal)"
               value={withdrawData.userMessage}
               onChange={(e) =>
                 setWithdrawData({ ...withdrawData, userMessage: e.target.value })
@@ -503,81 +509,102 @@ export default function AccountPage() {
         </div>
 
         {/* 🧩 Filtered Transaction List */}
-        {filteredTransactions.length === 0 ? (
-          <p className="text-sm opacity-80">No transactions yet.</p>
-        ) : (
-          <div className="space-y-3">
-            {filteredTransactions.map((t) => {
-              const isExpanded = expandedId === t._id;
-              return (
-                <div
-                  key={t._id}
-                  className="p-4 rounded-md border shadow-sm transition-all hover:shadow-md"
-                  style={{ borderColor: textColor || "#333" }}
-                >
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="font-semibold text-base">
-                        {t.type} — <span className="uppercase">{t.status}</span>
-                      </p>
-                      <p className="text-sm opacity-70">
-                        {new Date(t.createdAt).toLocaleString()}
-                      </p>
-                    </div>
-
-                    <button
-                      onClick={() => toggleExpand(t._id)}
-                      className="p-1 rounded transition cursor-pointer border hover:shadow-[0_0_12px_#00E5FF]"
-                      style={{
-                        color: "#00E5FF",
-                        borderColor: "#00E5FF",
-                        backgroundColor: "#0D1117",
-                        boxShadow: "0 0 6px #00E5FF",
-                        textShadow: "0 0 8px #00E5FF",
-                      }}
-                    >
-                      {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                    </button>
-                  </div>
-
-                  {isExpanded && (
-                    <div
-                      className="mt-4 p-3 rounded-md border text-sm transition-all duration-300 grid sm:grid-cols-2 gap-3"
-                      style={{
-                        borderColor: "#00E5FF",
-                        backgroundColor: "rgba(13, 17, 23, 0.6)",
-                        boxShadow: "0 0 10px rgba(0, 229, 255, 0.3)",
-                      }}
-                    >
-                      <div className="pl-3">
-                        <p>
-                          <span className="font-medium opacity-80">Amount:</span> ₹{t.amount}
-                        </p>
-                        <p>
-                          <span className="font-medium opacity-80">UTR:</span>{" "}
-                          {t.utrNumber || "—"}
-                        </p>
-                        <p>
-                          <span className="font-medium opacity-80">User Message:</span>{" "}
-                          {t.userMessage || "—"}
-                        </p>
-                        <p>
-                          <span className="font-medium opacity-80">System Message:</span>{" "}
-                          {t.systemMessage || "—"}
-                        </p>
-
-                        <p>
-                          <span className="font-medium opacity-80">Updated At:</span>{" "}
-                          {new Date(t.updatedAt).toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-                  )}
+    {filteredTransactions.length === 0 ? (
+  <p className="text-sm opacity-80">No transactions yet.</p>
+) : (
+  <>
+    <div className="space-y-3">
+      {filteredTransactions
+        .slice(0, visibleCount)
+        .map((t) => {
+          const isExpanded = expandedId === t._id;
+          return (
+            <div
+              key={t._id}
+              className="p-4 rounded-md border shadow-sm transition-all hover:shadow-md"
+              style={{ borderColor: textColor || "#333" }}
+            >
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="font-semibold text-base">
+                    {t.type} — <span className="uppercase">{t.status}</span>
+                  </p>
+                  <p className="text-sm opacity-70">
+                    {new Date(t.createdAt).toLocaleString()}
+                  </p>
                 </div>
-              );
-            })}
-          </div>
-        )}
+
+                <button
+                  onClick={() => toggleExpand(t._id)}
+                  className="p-1 rounded transition cursor-pointer border hover:shadow-[0_0_12px_#00E5FF]"
+                  style={{
+                    color: "#00E5FF",
+                    borderColor: "#00E5FF",
+                    backgroundColor: "#0D1117",
+                    boxShadow: "0 0 6px #00E5FF",
+                    textShadow: "0 0 8px #00E5FF",
+                  }}
+                >
+                  {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                </button>
+              </div>
+
+              {isExpanded && (
+                <div
+                  className="mt-4 p-3 rounded-md border text-sm transition-all duration-300 grid sm:grid-cols-2 gap-3"
+                  style={{
+                    borderColor: "#00E5FF",
+                    backgroundColor: "rgba(13, 17, 23, 0.6)",
+                    boxShadow: "0 0 10px rgba(0, 229, 255, 0.3)",
+                  }}
+                >
+                  <div className="pl-3">
+                    <p>
+                      <span className="font-medium opacity-80">Amount:</span> ₹{t.amount}
+                    </p>
+                    <p>
+                      <span className="font-medium opacity-80">UTR:</span>{" "}
+                      {t.utrNumber || "—"}
+                    </p>
+                    <p>
+                      <span className="font-medium opacity-80">User upi id:</span>{" "}
+                      {t.userMessage || "—"}
+                    </p>
+                    <p>
+                      <span className="font-medium opacity-80">System Message:</span>{" "}
+                      {t.systemMessage || "—"}
+                    </p>
+                    <p>
+                      <span className="font-medium opacity-80">Updated At:</span>{" "}
+                      {new Date(t.updatedAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+    </div>
+
+    {/* 👇 Load More Button */}
+    {visibleCount < filteredTransactions.length && (
+      <div className="text-center mt-4">
+        <button
+          onClick={() => setVisibleCount((prev) => prev + 4)}
+          className="px-4 py-2 rounded-md font-medium border shadow-md hover:shadow-lg transition-all"
+          style={{
+            color: textColor,
+            borderColor: textColor,
+            backgroundColor: bgColor,
+          }}
+        >
+          Load More
+        </button>
+      </div>
+    )}
+  </>
+)}
+
       </div>
       {/* Confirmation Modal */}
       {confirmModal.open && (

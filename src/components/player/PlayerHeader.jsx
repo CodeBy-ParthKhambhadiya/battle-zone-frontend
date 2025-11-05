@@ -5,6 +5,7 @@ import { HiShieldCheck, HiCurrencyRupee } from "react-icons/hi";
 import useAuth from "@/hooks/useAuth";
 import useNotifications from "@/hooks/useNotifications";
 import NotificationBell from "@/components/NotificationBell";
+import Link from "next/link";
 
 const PlayerHeader = () => {
   const { user } = useAuth();
@@ -25,14 +26,14 @@ const PlayerHeader = () => {
 
   return (
     <header
-      className="p-3 flex flex-wrap justify-between items-center gap-3"
+      className="p-3 flex flex-wrap justify-between items-center"
       style={{
         backgroundColor: colors.bgColor,
         color: colors.textColor,
         boxShadow: "0 0 15px rgba(0, 229, 255, 0.2)",
       }}
     >
-      <div className="flex-1 min-w-[160px] text-left">
+      <div className=" text-left">
         <h1
           className="text-xl sm:text-2xl font-extrabold uppercase tracking-wide"
           style={{
@@ -45,9 +46,10 @@ const PlayerHeader = () => {
         </h1>
       </div>
 
-      <div className="flex items-center gap-3 flex-wrap justify-end">
-        <div
-          className="flex items-center gap-2 px-4 py-2 rounded-full text-sm sm:text-base font-semibold"
+      <div className="flex items-center gap-2 flex-wrap justify-end">
+        <Link
+          href="/player/profile/account"
+          className="flex items-center gap-2 px-4 py-2 rounded-full text-sm sm:text-base font-semibold transition-all duration-300 hover:scale-105 hover:shadow-[0_0_15px_#00E5FF66]"
           style={{
             border: `1px solid ${colors.textColor}`,
             color: colors.textColor,
@@ -63,7 +65,8 @@ const PlayerHeader = () => {
             }}
           />
           <span className="font-bold">{walletBalance}</span>
-        </div>
+        </Link>
+
 
         {/* 🔔 Notification */}
         <div className="relative" onClick={handleBellClick}>

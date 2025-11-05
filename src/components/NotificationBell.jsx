@@ -79,7 +79,6 @@ export default function NotificationBell() {
         setSelectedNotification(notif);
     };
 
-                console.log("🚀 ~ NotificationBell ~ unreadCountAll:", unreadCountAll)
     return (
         <div className="relative" ref={dropdownRef}>
             {/* 🔔 Bell Button */}

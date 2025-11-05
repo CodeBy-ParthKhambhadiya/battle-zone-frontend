@@ -72,7 +72,6 @@ const notificationSlice = createSlice({
                 state.error = null;
             })
             .addCase(markNotificationAsReadAction.fulfilled, (state, action) => {
-                console.log("🚀 ~ action:", action)
                 state.loading = false;
                 // Mark every notification as read
                 state.notifications = state.notifications.map((n) => ({
