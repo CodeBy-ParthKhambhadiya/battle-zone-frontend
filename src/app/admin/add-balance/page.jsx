@@ -90,7 +90,8 @@ export default function UserListPage() {
                 <th className="py-3 px-4">Name</th>
                 <th className="py-3 px-4">Email</th>
                 <th className="py-3 px-4">Mobile</th>
-                <th className="py-3 px-4">Gender</th>
+                <th className="py-3 px-4">BGMI Username</th>
+                <th className="py-3 px-4">BGMI Id</th>
                 <th className="py-3 px-4">Role</th>
                 <th className="py-3 px-4">Verified</th>
                 <th className="py-3 px-4">Wallet</th>
@@ -113,7 +114,8 @@ export default function UserListPage() {
                     }`}</td>
                   <td className="py-3 px-4">{user.email || "-"}</td>
                   <td className="py-3 px-4">{user.mobile || "-"}</td>
-                  <td className="py-3 px-4">{user.gender || "-"}</td>
+                  <td className="py-3 px-4">{user.gameUserName || "-"}</td>
+                  <td className="py-3 px-4">{user.gameId || "-"}</td>
                   <td className="py-3 px-4 capitalize">{user.role || "-"}</td>
                   <td className="py-3 px-4">
                     {user.isVerified ? (

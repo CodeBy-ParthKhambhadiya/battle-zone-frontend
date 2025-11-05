@@ -29,10 +29,11 @@ export default function Footer() {
             Terms of Service
           </a>
           <a
-            href="mailto:battlezoneofficial@gmail.com"
+            href="mailto:battlezone2026@gmail.com"
             className="hover:text-cyan-400 transition-colors duration-200"
           >
-            Contact: battlezoneofficial@gmail.com
+            Contact:battlezone2026@gmail.com
+
           </a>
         </div>
 

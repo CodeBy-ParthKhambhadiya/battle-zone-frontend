@@ -140,27 +140,68 @@ export default function JoinedPage() {
                         // Initialize all prizes and counts to 0
                         let totalPool = 0, prizePoolMoney = 0, winnerPlayers = 0, winnerBottomPlayers = 0;
                         let bottomPlayersReturn = 0, leftoverMoney = 0, firstPrize = 0, secondPrize = 0, thirdPrize = 0, returnedPerPlayer = 0;
-
                         if (joinedPlayers > 0) {
                             totalPool = entry_fee * joinedPlayers;
-                            prizePoolMoney = totalPool * 0.8;
 
-                            // Half of players are winners (round up if odd)
-                            winnerPlayers = Math.ceil(joinedPlayers / 2);
-                            winnerBottomPlayers = Math.max(winnerPlayers - 3, 0);
+                            if (t?.game_type === "CLASSIC") {
+                                prizePoolMoney = totalPool * 0.8;
 
-                            bottomPlayersReturn = winnerBottomPlayers * entry_fee;
-                            leftoverMoney = prizePoolMoney - bottomPlayersReturn;
+                                // Half of players are winners (round up if odd)
+                                winnerPlayers = Math.ceil(joinedPlayers / 2);
+                                winnerBottomPlayers = Math.max(winnerPlayers - 3, 0);
 
-                            firstPrize = Math.floor(leftoverMoney * 0.5);
-                            secondPrize = Math.floor(leftoverMoney * 0.3);
-                            thirdPrize = Math.floor(leftoverMoney * 0.2);
+                                bottomPlayersReturn = winnerBottomPlayers * entry_fee;
+                                leftoverMoney = prizePoolMoney - bottomPlayersReturn;
 
-                            // Add any remaining leftover to first prize
-                            firstPrize += Math.floor(leftoverMoney - (firstPrize + secondPrize + thirdPrize));
+                                firstPrize = Math.floor(leftoverMoney * 0.5);
+                                secondPrize = Math.floor(leftoverMoney * 0.3);
+                                thirdPrize = Math.floor(leftoverMoney * 0.2);
 
-                            returnedPerPlayer = winnerBottomPlayers > 0 ? Math.floor(bottomPlayersReturn / winnerBottomPlayers) : 0;
+                                // Add any remaining leftover to first prize
+                                firstPrize += Math.floor(leftoverMoney - (firstPrize + secondPrize + thirdPrize));
+
+                                returnedPerPlayer = winnerBottomPlayers > 0 ? Math.floor(bottomPlayersReturn / winnerBottomPlayers) : 0;
+
+                            } else if (t?.game_type === "TDM") {
+                                // Step 1: Remove 38% commission
+                                const commission = totalPool * 0.38;
+                                console.log("Commission:", commission);
+
+                                const prizePoolMoney = totalPool - commission;
+
+                                // Step 2: Determine how many players joined
+                                const joinedPlayers = t?.joinedPlayers;
+
+                                // Step 3: Initialize prizes
+
+                                if (joinedPlayers === 7 || joinedPlayers === 8) {
+                                    // 3 winners
+                                    firstPrize = Math.floor(prizePoolMoney * 0.5);
+                                    secondPrize = Math.floor(prizePoolMoney * 0.3);
+                                    thirdPrize = Math.floor(prizePoolMoney * 0.2);
+                                } else if (joinedPlayers >= 2 && joinedPlayers <= 6) {
+                                    // Only 2 winners
+                                    firstPrize = Math.floor(prizePoolMoney * 0.6);
+                                    secondPrize = Math.floor(prizePoolMoney * 0.4);
+                                    thirdPrize = 0;
+                                } else if (joinedPlayers === 1) {
+                                    // Only 1 player
+                                    firstPrize = prizePoolMoney;
+                                    secondPrize = 0;
+                                    thirdPrize = 0;
+                                }
+
+                                // Step 4: Add leftover due to rounding to first prize
+                                const distributedTotal = firstPrize + secondPrize + thirdPrize;
+                                firstPrize += Math.floor(prizePoolMoney - distributedTotal);
+
+                                // Step 5: No extra return for other players
+                                const returnedPerPlayer = 0;
+
+                                console.log("Prizes:", { firstPrize, secondPrize, thirdPrize });
+                            }
                         }
+
                         const now = new Date();
                         const startTime = new Date(t.start_datetime);
                         const endTime = new Date(t.end_datetime);
@@ -250,7 +291,23 @@ export default function JoinedPage() {
                                             </span>
                                         </div>
                                     </div>
+                                    <div
+                                        className="flex flex-row justify-between items-center mb-3 gap-2 flex-wrap sm:flex-nowrap"
+                                        style={{
+                                            borderBottom: "1px solid #00E5FF22",
+                                            paddingBottom: "4px",
+                                        }}
+                                    >
+                                        {/* Tournament Name */}
+                                        <h3 className="text-[#00E5FF] font-semibold text-lg">
+                                            {t?.name || "Tournament Name"}
+                                        </h3>
 
+                                        {/* Game Type */}
+                                        <span className="text-sm text-[#00E5FF88]">
+                                            {t?.game_type || "Game Type"}
+                                        </span>
+                                    </div>
                                     {/* Progress bar */}
                                     <div
                                         className="w-full rounded-lg p-3 mt-2 bg-black/20 flex flex-col gap-1"
@@ -482,111 +539,113 @@ export default function JoinedPage() {
 
 
                                             {/* Leaderboard / Prize Distribution */}
-                                            {activeSection === "leaderboard" && t.joinedPlayers > 3 && (
-                                                <div
-                                                    className="mt-6 w-full rounded-xl overflow-hidden shadow-xl border"
-                                                    style={{
-                                                        backgroundColor: bgColor,
-                                                        color: textColor,
-                                                        borderColor: textColor,
-                                                        boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
-                                                    }}
-                                                >
-                                                    {/* Header */}
+                                            {activeSection === "leaderboard" &&
+                                                ((t.game_type === "CLASSIC" && t.joinedPlayers > 3) ||
+                                                    (t.game_type === "TDM" && t.joinedPlayers > 0)) && (
                                                     <div
-                                                        className="p-4 border-b flex items-center gap-2"
-                                                        style={{ borderColor: textColor }}
+                                                        className="mt-6 w-full rounded-xl overflow-hidden shadow-xl border"
+                                                        style={{
+                                                            backgroundColor: bgColor,
+                                                            color: textColor,
+                                                            borderColor: textColor,
+                                                            boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
+                                                        }}
                                                     >
-                                                        <Trophy className="w-6 h-6 text-yellow-400" />
-                                                        <h3 className="font-bold text-xl">Leaderboard / Prize Distribution</h3>
-                                                    </div>
-
-                                                    {/* Table */}
-                                                    <div className="overflow-x-auto">
-                                                        <table
-                                                            className="min-w-full text-sm sm:text-base"
-                                                            style={{
-                                                                borderCollapse: "collapse",
-                                                                width: "100%",
-                                                            }}
+                                                        {/* Header */}
+                                                        <div
+                                                            className="p-4 border-b flex items-center gap-2"
+                                                            style={{ borderColor: textColor }}
                                                         >
-                                                            <thead
+                                                            <Trophy className="w-6 h-6 text-yellow-400" />
+                                                            <h3 className="font-bold text-xl">Leaderboard / Prize Distribution</h3>
+                                                        </div>
+
+                                                        {/* Table */}
+                                                        <div className="overflow-x-auto">
+                                                            <table
+                                                                className="min-w-full text-sm sm:text-base"
                                                                 style={{
-                                                                    backgroundColor: "rgba(255,255,255,0.05)",
-                                                                    borderBottom: `1px solid ${textColor}`,
+                                                                    borderCollapse: "collapse",
+                                                                    width: "100%",
                                                                 }}
                                                             >
-                                                                <tr>
-                                                                    <th
-                                                                        className="px-6 py-3 text-left font-semibold uppercase tracking-wide"
-                                                                        style={{ borderBottom: `1px solid ${textColor}` }}
-                                                                    >
-                                                                        Position
-                                                                    </th>
-                                                                    <th
-                                                                        className="px-6 py-3 text-left font-semibold uppercase tracking-wide"
-                                                                        style={{ borderBottom: `1px solid ${textColor}` }}
-                                                                    >
-                                                                        Prize
-                                                                    </th>
-                                                                </tr>
-                                                            </thead>
-
-                                                            <tbody>
-                                                                {/* 1st */}
-                                                                <tr
-                                                                    className="hover:bg-gray-800/30 transition"
-                                                                    style={{ borderBottom: `1px solid ${textColor}` }}
+                                                                <thead
+                                                                    style={{
+                                                                        backgroundColor: "rgba(255,255,255,0.05)",
+                                                                        borderBottom: `1px solid ${textColor}`,
+                                                                    }}
                                                                 >
-                                                                    <td className="px-6 py-3 font-medium flex items-center gap-2">
-                                                                        <Crown className="w-5 h-5 text-yellow-400" />
-                                                                        1st Place
-                                                                    </td>
-                                                                    <td className="px-6 py-3">₹{firstPrize}</td>
-                                                                </tr>
+                                                                    <tr>
+                                                                        <th
+                                                                            className="px-6 py-3 text-left font-semibold uppercase tracking-wide"
+                                                                            style={{ borderBottom: `1px solid ${textColor}` }}
+                                                                        >
+                                                                            Position
+                                                                        </th>
+                                                                        <th
+                                                                            className="px-6 py-3 text-left font-semibold uppercase tracking-wide"
+                                                                            style={{ borderBottom: `1px solid ${textColor}` }}
+                                                                        >
+                                                                            Prize
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
 
-                                                                {/* 2nd */}
-                                                                <tr
-                                                                    className="hover:bg-gray-800/30 transition"
-                                                                    style={{ borderBottom: `1px solid ${textColor}` }}
-                                                                >
-                                                                    <td className="px-6 py-3 font-medium flex items-center gap-2">
-                                                                        <Trophy className="w-5 h-5 text-gray-300" />
-                                                                        2nd Place
-                                                                    </td>
-                                                                    <td className="px-6 py-3">₹{secondPrize}</td>
-                                                                </tr>
-
-                                                                {/* 3rd */}
-                                                                <tr
-                                                                    className="hover:bg-gray-800/30 transition"
-                                                                    style={{ borderBottom: `1px solid ${textColor}` }}
-                                                                >
-                                                                    <td className="px-6 py-3 font-medium flex items-center gap-2">
-                                                                        <Medal className="w-5 h-5 text-amber-500" />
-                                                                        3rd Place
-                                                                    </td>
-                                                                    <td className="px-6 py-3">₹{thirdPrize}</td>
-                                                                </tr>
-
-                                                                {/* 4th – Nth refund range */}
-                                                                {winnerBottomPlayers > 0 && (
+                                                                <tbody>
+                                                                    {/* 1st */}
                                                                     <tr
                                                                         className="hover:bg-gray-800/30 transition"
                                                                         style={{ borderBottom: `1px solid ${textColor}` }}
                                                                     >
                                                                         <td className="px-6 py-3 font-medium flex items-center gap-2">
-                                                                            <Gift className="w-5 h-5 text-cyan-400" />
-                                                                            4th – {winnerPlayers}th Place
+                                                                            <Crown className="w-5 h-5 text-yellow-400" />
+                                                                            1st Place
                                                                         </td>
-                                                                        <td className="px-6 py-3 text-cyan-300">₹{returnedPerPlayer}</td>
+                                                                        <td className="px-6 py-3">₹{firstPrize}</td>
                                                                     </tr>
-                                                                )}
-                                                            </tbody>
-                                                        </table>
+
+                                                                    {/* 2nd */}
+                                                                    <tr
+                                                                        className="hover:bg-gray-800/30 transition"
+                                                                        style={{ borderBottom: `1px solid ${textColor}` }}
+                                                                    >
+                                                                        <td className="px-6 py-3 font-medium flex items-center gap-2">
+                                                                            <Trophy className="w-5 h-5 text-gray-300" />
+                                                                            2nd Place
+                                                                        </td>
+                                                                        <td className="px-6 py-3">₹{secondPrize}</td>
+                                                                    </tr>
+
+                                                                    {/* 3rd */}
+                                                                    <tr
+                                                                        className="hover:bg-gray-800/30 transition"
+                                                                        style={{ borderBottom: `1px solid ${textColor}` }}
+                                                                    >
+                                                                        <td className="px-6 py-3 font-medium flex items-center gap-2">
+                                                                            <Medal className="w-5 h-5 text-amber-500" />
+                                                                            3rd Place
+                                                                        </td>
+                                                                        <td className="px-6 py-3">₹{thirdPrize}</td>
+                                                                    </tr>
+
+                                                                    {/* 4th – Nth refund range */}
+                                                                    {winnerBottomPlayers > 0 && (
+                                                                        <tr
+                                                                            className="hover:bg-gray-800/30 transition"
+                                                                            style={{ borderBottom: `1px solid ${textColor}` }}
+                                                                        >
+                                                                            <td className="px-6 py-3 font-medium flex items-center gap-2">
+                                                                                <Gift className="w-5 h-5 text-cyan-400" />
+                                                                                4th – {winnerPlayers}th Place
+                                                                            </td>
+                                                                            <td className="px-6 py-3 text-cyan-300">₹{returnedPerPlayer}</td>
+                                                                        </tr>
+                                                                    )}
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            )}
+                                                )}
 
 
 
