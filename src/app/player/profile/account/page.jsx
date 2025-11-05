@@ -20,11 +20,12 @@ export default function AccountPage() {
   const [showDeposit, setShowDeposit] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [balance, setBalance] = useState(0);
+  const [pandingBalance, setPandingBalance] = useState(0);
   const [expandedId, setExpandedId] = useState(null);
   const [depositErrors, setDepositErrors] = useState({});
   const [withdrawErrors, setWithdrawErrors] = useState({});
   const [copied, setCopied] = useState(false);
-const [visibleCount, setVisibleCount] = useState(4);
+  const [visibleCount, setVisibleCount] = useState(4);
 
   const [confirmModal, setConfirmModal] = useState({
     open: false,
@@ -68,7 +69,7 @@ const [visibleCount, setVisibleCount] = useState(4);
     setUserData(user);
     setUpiId(user.upiId || "");
     setBalance(user.walletBalance || 0);
-
+    setPandingBalance(user.pendingPayments || 0);
     loadTransactions();
     fetchAdminDetails();
   }, [user]); // run whenever user changes
@@ -158,6 +159,7 @@ const [visibleCount, setVisibleCount] = useState(4);
     try {
       await createTransaction({ type: "DEPOSIT", amount, utrNumber, userMessage });
       await loadTransactions();
+      await fetchUser();
       setDepositData({ amount: "", utrNumber: "", userMessage: "" });
       setConfirmModal({ open: false });
     } catch (err) {
@@ -173,6 +175,7 @@ const [visibleCount, setVisibleCount] = useState(4);
     try {
       await createTransaction({ type: "WITHDRAWAL", amount, userMessage });
       await loadTransactions();
+      await fetchUser();
       setWithdrawData({ amount: "", userMessage: "" });
       setConfirmModal({ open: false });
     } catch (err) {
@@ -228,12 +231,26 @@ const [visibleCount, setVisibleCount] = useState(4);
       }}
     >
       {/* 💰 Wallet Section */}
-      <div className="mt-6 p-4 rounded-md border" style={{ borderColor: textColor || "#444" }}>
-        <h2 className="text-lg font-semibold mb-3 text-center">Wallet Balance</h2>
-        <p className="text-3xl font-bold mb-5 text-[#00E5FF] text-center">₹{balance}</p>
+      <div className="p-2 rounded-md border" style={{ borderColor: textColor || "#444" }}>
+        <div className="bg-[#0D1117] p-6 rounded-2xl shadow-lg text-center border border-[#00E5FF]/30 max-w-md mx-auto sm:max-w-2xl">
+          <h2 className="text-lg sm:text-xl font-semibold mb-4 text-[#00E5FF]">Wallet Summary</h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-4">
+            <div className="bg-[#111827] p-4 sm:p-5 rounded-xl shadow-inner border border-[#00E5FF]/20">
+              <h3 className="text-sm sm:text-base font-medium text-gray-300 mb-2">Wallet Balance</h3>
+              <p className="text-2xl sm:text-3xl font-bold text-[#00E5FF]">₹{balance}</p>
+            </div>
+
+            <div className="bg-[#111827] p-4 sm:p-5 rounded-xl shadow-inner border border-[#00E5FF]/20">
+              <h3 className="text-sm sm:text-base font-medium text-gray-300 mb-2">Pending Balance</h3>
+              <p className="text-2xl sm:text-3xl font-bold text-[#00E5FF]">₹{pandingBalance}</p>
+            </div>
+          </div>
+        </div>
+
 
         {admin && (
-          <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-center justify-center w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 p-4 items-center justify-center w-full sm:w-auto">
 
             {/* 👤 Account Holder Name Card */}
             {admin.accountHolderName && (
@@ -301,10 +318,8 @@ const [visibleCount, setVisibleCount] = useState(4);
             <span className="text-[#00E5FF] font-semibold">Deposit Request</span> in your wallet.
           </div>
         )}
-
-        <div className="flex gap-4">
+        <div className="flex flex-wrap justify-center sm:justify-start gap-4 w-auto">
           {/* 🧾 Admin Payment Info */}
-
 
           <button
             onClick={() => {
@@ -312,21 +327,23 @@ const [visibleCount, setVisibleCount] = useState(4);
               setShowWithdraw(false);
             }}
             style={buttonStyle}
-            className="px-4 py-2 rounded-md font-medium shadow-md"
+            className="px-4 py-2 rounded-md font-medium shadow-md w-auto"
           >
             Deposit
           </button>
+
           <button
             onClick={() => {
               setShowWithdraw(!showWithdraw);
               setShowDeposit(false);
             }}
             style={buttonStyle}
-            className="px-4 py-2 rounded-md font-medium shadow-md"
+            className="px-4 py-2 rounded-md font-medium shadow-md w-auto"
           >
             Withdraw
           </button>
         </div>
+
 
         {/* Deposit Form */}
         {showDeposit && (
@@ -509,101 +526,101 @@ const [visibleCount, setVisibleCount] = useState(4);
         </div>
 
         {/* 🧩 Filtered Transaction List */}
-    {filteredTransactions.length === 0 ? (
-  <p className="text-sm opacity-80">No transactions yet.</p>
-) : (
-  <>
-    <div className="space-y-3">
-      {filteredTransactions
-        .slice(0, visibleCount)
-        .map((t) => {
-          const isExpanded = expandedId === t._id;
-          return (
-            <div
-              key={t._id}
-              className="p-4 rounded-md border shadow-sm transition-all hover:shadow-md"
-              style={{ borderColor: textColor || "#333" }}
-            >
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="font-semibold text-base">
-                    {t.type} — <span className="uppercase">{t.status}</span>
-                  </p>
-                  <p className="text-sm opacity-70">
-                    {new Date(t.createdAt).toLocaleString()}
-                  </p>
-                </div>
+        {filteredTransactions.length === 0 ? (
+          <p className="text-sm opacity-80">No transactions yet.</p>
+        ) : (
+          <>
+            <div className="space-y-3">
+              {filteredTransactions
+                .slice(0, visibleCount)
+                .map((t) => {
+                  const isExpanded = expandedId === t._id;
+                  return (
+                    <div
+                      key={t._id}
+                      className="p-4 rounded-md border shadow-sm transition-all hover:shadow-md"
+                      style={{ borderColor: textColor || "#333" }}
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="font-semibold text-base">
+                            {t.type} — <span className="uppercase">{t.status}</span>
+                          </p>
+                          <p className="text-sm opacity-70">
+                            {new Date(t.createdAt).toLocaleString()}
+                          </p>
+                        </div>
 
+                        <button
+                          onClick={() => toggleExpand(t._id)}
+                          className="p-1 rounded transition cursor-pointer border hover:shadow-[0_0_12px_#00E5FF]"
+                          style={{
+                            color: "#00E5FF",
+                            borderColor: "#00E5FF",
+                            backgroundColor: "#0D1117",
+                            boxShadow: "0 0 6px #00E5FF",
+                            textShadow: "0 0 8px #00E5FF",
+                          }}
+                        >
+                          {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                        </button>
+                      </div>
+
+                      {isExpanded && (
+                        <div
+                          className="mt-4 p-3 rounded-md border text-sm transition-all duration-300 grid sm:grid-cols-2 gap-3"
+                          style={{
+                            borderColor: "#00E5FF",
+                            backgroundColor: "rgba(13, 17, 23, 0.6)",
+                            boxShadow: "0 0 10px rgba(0, 229, 255, 0.3)",
+                          }}
+                        >
+                          <div className="pl-3">
+                            <p>
+                              <span className="font-medium opacity-80">Amount:</span> ₹{t.amount}
+                            </p>
+                            <p>
+                              <span className="font-medium opacity-80">UTR:</span>{" "}
+                              {t.utrNumber || "—"}
+                            </p>
+                            <p>
+                              <span className="font-medium opacity-80">User upi id:</span>{" "}
+                              {t.userMessage || "—"}
+                            </p>
+                            <p>
+                              <span className="font-medium opacity-80">System Message:</span>{" "}
+                              {t.systemMessage || "—"}
+                            </p>
+                            <p>
+                              <span className="font-medium opacity-80">Updated At:</span>{" "}
+                              {new Date(t.updatedAt).toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+            </div>
+
+            {/* 👇 Load More Button */}
+            {visibleCount < filteredTransactions.length && (
+              <div className="text-center mt-4">
                 <button
-                  onClick={() => toggleExpand(t._id)}
-                  className="p-1 rounded transition cursor-pointer border hover:shadow-[0_0_12px_#00E5FF]"
+                  onClick={() => setVisibleCount((prev) => prev + 4)}
+                  className="px-4 py-2 rounded-md font-medium border shadow-md hover:shadow-lg transition-all"
                   style={{
-                    color: "#00E5FF",
-                    borderColor: "#00E5FF",
-                    backgroundColor: "#0D1117",
-                    boxShadow: "0 0 6px #00E5FF",
-                    textShadow: "0 0 8px #00E5FF",
+                    color: textColor,
+                    borderColor: textColor,
+                    backgroundColor: bgColor,
                   }}
                 >
-                  {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                  Load More
                 </button>
               </div>
-
-              {isExpanded && (
-                <div
-                  className="mt-4 p-3 rounded-md border text-sm transition-all duration-300 grid sm:grid-cols-2 gap-3"
-                  style={{
-                    borderColor: "#00E5FF",
-                    backgroundColor: "rgba(13, 17, 23, 0.6)",
-                    boxShadow: "0 0 10px rgba(0, 229, 255, 0.3)",
-                  }}
-                >
-                  <div className="pl-3">
-                    <p>
-                      <span className="font-medium opacity-80">Amount:</span> ₹{t.amount}
-                    </p>
-                    <p>
-                      <span className="font-medium opacity-80">UTR:</span>{" "}
-                      {t.utrNumber || "—"}
-                    </p>
-                    <p>
-                      <span className="font-medium opacity-80">User upi id:</span>{" "}
-                      {t.userMessage || "—"}
-                    </p>
-                    <p>
-                      <span className="font-medium opacity-80">System Message:</span>{" "}
-                      {t.systemMessage || "—"}
-                    </p>
-                    <p>
-                      <span className="font-medium opacity-80">Updated At:</span>{" "}
-                      {new Date(t.updatedAt).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-    </div>
-
-    {/* 👇 Load More Button */}
-    {visibleCount < filteredTransactions.length && (
-      <div className="text-center mt-4">
-        <button
-          onClick={() => setVisibleCount((prev) => prev + 4)}
-          className="px-4 py-2 rounded-md font-medium border shadow-md hover:shadow-lg transition-all"
-          style={{
-            color: textColor,
-            borderColor: textColor,
-            backgroundColor: bgColor,
-          }}
-        >
-          Load More
-        </button>
-      </div>
-    )}
-  </>
-)}
+            )}
+          </>
+        )}
 
       </div>
       {/* Confirmation Modal */}
