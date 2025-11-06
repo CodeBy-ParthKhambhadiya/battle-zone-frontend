@@ -23,7 +23,7 @@ import ConfirmModal from "@/components/organizer/ConfirmModal";
 export default function ManageTournamentPage() {
     const [expanded, setExpanded] = useState(null);
     const [tournamentColors, setTournamentColors] = useState({});
-    const [activeTab, setActiveTab] = useState("details");
+    const [activeTab, setActiveTab] = useState("leaderboard");
 
     const { ManagePendingPlayers, loading, error, confirmTournamentJoin, deleteTournamentJoin, fetchTournamentsPendingPlayerList } = useTournament();
     const [showModal, setShowModal] = useState(false);
@@ -165,6 +165,76 @@ export default function ManageTournamentPage() {
                             (confirmedPlayers / maxPlayers) * 100,
                             100
                         );
+                        const {
+                            // joinedPlayers = 0,
+                            entry_fee = 0
+                        } = tournament;
+
+                        // Initialize all prizes and counts to 0
+                        let totalPool = 0, prizePoolMoney = 0, winnerPlayers = 0, winnerBottomPlayers = 0;
+                        let bottomPlayersReturn = 0, leftoverMoney = 0, firstPrize = 0, secondPrize = 0, thirdPrize = 0, returnedPerPlayer = 0;
+
+                        if (joinedPlayers > 0) {
+                            totalPool = entry_fee * joinedPlayers;
+
+                            if (tournament?.game_type === "CLASSIC") {
+                                prizePoolMoney = totalPool * 0.8;
+
+                                // Half of players are winners (round up if odd)
+                                winnerPlayers = Math.ceil(joinedPlayers / 2);
+                                winnerBottomPlayers = Math.max(winnerPlayers - 3, 0);
+
+                                bottomPlayersReturn = winnerBottomPlayers * entry_fee;
+                                leftoverMoney = prizePoolMoney - bottomPlayersReturn;
+
+                                firstPrize = Math.floor(leftoverMoney * 0.5);
+                                secondPrize = Math.floor(leftoverMoney * 0.3);
+                                thirdPrize = Math.floor(leftoverMoney * 0.2);
+
+                                // Add any remaining leftover to first prize
+                                firstPrize += Math.floor(leftoverMoney - (firstPrize + secondPrize + thirdPrize));
+
+                                returnedPerPlayer = winnerBottomPlayers > 0 ? Math.floor(bottomPlayersReturn / winnerBottomPlayers) : 0;
+
+                            } else if (tournament?.game_type === "TDM") {
+                                // Step 1: Remove 38% commission
+                                const commission = totalPool * 0.38;
+                                console.log("Commission:", commission);
+
+                                const prizePoolMoney = totalPool - commission;
+
+                                // Step 2: Determine how many players joined
+                                const joinedPlayers = tournament?.joinedPlayers;
+
+                                // Step 3: Initialize prizes
+
+                                if (joinedPlayers === 7 || joinedPlayers === 8) {
+                                    // 3 winners
+                                    firstPrize = Math.floor(prizePoolMoney * 0.5);
+                                    secondPrize = Math.floor(prizePoolMoney * 0.3);
+                                    thirdPrize = Math.floor(prizePoolMoney * 0.2);
+                                } else if (joinedPlayers >= 2 && joinedPlayers <= 6) {
+                                    // Only 2 winners
+                                    firstPrize = Math.floor(prizePoolMoney * 0.6);
+                                    secondPrize = Math.floor(prizePoolMoney * 0.4);
+                                    thirdPrize = 0;
+                                } else if (joinedPlayers === 1) {
+                                    // Only 1 player
+                                    firstPrize = prizePoolMoney;
+                                    secondPrize = 0;
+                                    thirdPrize = 0;
+                                }
+
+                                // Step 4: Add leftover due to rounding to first prize
+                                const distributedTotal = firstPrize + secondPrize + thirdPrize;
+                                firstPrize += Math.floor(prizePoolMoney - distributedTotal);
+
+                                // Step 5: No extra return for other players
+                                const returnedPerPlayer = 0;
+
+                                console.log("Prizes:", { firstPrize, secondPrize, thirdPrize });
+                            }
+                        }
                         return (
                             <div
                                 key={tournament._id}
@@ -178,7 +248,7 @@ export default function ManageTournamentPage() {
                                 {/* Tournament Header */}
                                 <div className="p-4 rounded-lg shadow-md w-full">
                                     <div className="flex sm:flex-row justify-between items-start sm:items-center gap-3">
-                                            <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-2">
                                             <Trophy
                                                 className="w-5 h-5"
                                                 style={{
@@ -198,7 +268,7 @@ export default function ManageTournamentPage() {
                                         </div>
 
                                         <div className="flex items-center gap-2">
-                                        
+
                                             {/* <span
                                                 className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColor}`}
                                             >
@@ -264,7 +334,7 @@ export default function ManageTournamentPage() {
                                                         className="text-[10px] sm:text-xs font-medium"
                                                         style={{ color: "#00E5FF" }}
                                                     >
-                                                         Starts in {getTimeLeft(tournament.start_datetime) || "00:00:00"}
+                                                        Starts in {getTimeLeft(tournament.start_datetime) || "00:00:00"}
                                                     </span>
                                                 )}
                                             </div>
@@ -297,6 +367,7 @@ export default function ManageTournamentPage() {
                                         {/* Tabs */}
                                         <div className="flex flex-wrap gap-2">
                                             {[
+                                                { key: "leaderboard", label: <><Trophy className="inline w-4 h-4 mr-1" />Leaderboard</> },
                                                 { key: "details", label: "Details" },
                                                 { key: "players", label: "Pending Players" },
                                                 { key: "joined", label: "Joined Players" },
@@ -326,6 +397,67 @@ export default function ManageTournamentPage() {
                                                 </button>
                                             ))}
                                         </div>
+                                        {activeTab === "leaderboard" &&
+                                            ((tournament.game_type === "CLASSIC" && tournament.joinedPlayers > 3) ||
+                                                (tournament.game_type === "TDM" && tournament.joinedPlayers > 0)) && (
+                                                <div
+                                                    className="mt-6 w-full rounded-xl overflow-hidden shadow-xl border border-gray-700"
+                                                    style={{
+                                                        backgroundColor: bgColor,
+                                                        color: textColor,
+                                                        boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
+                                                    }}
+                                                >
+                                                    <div className="p-4 border-b border-gray-600 flex items-center gap-2">
+                                                        <Trophy className="w-6 h-6 text-yellow-400" />
+                                                        <h3 className="font-bold text-xl">Leaderboard / Prize Distribution</h3>
+                                                        <h1 className="ml-auto font-medium">
+                                                            {tournament?.joinedPlayers > 0
+                                                                ? `Prize money will be distributed among ${tournament.joinedPlayers} players.`
+                                                                : "Waiting for players to join..."}
+                                                        </h1>
+                                                    </div>
+
+                                                    <div className="overflow-x-auto">
+                                                        <table className="min-w-full divide-y divide-gray-700 text-sm sm:text-base">
+                                                            <thead className="bg-gray-800/40">
+                                                                <tr>
+                                                                    <th className="px-6 py-3 text-left font-semibold uppercase tracking-wide">
+                                                                        Position
+                                                                    </th>
+                                                                    <th className="px-6 py-3 text-left font-semibold uppercase tracking-wide">
+                                                                        Prize
+                                                                    </th>
+                                                                </tr>
+                                                            </thead>
+
+                                                            <tbody className="divide-y divide-gray-700">
+                                                                <tr className="hover:bg-gray-800/30 transition">
+                                                                    <td className="px-6 py-3 font-medium">🥇 1st Place</td>
+                                                                    <td className="px-6 py-3">₹{firstPrize}</td>
+                                                                </tr>
+                                                                <tr className="hover:bg-gray-800/30 transition">
+                                                                    <td className="px-6 py-3 font-medium">🥈 2nd Place</td>
+                                                                    <td className="px-6 py-3">₹{secondPrize}</td>
+                                                                </tr>
+                                                                <tr className="hover:bg-gray-800/30 transition">
+                                                                    <td className="px-6 py-3 font-medium">🥉 3rd Place</td>
+                                                                    <td className="px-6 py-3">₹{thirdPrize}</td>
+                                                                </tr>
+
+                                                                {winnerBottomPlayers > 0 && (
+                                                                    <tr className="hover:bg-gray-800/30 transition">
+                                                                        <td className="px-6 py-3 font-medium">
+                                                                            4th – {winnerPlayers}th Place
+                                                                        </td>
+                                                                        <td className="px-6 py-3">₹{returnedPerPlayer}</td>
+                                                                    </tr>
+                                                                )}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            )}
 
                                         {/* Details Tab */}
                                         {activeTab === "details" && (

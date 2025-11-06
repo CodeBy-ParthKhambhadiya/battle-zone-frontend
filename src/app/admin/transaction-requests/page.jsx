@@ -252,7 +252,7 @@ export default function TransactionRequestsPage() {
                                     <SortButton label="UTR Number" sortKey="utrNumber" />
                                 </th>
                                 <th className="py-3 px-4">
-                                    <SortButton label="User Message" sortKey="userMessage" />
+                                    <SortButton label="User UPI Id" sortKey="userMessage" />
                                 </th>
                                 <th className="py-3 px-4">Date</th>
                                 <th className="py-3 px-4 text-center">Action</th>

@@ -557,8 +557,9 @@ export default function JoinedPage() {
                                                             style={{ borderColor: textColor }}
                                                         >
                                                             <Trophy className="w-6 h-6 text-yellow-400" />
-                                                            <h3 className="font-bold text-xl">Leaderboard / Prize Distribution</h3>
-                                                        </div>
+    <h3 className="font-bold text-xl">   {t?.game_type === "CLASSIC"
+                                                                ? "Leaderboard / Prize Distribution"
+                                                                : "Leaderboard / Prize Distribution rank base on kill"}</h3>                                                        </div>
 
                                                         {/* Table */}
                                                         <div className="overflow-x-auto">
@@ -727,8 +728,7 @@ export default function JoinedPage() {
 
                                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
 
-                                                        <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-center justify-center w-full sm:w-auto">
-                                                            {/* 👤 Account Holder Name Card */}
+                                                        {/* <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-center justify-center w-full sm:w-auto">
                                                             {t.organizer_id?.accountHolderName && (
                                                                 <div
                                                                     className="flex items-center justify-between gap-2 w-full sm:w-auto max-w-full sm:max-w-md px-3 py-2 rounded-lg shadow-md transition-all duration-300 border cursor-pointer text-[11px] sm:text-sm overflow-hidden"
@@ -749,7 +749,6 @@ export default function JoinedPage() {
                                                                 </div>
                                                             )}
 
-                                                            {/* 💰 UPI ID Card */}
                                                             {t.organizer_id?.upiId && (
                                                                 <div
                                                                     className="flex items-center justify-between gap-2 w-full sm:w-auto max-w-full sm:max-w-md px-3 py-2 rounded-lg shadow-md transition-all duration-300 border cursor-pointer text-[11px] sm:text-sm overflow-hidden"
@@ -784,7 +783,7 @@ export default function JoinedPage() {
                                                                     </button>
                                                                 </div>
                                                             )}
-                                                        </div>
+                                                        </div> */}
 
                                                     </div>
                                                 </div>
