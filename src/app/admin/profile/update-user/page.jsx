@@ -4,10 +4,9 @@ import { useState, useEffect } from "react";
 import useAuth from "@/hooks/useAuth";
 import LoaderIcon from "@/components/LoadingButton";
 import CropperModal from "@/components/player/CropperModal";
-import { LogOut, Upload } from "lucide-react";
+import { Asterisk, ChevronDown, LogOut, Upload } from "lucide-react";
 import Link from "next/link";
-import Toast from "@/utils/toast";
-import { useTheme } from "@/context/ThemeContext"; // 🩵 Import ThemeContext hook
+import { useTheme } from "@/context/ThemeContext";
 
 export default function ProfilePage() {
   const { updateUser, loading } = useAuth();
@@ -18,6 +17,7 @@ export default function ProfilePage() {
   const [croppedFile, setCroppedFile] = useState(null);
   const [showCropper, setShowCropper] = useState(false);
   const [rawImage, setRawImage] = useState(null);
+  const [error, setError] = useState("");
 
   // user info
   const [userId, setUserId] = useState("");
@@ -30,6 +30,9 @@ export default function ProfilePage() {
   const [gender, setGender] = useState("");
   const [bio, setBio] = useState("");
   const [role, setRole] = useState("PLAYER");
+  const [accountHolderName, setAccountHolderName] = useState("");
+  const [upiId, setUpiId] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Load user from localStorage
   useEffect(() => {
@@ -50,6 +53,8 @@ export default function ProfilePage() {
       setBio(userData.bio || "");
       setRole(userData.role || "PLAYER");
       setAvatarPreview(userData.avatar || "");
+      setAccountHolderName(userData.accountHolderName || "");
+      setUpiId(userData.upiId || "");
     }
   }, [userData]);
 
@@ -83,8 +88,37 @@ export default function ProfilePage() {
     sessionStorage.clear();
   };
 
+  // 🧩 Validation
+  const validateForm = () => {
+    if (
+      !firstName ||
+      !lastName ||
+      !username ||
+      !mobile ||
+      !address ||
+      !gender ||
+      !accountHolderName ||
+      !upiId
+    ) {
+      setError("Please fill out all required fields before saving.");
+      setTimeout(() => setError(""), 3000);
+      return false;
+    }
+
+    const upiPattern = /^[\w.-]+@[\w.-]+$/;
+    if (!upiPattern.test(upiId)) {
+      setError("Please enter a valid UPI ID (e.g., name@bank).");
+      setTimeout(() => setError(""), 3000);
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
+
     try {
       const updatedData = {
         firstName,
@@ -95,6 +129,8 @@ export default function ProfilePage() {
         gender,
         bio,
         role,
+        accountHolderName,
+        upiId,
         avatarFile: croppedFile,
       };
 
@@ -106,7 +142,6 @@ export default function ProfilePage() {
 
   // 🎨 Themed styles
   const inputStyle = {
-    // backgroundColor: textColor || "#1e1e1e",
     color: textColor || "#fff",
     border: `1px solid ${textColor || "#444"}`,
   };
@@ -121,7 +156,7 @@ export default function ProfilePage() {
   };
 
   const logoutStyle = {
-    backgroundColor: "#dc2626", // red
+    backgroundColor: "#dc2626",
     color: "#000000ff",
   };
 
@@ -137,12 +172,13 @@ export default function ProfilePage() {
         Update Profile
       </h3>
 
+
       <form
         onSubmit={handleSave}
         className="space-y-6"
         encType="multipart/form-data"
       >
-        {/* Avatar Preview & Upload */}
+        {/* Avatar Section */}
         <div className="flex items-center gap-6 mb-6">
           {avatarPreview ? (
             <img
@@ -163,7 +199,6 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {/* Upload Button */}
           <div>
             <input
               type="file"
@@ -198,48 +233,91 @@ export default function ProfilePage() {
         {/* User Fields */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
-            { label: "First Name", value: firstName, setter: setFirstName },
-            { label: "Last Name", value: lastName, setter: setLastName },
-            { label: "Username", value: username, setter: setUsername },
-            { label: "Email", value: email, disabled: true },
-            { label: "Mobile", value: mobile, setter: setMobile },
-            { label: "Address", value: address, setter: setAddress },
+            { label: "First Name", value: firstName, setter: setFirstName, required: true },
+            { label: "Last Name", value: lastName, setter: setLastName, required: true },
+            { label: "Username", value: username, setter: setUsername, required: true },
+            { label: "Email", value: email, disabled: true, required: false },
+            { label: "Mobile", value: mobile, setter: setMobile, required: true },
+            // { label: "Address", value: address, setter: setAddress, required: true },
+            { label: "Account Holder Name", value: accountHolderName, setter: setAccountHolderName, required: true },
+            { label: "UPI ID", value: upiId, setter: setUpiId, required: true },
           ].map((field, i) => (
             <div key={i}>
-              <label className="block mb-1 text-sm" style={labelStyle}>
+              <label className="block mb-1 text-sm flex items-center gap-1" style={labelStyle}>
                 {field.label}
+                {field.required && <Asterisk size={12} className="text-red-500" />} {/* 🔴 asterisk icon */}
               </label>
               <input
-                type={field.label === "Email" ? "email" : "text"}
+                type="text"
                 value={field.value}
                 disabled={field.disabled}
                 onChange={(e) => field.setter && field.setter(e.target.value)}
                 className="w-full p-2 rounded-md focus:outline-none focus:ring-2 transition-all"
-                style={{
-                  ...inputStyle,
-
-                }}
+                style={inputStyle}
               />
             </div>
           ))}
 
+
           {/* Gender */}
           <div className="md:col-span-2">
-            <label className="block mb-1 text-sm" style={labelStyle}>
-              Gender
+            <label className="block mb-1 text-sm flex items-center gap-1" style={labelStyle}>
+              Gender <Asterisk size={12} className="text-red-500" />
             </label>
-            <select
-              className="w-full p-2 rounded-md focus:outline-none focus:ring-2 transition-all"
-              style={inputStyle}
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-            >
-              <option value="">Select Gender</option>
-              <option value="MALE">Male</option>
-              <option value="FEMALE">Female</option>
-              <option value="OTHER">Other</option>
-            </select>
+
+            <div className="relative w-full">
+              <button
+                type="button"
+                className="w-full p-2 rounded-md border text-left flex justify-between items-center transition-all duration-200"
+                style={{
+                  borderColor: textColor,
+                  color: textColor,
+                  backgroundColor: "transparent",
+                }}
+                onClick={() => setDropdownOpen((prev) => !prev)}
+              >
+                {gender || "Select Gender"}
+                <ChevronDown
+                  size={20}
+                  className={`transition-transform duration-300 ${dropdownOpen ? "rotate-180" : ""}`}
+                  style={{ color: textColor }}
+                />
+              </button>
+
+              <ul
+                className={`absolute w-full mt-1 rounded-md overflow-hidden shadow-lg transition-all duration-300 origin-top z-10 ${dropdownOpen ? "scale-y-100 opacity-100" : "scale-y-0 opacity-0"
+                  }`}
+                style={{
+                  backgroundColor: bgColor,
+                  border: `1px solid ${textColor}`,
+                }}
+              >
+                {["MALE", "FEMALE", "OTHER"].map((option) => (
+                  <li
+                    key={option}
+                    className="p-2 cursor-pointer transition-all duration-200"
+                    style={{
+                      color: textColor,
+                      border: "1px solid transparent",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.border = `1px solid ${textColor}`)
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.border = "1px solid transparent")
+                    }
+                    onClick={() => {
+                      setGender(option);
+                      setDropdownOpen(false);
+                    }}
+                  >
+                    {option.charAt(0) + option.slice(1).toLowerCase()}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
+
 
           {/* Bio */}
           <div className="md:col-span-2">
@@ -254,9 +332,18 @@ export default function ProfilePage() {
             />
           </div>
         </div>
+        {error && (
+          <div
+            className="text-red-500 text-center mb-3 transition-opacity duration-500 ease-in-out"
+            style={{ opacity: error ? 1 : 0 }}
+          >
+            {error}
+          </div>
+        )}
 
         {/* Submit + Logout */}
         <div className="flex justify-center mt-4 gap-4">
+
           <button
             type="submit"
             disabled={loading}
@@ -268,13 +355,9 @@ export default function ProfilePage() {
             }}
           >
             {loading ? (
-              <LoaderIcon
-                size={24} // or 20 / 32 depending on your button size
-                colorClass="text-[]" // glowing cyan
-                className="animate-spin mx-auto" // center if needed
-              />
+              <LoaderIcon className="animate-spin mx-auto w-5 h-5 text-black" />
             ) : (
-              "Update Changes"
+              "Update"
             )}
           </button>
 
