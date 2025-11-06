@@ -69,7 +69,6 @@ export default function ChatIndexPage() {
       return fullName.includes(searchQuery.toLowerCase());
     });
 
-  // display users: if searching → all users, else → chat list
   const displayedUsers = searchQuery ? filteredUsers : newChatUserList;
 
   const bgColor = "#0D1117";
@@ -77,7 +76,6 @@ export default function ChatIndexPage() {
 
   return (
     <div className="flex flex-col justify-start p-6 text-gray-200 w-full max-w-md mx-auto">
-      {/* 🔍 Search Bar */}
       <div className="mb-6 w-full">
         <div
           className="flex items-center rounded-full overflow-hidden transition-all"
