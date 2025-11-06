@@ -25,7 +25,6 @@ export default function ChatArea({ roomId }) {
   const bgColor = "#0D1117";
   const textColor = "#00E5FF";
 
-  // ✅ Socket message handler
   const handleNewMessage = useCallback((data) => {
     setIncomingMessage(data);
   }, []);
