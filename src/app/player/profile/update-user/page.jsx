@@ -238,7 +238,7 @@ export default function ProfilePage() {
             { label: "Username", value: username, setter: setUsername, required: true },
             { label: "Email", value: email, disabled: true, required: false },
             { label: "Mobile", value: mobile, setter: setMobile, required: true },
-            // { label: "Address", value: address, setter: setAddress, required: true },
+            { label: "Address", value: address, setter: setAddress, required: true },
             { label: "Account Holder Name", value: accountHolderName, setter: setAccountHolderName, required: true },
             { label: "UPI ID", value: upiId, setter: setUpiId, required: true },
           ].map((field, i) => (
